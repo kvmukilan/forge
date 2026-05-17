@@ -1,7 +1,6 @@
 import './globals.css'
 import { DM_Sans } from 'next/font/google'
 import { JotaiProvider } from '@/components/jotai-providers'
-import { JotaiHydrate } from '@/components/jotai-hydrate'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { loadSettings, loadHabitsData, loadCoinsData, loadWishlistData, loadUsersPublicData, loadServerSettings } from './actions/data'
 import { loadXPData, loadProjectsData, loadBossData } from './actions/gamification'
@@ -83,24 +82,23 @@ export default async function RootLayout({
             `,
           }}
         />
-        <JotaiProvider>
+        <JotaiProvider
+          initialValues={{
+            settings: initialSettings,
+            habits: initialHabits,
+            coins: initialCoins,
+            wishlist: initialWishlist,
+            users: initialUsers,
+            serverSettings: initialServerSettings,
+            xp: initialXP,
+            projects: initialProjects,
+            boss: initialBoss,
+            guild: initialGuild,
+            pet: initialPet,
+          }}
+        >
           <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
-            <JotaiHydrate
-              initialValues={{
-                settings: initialSettings,
-                habits: initialHabits,
-                coins: initialCoins,
-                wishlist: initialWishlist,
-                users: initialUsers,
-                serverSettings: initialServerSettings,
-                xp: initialXP,
-                projects: initialProjects,
-                boss: initialBoss,
-                guild: initialGuild,
-              pet: initialPet,
-              }}
-            >
               <NextIntlClientProvider locale={locale} messages={messages}>
                 <ThemeProvider
                   attribute="class"
@@ -115,7 +113,6 @@ export default async function RootLayout({
                   </SessionProvider>
                 </ThemeProvider>
               </NextIntlClientProvider>
-            </JotaiHydrate>
           </Suspense>
           </ErrorBoundary>
         </JotaiProvider>
