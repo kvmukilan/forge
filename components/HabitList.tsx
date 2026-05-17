@@ -20,12 +20,12 @@ import { Label } from '@/components/ui/label' // Added
 import { DateTime } from 'luxon' // Added
 import { getHabitFreq } from '@/lib/utils' // Added
 
-export default function HabitList() {
+export default function HabitList({ viewOverride }: { viewOverride?: 'habits' | 'tasks' }) {
   const t = useTranslations('HabitList');
   const { saveHabit, deleteHabit } = useHabits()
   const [habitsData] = useAtom(habitsAtom) // setHabitsData removed as it's not used
   const [browserSettings] = useAtom(browserSettingsAtom)
-  const isTasksView = browserSettings.viewType === 'tasks'
+  const isTasksView = viewOverride ? viewOverride === 'tasks' : browserSettings.viewType === 'tasks'
   // const [settings] = useAtom(settingsAtom); // settingsAtom is not directly used in HabitList itself.
 
   type SortableField = 'name' | 'coinReward' | 'dueDate' | 'frequency';
@@ -125,22 +125,29 @@ export default function HabitList() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl xs:text-3xl font-bold">
-          {t(isTasksView ? 'myTasks' : 'myHabits')}
-        </h1>
-        <span>
-          <Button className="mr-2" onClick={() => setModalConfig({ isOpen: true, isTask: true })}>
-            <Plus className="mr-2 h-4 w-4" /> {t('addTaskButton')}
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h1 className="page-title">{isTasksView ? 'TASKS' : 'THE VAULT'}</h1>
+          <p className="section-label mt-1">
+            {isTasksView ? 'MISSION DIRECTORY' : 'HABIT DIRECTORY'} · {activeHabits.length} ACTIVE
+          </p>
+        </div>
+        <div className="flex gap-2 mt-2">
+          {!viewOverride && (
+            <Button variant="outline" size="sm" onClick={() => setModalConfig({ isOpen: true, isTask: true })}>
+              <Plus className="h-3.5 w-3.5 mr-1.5" /> {t('addTaskButton')}
+            </Button>
+          )}
+          <Button size="sm" onClick={() => setModalConfig({ isOpen: true, isTask: false })}>
+            <Plus className="h-3.5 w-3.5 mr-1.5" /> {t('addHabitButton')}
           </Button>
-          <Button onClick={() => setModalConfig({ isOpen: true, isTask: false })}>
-            <Plus className="mr-2 h-4 w-4" /> {t('addHabitButton')}
-          </Button>
-        </span>
+        </div>
       </div>
-      <div className='py-4'>
-        <ViewToggle />
-      </div>
+      {!viewOverride && (
+        <div className='py-4'>
+          <ViewToggle />
+        </div>
+      )}
 
       {/* Search and Sort Controls */}
       <div className="flex flex-col sm:flex-row items-center gap-4 my-4">
@@ -176,54 +183,105 @@ export default function HabitList() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
-        {activeHabits.length === 0 && searchTerm.trim() ? (
-          <div className="col-span-2 text-center text-muted-foreground py-8">
-            {t(isTasksView ? 'noTasksFoundMessage' : 'noHabitsFoundMessage')}
-          </div>
-        ) : activeHabits.length === 0 ? (
-          <div className="col-span-2">
-            <EmptyState
-              icon={isTasksView ? TaskIcon : HabitIcon}
-              title={t(isTasksView ? 'emptyStateTasksTitle' : 'emptyStateHabitsTitle')}
-              description={t(isTasksView ? 'emptyStateTasksDescription' : 'emptyStateHabitsDescription')}
-            />
-          </div>
-        ) : (
-          activeHabits.map((habit: Habit) => (
-            <HabitItem
-              key={habit.id}
-              habit={habit}
-              onEdit={() => {
-                setEditingHabit(habit)
-                setModalConfig({ isOpen: true, isTask: isTasksView })
-              }}
-              onDelete={() => setDeleteConfirmation({ isOpen: true, habitId: habit.id })}
-            />
-          ))
-        )}
-
-        {archivedHabits.length > 0 && (
-          <>
-            <div className="col-span-1 sm:col-span-2 relative flex items-center my-6">
-              <div className="flex-grow border-t border-gray-300 dark:border-gray-600" />
-              <span className="mx-4 text-sm text-gray-500 dark:text-gray-400">{t('archivedSectionTitle')}</span>
-              <div className="flex-grow border-t border-gray-300 dark:border-gray-600" />
+      {isTasksView ? (
+        /* Tasks — column layout */
+        <div className="flex flex-col gap-2">
+          {activeHabits.length === 0 && searchTerm.trim() ? (
+            <div className="text-center text-muted-foreground py-8">
+              {t('noTasksFoundMessage')}
             </div>
-            {archivedHabits.map((habit: Habit) => (
+          ) : activeHabits.length === 0 ? (
+            <EmptyState
+              icon={TaskIcon}
+              title={t('emptyStateTasksTitle')}
+              description={t('emptyStateTasksDescription')}
+            />
+          ) : (
+            activeHabits.map((habit: Habit) => (
               <HabitItem
                 key={habit.id}
                 habit={habit}
                 onEdit={() => {
                   setEditingHabit(habit)
-                  setModalConfig({ isOpen: true, isTask: isTasksView })
+                  setModalConfig({ isOpen: true, isTask: true })
                 }}
                 onDelete={() => setDeleteConfirmation({ isOpen: true, habitId: habit.id })}
               />
-            ))}
-          </>
-        )}
-      </div>
+            ))
+          )}
+          {archivedHabits.length > 0 && (
+            <>
+              <div className="relative flex items-center my-6">
+                <div className="flex-grow border-t border-border/60" />
+                <span className="mx-4 section-title">{t('archivedSectionTitle')}</span>
+                <div className="flex-grow border-t border-border/60" />
+              </div>
+              {archivedHabits.map((habit: Habit) => (
+                <HabitItem
+                  key={habit.id}
+                  habit={habit}
+                  onEdit={() => {
+                    setEditingHabit(habit)
+                    setModalConfig({ isOpen: true, isTask: true })
+                  }}
+                  onDelete={() => setDeleteConfirmation({ isOpen: true, habitId: habit.id })}
+                />
+              ))}
+            </>
+          )}
+        </div>
+      ) : (
+        /* Habits — grid layout */
+        <>
+          {activeHabits.length === 0 && searchTerm.trim() ? (
+            <div className="text-center text-muted-foreground py-8">
+              {t('noHabitsFoundMessage')}
+            </div>
+          ) : activeHabits.length === 0 ? (
+            <EmptyState
+              icon={HabitIcon}
+              title={t('emptyStateHabitsTitle')}
+              description={t('emptyStateHabitsDescription')}
+            />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {activeHabits.map((habit: Habit) => (
+                <HabitItem
+                  key={habit.id}
+                  habit={habit}
+                  onEdit={() => {
+                    setEditingHabit(habit)
+                    setModalConfig({ isOpen: true, isTask: false })
+                  }}
+                  onDelete={() => setDeleteConfirmation({ isOpen: true, habitId: habit.id })}
+                />
+              ))}
+            </div>
+          )}
+          {archivedHabits.length > 0 && (
+            <>
+              <div className="relative flex items-center my-6">
+                <div className="flex-grow border-t border-border/60" />
+                <span className="mx-4 section-title">{t('archivedSectionTitle')}</span>
+                <div className="flex-grow border-t border-border/60" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {archivedHabits.map((habit: Habit) => (
+                  <HabitItem
+                    key={habit.id}
+                    habit={habit}
+                    onEdit={() => {
+                      setEditingHabit(habit)
+                      setModalConfig({ isOpen: true, isTask: false })
+                    }}
+                    onDelete={() => setDeleteConfirmation({ isOpen: true, habitId: habit.id })}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </>
+      )}
       {modalConfig.isOpen &&
         <AddEditHabitModal
           onClose={() => {

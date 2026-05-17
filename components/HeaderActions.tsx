@@ -18,13 +18,13 @@ export default function HeaderActions() {
 
   return (
     <div className="flex items-center gap-1 sm:gap-2">
-      <Link href="/coins" className="flex items-center gap-1 sm:gap-2 px-3 py-1.5 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full transition-colors border border-gray-200 dark:border-gray-600">
-        <Coins className="h-5 w-5 text-yellow-500 dark:text-yellow-400" />
-        <div className="flex items-baseline gap-1 sm:gap-2">
+      <Link href="/coins" className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary hover:bg-secondary/80 rounded-full transition-colors border border-border">
+        <Coins className="h-4 w-4 text-amber-400" />
+        <div className="flex items-baseline gap-1.5">
           <FormattedNumber
             amount={balance}
             settings={settings}
-            className="text-gray-800 dark:text-gray-100 font-medium text-lg"
+            className="text-foreground font-semibold text-sm tabular-nums"
           />
           <div className="hidden sm:block">
             <TodayEarnedCoins />

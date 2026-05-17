@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KINETIC - Focus Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#303030",
+                        "surface": "#131313",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#3a0b00",
+                        "secondary": "#c6c6c7",
+                        "on-secondary": "#2f3131",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#e2e2e2",
+                        "outline-variant": "#5c4037",
+                        "surface-container-highest": "#353535",
+                        "inverse-primary": "#ae3200",
+                        "primary": "#ffb59e",
+                        "secondary-container": "#454747",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#e5e2e1",
+                        "tertiary": "#c8c6c5",
+                        "surface-bright": "#393939",
+                        "on-primary-fixed-variant": "#852400",
+                        "on-secondary-fixed-variant": "#454747",
+                        "tertiary-container": "#929090",
+                        "on-tertiary": "#313030",
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "on-secondary-container": "#b4b5b5",
+                        "on-primary": "#5e1700",
+                        "on-surface": "#e2e2e2",
+                        "primary-container": "#ff571a",
+                        "background": "#131313",
+                        "surface-container-low": "#1b1b1b",
+                        "on-tertiary-container": "#2a2a2a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-fixed": "#ffdbd0",
+                        "secondary-fixed": "#e2e2e2",
+                        "outline": "#ad897e",
+                        "surface-variant": "#353535",
+                        "surface-tint": "#ffb59e",
+                        "surface-container-high": "#2a2a2a",
+                        "inverse-surface": "#e2e2e2",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "surface-dim": "#131313",
+                        "on-primary-container": "#521300",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "primary-fixed-dim": "#ffb59e",
+                        "on-surface-variant": "#e6beb2",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "surface-container": "#1f1f1f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "bento-gap": "12px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "mono-stats": ["Geist", "monospace"],
+                        "label-bold": ["Geist", "sans-serif"],
+                        "headline-lg-mobile": ["Geist", "sans-serif"],
+                        "display-xl": ["Geist", "sans-serif"],
+                        "headline-lg": ["Geist", "sans-serif"],
+                        "display-xl-mobile": ["Geist", "sans-serif"],
+                        "body-md": ["Geist", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "mono-stats": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "label-bold": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-xl": ["80px", { "lineHeight": "72px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "headline-lg": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-xl-mobile": ["48px", { "lineHeight": "44px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden fixed top-0 z-50 flex justify-between items-center w-full px-margin-mobile py-unit h-16 bg-background dark:bg-background border-b-2 border-primary dark:border-primary">
+<h1 class="font-display-xl-mobile text-display-xl-mobile uppercase tracking-tighter text-primary dark:text-primary">KINETIC</h1>
+<div>
+<span class="material-symbols-outlined text-primary dark:text-primary font-label-bold text-label-bold hover:bg-primary hover:text-background dark:hover:bg-primary dark:hover:text-background transition-none p-2 cursor-pointer">bolt</span>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-full fixed left-0 top-0 z-50 w-64 bg-background dark:bg-background border-r-2 border-primary dark:border-primary">
+<div class="p-6">
+<h1 class="font-display-xl text-display-xl text-primary dark:text-primary tracking-tighter uppercase mb-2">KINETIC</h1>
+<div class="flex items-center gap-4 mb-8 border border-surface-variant p-3 bg-surface-dim">
+<div class="w-10 h-10 bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">person</span>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-secondary uppercase">User Vitality Profile</p>
+<p class="font-mono-stats text-mono-stats text-primary font-bold">VITALITY: 98%</p>
+</div>
+</div>
+<ul class="flex flex-col gap-2">
+<!-- Dashboard (Active) -->
+<li class="bg-primary text-background dark:bg-primary dark:text-background font-bold px-4 py-3 flex items-center gap-3 cursor-pointer border-l-4 border-white transition-none">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-bold text-label-bold">Dashboard</span>
+</li>
+<!-- The Vault (Inactive) -->
+<li class="text-secondary dark:text-secondary px-4 py-3 hover:text-primary hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-none flex items-center gap-3 cursor-pointer border-l-4 border-transparent">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-bold text-label-bold">The Vault</span>
+</li>
+<!-- The Arena (Inactive) -->
+<li class="text-secondary dark:text-secondary px-4 py-3 hover:text-primary hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-none flex items-center gap-3 cursor-pointer border-l-4 border-transparent">
+<span class="material-symbols-outlined">swords</span>
+<span class="font-label-bold text-label-bold">The Arena</span>
+</li>
+<!-- Forge (Inactive) -->
+<li class="text-secondary dark:text-secondary px-4 py-3 hover:text-primary hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-none flex items-center gap-3 cursor-pointer border-l-4 border-transparent">
+<span class="material-symbols-outlined">add_box</span>
+<span class="font-label-bold text-label-bold">Forge</span>
+</li>
+</ul>
+<button class="mt-8 w-full bg-primary text-on-primary font-label-bold text-label-bold py-4 uppercase tracking-widest hover:bg-on-background hover:text-background transition-none border-2 border-transparent">
+                LOG ACTION
+            </button>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="md:ml-64 px-margin-mobile md:px-margin-desktop py-20 md:py-12 pb-28 md:pb-12">
+<div class="grid grid-cols-4 md:grid-cols-12 gap-bento-gap">
+<!-- Daily Vitality Widget -->
+<div class="col-span-4 md:col-span-8 border border-surface-variant bg-surface-dim p-6 flex flex-col justify-between h-[300px]">
+<div class="flex justify-between items-start">
+<h2 class="font-label-bold text-label-bold text-secondary uppercase tracking-widest">Daily Vitality</h2>
+<span class="material-symbols-outlined text-primary">bolt</span>
+</div>
+<div class="flex items-end gap-6">
+<h3 class="font-display-xl text-display-xl text-on-background tracking-tighter">98<span class="text-headline-lg text-primary">%</span></h3>
+<div class="flex-1 pb-4">
+<div class="flex gap-1 h-12 w-full items-end">
+<!-- Visual Momentum Blocks -->
+<div class="flex-1 bg-surface-variant h-full border border-surface-variant"></div>
+<div class="flex-1 bg-surface-variant h-full border border-surface-variant"></div>
+<div class="flex-1 bg-surface-variant h-full border border-surface-variant"></div>
+<div class="flex-1 bg-primary h-full border border-on-primary"></div>
+<div class="flex-1 bg-primary h-full border border-on-primary"></div>
+<div class="flex-1 bg-surface-container-highest h-4 border border-surface-variant"></div>
+<div class="flex-1 bg-surface-container-highest h-4 border border-surface-variant"></div>
+</div>
+<p class="font-mono-stats text-mono-stats text-secondary mt-2 uppercase">Streak: 5 Days Kinetic</p>
+</div>
+</div>
+</div>
+<!-- Party Status Widget -->
+<div class="col-span-4 md:col-span-4 border border-surface-variant bg-surface-dim p-6 flex flex-col gap-4 h-[300px] overflow-y-auto">
+<div class="flex justify-between items-center mb-2">
+<h2 class="font-label-bold text-label-bold text-secondary uppercase tracking-widest">Party Status</h2>
+<span class="material-symbols-outlined text-secondary">groups</span>
+</div>
+<!-- Party Member 1 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="font-mono-stats text-mono-stats text-on-background uppercase">Alpha</span>
+<span class="font-mono-stats text-mono-stats text-primary">100%</span>
+</div>
+<div class="w-full h-2 bg-surface-variant border border-surface-variant">
+<div class="h-full bg-primary w-full"></div>
+</div>
+</div>
+<!-- Party Member 2 (Degraded) -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="font-mono-stats text-mono-stats text-secondary uppercase">Bravo</span>
+<span class="font-mono-stats text-mono-stats text-error">45%</span>
+</div>
+<div class="w-full h-2 bg-surface-variant border border-surface-variant border-dashed">
+<div class="h-full bg-error w-[45%]"></div>
+</div>
+</div>
+<!-- Party Member 3 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="font-mono-stats text-mono-stats text-on-background uppercase">Charlie</span>
+<span class="font-mono-stats text-mono-stats text-primary">82%</span>
+</div>
+<div class="w-full h-2 bg-surface-variant border border-surface-variant">
+<div class="h-full bg-primary w-[82%]"></div>
+</div>
+</div>
+</div>
+<!-- Today's Rituals -->
+<div class="col-span-4 md:col-span-12 border border-surface-variant bg-surface-dim p-6">
+<h2 class="font-label-bold text-label-bold text-secondary uppercase tracking-widest mb-6">Today's Rituals</h2>
+<div class="flex flex-col gap-4">
+<!-- Ritual 1 (Pending) -->
+<div class="flex items-center justify-between border border-surface-variant p-4 bg-background">
+<div class="flex items-center gap-4">
+<div class="w-6 h-6 border-2 border-surface-variant rounded-none flex items-center justify-center cursor-pointer hover:border-primary transition-none"></div>
+<span class="font-body-md text-body-md text-on-background">Morning Protocol (Meditation + Cold Exposure)</span>
+</div>
+<button class="bg-surface-variant text-on-surface font-label-bold text-label-bold px-4 py-2 uppercase hover:bg-primary hover:text-on-primary transition-none border border-transparent">
+                            Execute
+                        </button>
+</div>
+<!-- Ritual 2 (Completed) -->
+<div class="flex items-center justify-between border border-primary p-4 bg-surface-container-low opacity-50">
+<div class="flex items-center gap-4">
+<div class="w-6 h-6 bg-primary border-2 border-primary rounded-none flex items-center justify-center">
+<span class="material-symbols-outlined text-background text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="font-body-md text-body-md text-secondary line-through">Deep Work Sprint (90m)</span>
+</div>
+<span class="font-mono-stats text-mono-stats text-primary uppercase">Logged</span>
+</div>
+<!-- Ritual 3 (Pending, High Stakes) -->
+<div class="flex items-center justify-between border border-error p-4 bg-background">
+<div class="flex items-center gap-4">
+<div class="w-6 h-6 border-2 border-error rounded-none flex items-center justify-center cursor-pointer hover:bg-error transition-none"></div>
+<span class="font-body-md text-body-md text-on-background">Resistance Training (Heavy)</span>
+</div>
+<button class="bg-error text-background font-label-bold text-label-bold px-4 py-2 uppercase hover:bg-on-background hover:text-background transition-none border border-transparent">
+                            Critical
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 bg-background dark:bg-background border-t-2 border-primary dark:border-primary">
+<!-- Home (Active) -->
+<div class="flex flex-col items-center justify-center bg-primary text-background dark:bg-primary dark:text-background p-2 scale-100 active:scale-95 cursor-pointer w-full h-full border-t-4 border-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Home</span>
+</div>
+<!-- Vault (Inactive) -->
+<div class="flex flex-col items-center justify-center text-secondary dark:text-secondary p-2 hover:text-primary transition-none scale-100 active:scale-95 cursor-pointer w-full h-full border-t-4 border-transparent">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Vault</span>
+</div>
+<!-- Arena (Inactive) -->
+<div class="flex flex-col items-center justify-center text-secondary dark:text-secondary p-2 hover:text-primary transition-none scale-100 active:scale-95 cursor-pointer w-full h-full border-t-4 border-transparent">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Arena</span>
+</div>
+<!-- Forge (Inactive) -->
+<div class="flex flex-col items-center justify-center text-secondary dark:text-secondary p-2 hover:text-primary transition-none scale-100 active:scale-95 cursor-pointer w-full h-full border-t-4 border-transparent">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Forge</span>
+</div>
+</nav>
+</body></html>

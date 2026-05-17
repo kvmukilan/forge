@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'HabitTrove',
-    short_name: 'HabitTrove',
-    description: 'Gamified habit tracking application',
+    name: 'Forge',
+    short_name: 'Forge',
+    description: 'Forge your best self — gamified habits, quests & guilds',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

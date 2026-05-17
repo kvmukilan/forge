@@ -1,10 +1,10 @@
-import Image from "next/image"
-
 export function Logo() {
   return (
     <div className="flex items-center gap-2">
-      <Image src="/icons/icon.png" alt="HabitTrove Logo" width={96} height={96} className="h-12 w-12 hidden xs:inline" />
-      <span className="font-bold text-xl">HabitTrove</span>
+      <div className="h-7 w-7 rounded-sm bg-primary flex items-center justify-center flex-shrink-0">
+        <span className="text-primary-foreground text-xs font-black">F</span>
+      </div>
+      <span className="font-black text-sm tracking-widest uppercase text-foreground">Forge</span>
     </div>
   )
 }

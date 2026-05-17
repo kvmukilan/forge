@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic - Calendar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#131313",
+                    "on-tertiary-container": "#2a2a2a",
+                    "on-secondary": "#2f3131",
+                    "secondary-container": "#454747",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "surface-container": "#1f1f1f",
+                    "surface-tint": "#ffb59e",
+                    "inverse-primary": "#ae3200",
+                    "inverse-on-surface": "#303030",
+                    "surface-container-low": "#1b1b1b",
+                    "outline-variant": "#5c4037",
+                    "tertiary-fixed": "#e5e2e1",
+                    "surface-dim": "#131313",
+                    "on-primary-fixed-variant": "#852400",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-primary": "#5e1700",
+                    "tertiary": "#c8c6c5",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "on-primary-container": "#521300",
+                    "error": "#ffb4ab",
+                    "on-secondary-container": "#b4b5b5",
+                    "on-primary-fixed": "#3a0b00",
+                    "on-error": "#690005",
+                    "on-background": "#e2e2e2",
+                    "on-tertiary-fixed-variant": "#474746",
+                    "error-container": "#93000a",
+                    "tertiary-container": "#929090",
+                    "surface-container-high": "#2a2a2a",
+                    "primary": "#ffb59e",
+                    "background": "#131313",
+                    "surface-container-highest": "#353535",
+                    "outline": "#ad897e",
+                    "on-error-container": "#ffdad6",
+                    "on-surface": "#e2e2e2",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "surface-bright": "#393939",
+                    "on-secondary-fixed-variant": "#454747",
+                    "on-tertiary": "#313030",
+                    "surface-variant": "#353535",
+                    "inverse-surface": "#e2e2e2",
+                    "primary-fixed-dim": "#ffb59e",
+                    "secondary": "#c6c6c7",
+                    "on-surface-variant": "#e6beb2",
+                    "primary-fixed": "#ffdbd0",
+                    "secondary-fixed": "#e2e2e2",
+                    "primary-container": "#ff571a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "margin-desktop": "40px",
+                    "gutter": "16px",
+                    "bento-gap": "12px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-bold": ["Geist"],
+                    "mono-stats": ["Geist"],
+                    "headline-lg-mobile": ["Geist"],
+                    "headline-lg": ["Geist"],
+                    "body-md": ["Geist"],
+                    "display-xl-mobile": ["Geist"],
+                    "display-xl": ["Geist"]
+            },
+            "fontSize": {
+                    "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "mono-stats": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}],
+                    "display-xl-mobile": ["48px", {"lineHeight": "44px", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                    "display-xl": ["80px", {"lineHeight": "72px", "letterSpacing": "-0.04em", "fontWeight": "800"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface h-screen flex overflow-hidden antialiased selection:bg-primary-container selection:text-white">
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-full p-unit gap-bento-gap bg-surface-container-lowest border-r-2 border-on-tertiary-container w-64 z-10 shrink-0">
+<!-- Header -->
+<div class="px-4 py-6 border-b-2 border-on-tertiary-container mb-4">
+<h1 class="font-headline-lg text-headline-lg font-black text-primary uppercase tracking-tighter">RITUALS</h1>
+<p class="font-mono-stats text-mono-stats text-secondary-fixed-dim mt-1">VITALITY LEVEL 99</p>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 flex flex-col gap-2 px-2 overflow-y-auto">
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface transition-none" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface transition-none" href="#">
+<span class="material-symbols-outlined">checklist</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Tasks</span>
+</a>
+<!-- ACTIVE TAB: Calendar -->
+<a class="flex items-center gap-4 px-4 py-3 bg-primary text-on-primary font-bold border-2 border-primary transition-none" href="#">
+<span class="material-symbols-outlined fill">calendar_today</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Calendar</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface transition-none" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Wishlist</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface transition-none" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Coins</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface transition-none" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Projects</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface transition-none" href="#">
+<span class="material-symbols-outlined">military_tech</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Achievements</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface transition-none" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Shop</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="px-4 py-4 mt-auto">
+<button class="w-full bg-primary-container text-black font-label-bold text-label-bold uppercase tracking-widest py-4 border-2 border-primary-container hover:bg-black hover:text-primary-container hover:border-primary-container transition-none flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                NEW HABIT
+            </button>
+</div>
+<!-- Footer Navigation -->
+<div class="px-2 pb-4 flex flex-col gap-2 border-t-2 border-on-tertiary-container pt-4">
+<a class="flex items-center gap-4 px-4 py-2 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface transition-none" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Settings</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface transition-none" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-full overflow-hidden bg-background">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 w-full bg-surface-container-lowest border-b-2 border-on-tertiary-container shrink-0 z-10">
+<!-- Brand -->
+<div class="flex items-center gap-4">
+<div class="md:hidden">
+<span class="material-symbols-outlined text-primary text-3xl">menu</span>
+</div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-black tracking-tighter text-primary uppercase">KINETIC</h1>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-6">
+<button class="text-secondary-fixed-dim hover:text-primary transition-none">
+<span class="material-symbols-outlined text-[28px]">monetization_on</span>
+</button>
+<button class="text-secondary-fixed-dim hover:text-primary transition-none relative">
+<span class="material-symbols-outlined text-[28px]">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-primary-container rounded-none"></span>
+</button>
+<button class="text-secondary-fixed-dim hover:text-primary transition-none">
+<span class="material-symbols-outlined text-[28px]">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Bento Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-bento-gap max-w-[1600px] mx-auto h-full">
+<!-- Calendar View (Bento Cell - 8 Cols) -->
+<div class="md:col-span-8 flex flex-col border border-on-tertiary-container bg-surface min-h-[600px]">
+<!-- Calendar Header -->
+<div class="flex justify-between items-center p-6 border-b border-on-tertiary-container">
+<div class="flex items-center gap-4">
+<button class="text-secondary-fixed-dim hover:text-primary transition-none">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<h2 class="font-headline-lg text-headline-lg font-black tracking-tighter uppercase">NOVEMBER 2024</h2>
+<button class="text-secondary-fixed-dim hover:text-primary transition-none">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 border border-on-tertiary-container text-secondary-fixed-dim font-label-bold text-label-bold hover:bg-surface-container-high transition-none">TODAY</button>
+<button class="px-4 py-2 border border-primary text-primary font-label-bold text-label-bold transition-none">MONTH</button>
+</div>
+</div>
+<!-- Days of Week Header -->
+<div class="grid grid-cols-7 border-b border-on-tertiary-container bg-surface-container-low">
+<div class="py-3 text-center font-label-bold text-label-bold text-secondary-fixed-dim uppercase">Mon</div>
+<div class="py-3 text-center font-label-bold text-label-bold text-secondary-fixed-dim uppercase">Tue</div>
+<div class="py-3 text-center font-label-bold text-label-bold text-secondary-fixed-dim uppercase">Wed</div>
+<div class="py-3 text-center font-label-bold text-label-bold text-secondary-fixed-dim uppercase">Thu</div>
+<div class="py-3 text-center font-label-bold text-label-bold text-secondary-fixed-dim uppercase">Fri</div>
+<div class="py-3 text-center font-label-bold text-label-bold text-secondary-fixed-dim uppercase">Sat</div>
+<div class="py-3 text-center font-label-bold text-label-bold text-secondary-fixed-dim uppercase">Sun</div>
+</div>
+<!-- Calendar Grid (High Contrast Lines) -->
+<div class="grid grid-cols-7 flex-1 bg-surface-container-lowest">
+<!-- Previous Month Empty Cells -->
+<div class="border-r border-b border-on-tertiary-container bg-surface-dim opacity-50"></div>
+<div class="border-r border-b border-on-tertiary-container bg-surface-dim opacity-50"></div>
+<div class="border-r border-b border-on-tertiary-container bg-surface-dim opacity-50"></div>
+<div class="border-r border-b border-on-tertiary-container bg-surface-dim opacity-50"></div>
+<!-- Day 1 -->
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between hover:bg-surface-container-high transition-none group relative">
+<span class="font-mono-stats text-mono-stats text-on-surface group-hover:text-primary">01</span>
+</div>
+<!-- Day 2 (Recorded Vitality - Ember Highlight) -->
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between bg-surface hover:bg-surface-container-high transition-none relative overflow-hidden">
+<span class="font-mono-stats text-mono-stats text-primary font-bold">02</span>
+<!-- Ember Block (Visual Momentum) -->
+<div class="absolute bottom-0 left-0 w-full h-1.5 bg-primary-container"></div>
+</div>
+<!-- Day 3 (Recorded Vitality - Ember Highlight) -->
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between bg-surface hover:bg-surface-container-high transition-none relative overflow-hidden">
+<span class="font-mono-stats text-mono-stats text-primary font-bold">03</span>
+<div class="absolute bottom-0 left-0 w-full h-1.5 bg-primary-container"></div>
+</div>
+<!-- Day 4 -->
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between hover:bg-surface-container-high transition-none group">
+<span class="font-mono-stats text-mono-stats text-on-surface group-hover:text-primary">04</span>
+</div>
+<!-- Day 5 (Recorded Vitality) -->
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between bg-surface hover:bg-surface-container-high transition-none relative overflow-hidden">
+<span class="font-mono-stats text-mono-stats text-primary font-bold">05</span>
+<div class="absolute bottom-0 left-0 w-full h-1.5 bg-primary-container"></div>
+</div>
+<!-- Day 6 (Missed - Degraded Grey) -->
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between bg-surface-container-low transition-none relative">
+<span class="font-mono-stats text-mono-stats text-secondary-fixed-dim">06</span>
+<div class="absolute bottom-0 left-0 w-full border-b border-dashed border-secondary-fixed-dim"></div>
+</div>
+<!-- Days 7-10 -->
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between hover:bg-surface-container-high transition-none group"><span class="font-mono-stats text-mono-stats text-on-surface group-hover:text-primary">07</span></div>
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between hover:bg-surface-container-high transition-none group"><span class="font-mono-stats text-mono-stats text-on-surface group-hover:text-primary">08</span></div>
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between hover:bg-surface-container-high transition-none group"><span class="font-mono-stats text-mono-stats text-on-surface group-hover:text-primary">09</span></div>
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between hover:bg-surface-container-high transition-none group"><span class="font-mono-stats text-mono-stats text-on-surface group-hover:text-primary">10</span></div>
+<!-- Day 11 (Today) -->
+<div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between bg-surface transition-none relative border-2 border-white z-10 -m-[1px]">
+<span class="font-mono-stats text-mono-stats text-white font-bold bg-primary-container px-1 inline-block w-max">11</span>
+<!-- Current Active Streak -->
+<div class="absolute bottom-0 left-0 w-full h-2 bg-white"></div>
+</div>
+<!-- Days 12-30 (Future) -->
+<!-- Generating a few rows to fill the grid visually -->
+<script>
+                            for(let i=12; i<=30; i++) {
+                                document.write(`
+                                    <div class="border-r border-b border-on-tertiary-container p-2 flex flex-col justify-between hover:bg-surface-container-high transition-none group">
+                                        <span class="font-mono-stats text-mono-stats text-secondary-fixed-dim group-hover:text-white">${i}</span>
+                                    </div>
+                                `);
+                            }
+                        </script>
+<!-- Remaining empty cells to complete the 5-row grid -->
+<div class="border-r border-b border-on-tertiary-container bg-surface-dim opacity-50"></div>
+<div class="border-r border-b border-on-tertiary-container bg-surface-dim opacity-50"></div>
+<div class="border-r border-b border-on-tertiary-container bg-surface-dim opacity-50"></div>
+<div class="border-r border-b border-on-tertiary-container bg-surface-dim opacity-50"></div>
+<div class="border-r border-b border-on-tertiary-container bg-surface-dim opacity-50"></div>
+</div>
+</div>
+<!-- Side Panels (Bento Cells - 4 Cols) -->
+<div class="md:col-span-4 flex flex-col gap-bento-gap">
+<!-- Upcoming Rituals -->
+<div class="border border-on-tertiary-container bg-surface p-6 flex flex-col flex-1 min-h-[300px]">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-black tracking-tighter uppercase">UPCOMING</h3>
+<span class="material-symbols-outlined text-primary">bolt</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Task Item -->
+<div class="group flex items-center justify-between p-4 border border-on-tertiary-container hover:border-primary transition-none cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 border-2 border-secondary-fixed-dim group-hover:border-primary flex items-center justify-center"></div>
+<div>
+<p class="font-label-bold text-label-bold uppercase text-on-surface">Deep Work Session</p>
+<p class="font-mono-stats text-[12px] text-secondary-fixed-dim mt-1">14:00 - 16:00</p>
+</div>
+</div>
+<span class="font-mono-stats text-mono-stats text-primary">+50</span>
+</div>
+<!-- Task Item -->
+<div class="group flex items-center justify-between p-4 border border-on-tertiary-container hover:border-primary transition-none cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 border-2 border-secondary-fixed-dim group-hover:border-primary flex items-center justify-center"></div>
+<div>
+<p class="font-label-bold text-label-bold uppercase text-on-surface">Physical Training</p>
+<p class="font-mono-stats text-[12px] text-secondary-fixed-dim mt-1">17:30 - 18:30</p>
+</div>
+</div>
+<span class="font-mono-stats text-mono-stats text-primary">+30</span>
+</div>
+<!-- Task Item (Completed) -->
+<div class="flex items-center justify-between p-4 border border-on-tertiary-container bg-surface-container-high opacity-70">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-black text-[16px] font-bold">check</span>
+</div>
+<div>
+<p class="font-label-bold text-label-bold uppercase text-secondary-fixed-dim line-through">Morning Hydration</p>
+</div>
+</div>
+<span class="font-mono-stats text-mono-stats text-secondary-fixed-dim">DONE</span>
+</div>
+</div>
+</div>
+<!-- Weekly Deadlines -->
+<div class="border border-on-tertiary-container bg-surface p-6 flex flex-col flex-1 min-h-[300px]">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-black tracking-tighter uppercase text-primary">DEADLINES</h3>
+<span class="material-symbols-outlined text-primary">warning</span>
+</div>
+<div class="flex flex-col gap-0 border border-on-tertiary-container divide-y divide-on-tertiary-container">
+<!-- Deadline Item -->
+<div class="p-4 flex flex-col gap-2 bg-surface-container-low border-l-4 border-primary-container">
+<div class="flex justify-between items-start">
+<p class="font-label-bold text-label-bold uppercase text-on-surface">Submit Quarterly Review</p>
+<span class="font-mono-stats text-mono-stats text-primary-container font-bold">2 DAYS</span>
+</div>
+<div class="w-full h-1 bg-surface-container-highest mt-2">
+<div class="h-full bg-primary-container w-[80%]"></div>
+</div>
+</div>
+<!-- Deadline Item -->
+<div class="p-4 flex flex-col gap-2 bg-surface hover:bg-surface-container-low transition-none cursor-pointer">
+<div class="flex justify-between items-start">
+<p class="font-label-bold text-label-bold uppercase text-secondary-fixed-dim">Marathon Registration</p>
+<span class="font-mono-stats text-mono-stats text-secondary-fixed-dim">5 DAYS</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic - Tasks</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#131313",
+                    "on-tertiary-container": "#2a2a2a",
+                    "on-secondary": "#2f3131",
+                    "secondary-container": "#454747",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "surface-container": "#1f1f1f",
+                    "surface-tint": "#ffb59e",
+                    "inverse-primary": "#ae3200",
+                    "inverse-on-surface": "#303030",
+                    "surface-container-low": "#1b1b1b",
+                    "outline-variant": "#5c4037",
+                    "tertiary-fixed": "#e5e2e1",
+                    "surface-dim": "#131313",
+                    "on-primary-fixed-variant": "#852400",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-primary": "#5e1700",
+                    "tertiary": "#c8c6c5",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "on-primary-container": "#521300",
+                    "error": "#ffb4ab",
+                    "on-secondary-container": "#b4b5b5",
+                    "on-primary-fixed": "#3a0b00",
+                    "on-error": "#690005",
+                    "on-background": "#e2e2e2",
+                    "on-tertiary-fixed-variant": "#474746",
+                    "error-container": "#93000a",
+                    "tertiary-container": "#929090",
+                    "surface-container-high": "#2a2a2a",
+                    "primary": "#ffb59e",
+                    "background": "#131313",
+                    "surface-container-highest": "#353535",
+                    "outline": "#ad897e",
+                    "on-error-container": "#ffdad6",
+                    "on-surface": "#e2e2e2",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "surface-bright": "#393939",
+                    "on-secondary-fixed-variant": "#454747",
+                    "on-tertiary": "#313030",
+                    "surface-variant": "#353535",
+                    "inverse-surface": "#e2e2e2",
+                    "primary-fixed-dim": "#ffb59e",
+                    "secondary": "#c6c6c7",
+                    "on-surface-variant": "#e6beb2",
+                    "primary-fixed": "#ffdbd0",
+                    "secondary-fixed": "#e2e2e2",
+                    "primary-container": "#ff571a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "margin-desktop": "40px",
+                    "gutter": "16px",
+                    "bento-gap": "12px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-bold": [
+                            "Geist"
+                    ],
+                    "mono-stats": [
+                            "Geist"
+                    ],
+                    "headline-lg-mobile": [
+                            "Geist"
+                    ],
+                    "headline-lg": [
+                            "Geist"
+                    ],
+                    "body-md": [
+                            "Geist"
+                    ],
+                    "display-xl-mobile": [
+                            "Geist"
+                    ],
+                    "display-xl": [
+                            "Geist"
+                    ]
+            },
+            "fontSize": {
+                    "label-bold": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "mono-stats": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.02em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "28px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "36px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "letterSpacing": "0em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-xl-mobile": [
+                            "48px",
+                            {
+                                    "lineHeight": "44px",
+                                    "letterSpacing": "-0.04em",
+                                    "fontWeight": "800"
+                            }
+                    ],
+                    "display-xl": [
+                            "80px",
+                            {
+                                    "lineHeight": "72px",
+                                    "letterSpacing": "-0.04em",
+                                    "fontWeight": "800"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        /* Hide scrollbar for bento aesthetic */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen">
+<!-- Desktop SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 p-unit gap-bento-gap bg-surface-container-lowest border-r-2 border-on-tertiary-container shrink-0 fixed left-0 top-0 z-50">
+<!-- Header -->
+<div class="px-4 py-6 flex flex-col gap-2">
+<h1 class="font-headline-lg text-headline-lg font-black text-primary uppercase">RITUALS</h1>
+<p class="font-mono-stats text-mono-stats text-secondary-fixed-dim">VITALITY LEVEL 99</p>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-2 flex-grow px-2">
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface instant digital state switching" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Dashboard</span>
+</a>
+<!-- Active State Navigation -->
+<a class="flex items-center gap-4 px-4 py-3 bg-primary text-on-primary font-bold border-2 border-primary instant digital state switching" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">checklist</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Tasks</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface instant digital state switching" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Calendar</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface instant digital state switching" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Wishlist</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface instant digital state switching" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Coins</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface instant digital state switching" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Projects</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface instant digital state switching" href="#">
+<span class="material-symbols-outlined">military_tech</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Achievements</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface instant digital state switching" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Shop</span>
+</a>
+</div>
+<!-- CTA Button -->
+<div class="px-2 mt-auto">
+<button class="w-full py-4 bg-primary-container text-on-tertiary-fixed font-label-bold text-label-bold uppercase tracking-widest border-2 border-transparent hover:border-on-surface hover:text-on-surface hover:bg-transparent instant digital state switching">
+                NEW HABIT
+            </button>
+</div>
+<!-- Footer Links -->
+<div class="flex flex-col gap-2 px-2 pb-6 pt-4 border-t-2 border-on-tertiary-container mt-4">
+<a class="flex items-center gap-4 px-4 py-2 text-secondary-fixed-dim hover:text-on-surface instant digital state switching" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Settings</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2 text-secondary-fixed-dim hover:text-on-surface instant digital state switching" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- Mobile TopNavBar -->
+<header class="md:hidden flex justify-between items-center px-margin-mobile py-4 w-full bg-surface-container-lowest border-b-2 border-on-tertiary-container sticky top-0 z-40">
+<div class="font-headline-lg-mobile text-headline-lg-mobile font-black tracking-tighter text-primary">KINETIC</div>
+<div class="flex items-center gap-4 text-primary">
+<button class="hover:text-primary transition-colors duration-100 instant state change no transitions text-secondary-fixed-dim">
+<span class="material-symbols-outlined">monetization_on</span>
+</button>
+<button class="hover:text-primary transition-colors duration-100 instant state change no transitions text-secondary-fixed-dim">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="hover:text-primary transition-colors duration-100 instant state change no transitions text-secondary-fixed-dim">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Page Canvas / Bento Grid -->
+<main class="grid grid-cols-4 md:grid-cols-12 gap-bento-gap p-margin-mobile md:p-margin-desktop w-full items-start">
+<!-- Page Header Cell -->
+<div class="col-span-4 md:col-span-12 flex justify-between items-end pb-4 border-b-[1px] border-surface-container-high mb-4">
+<h2 class="font-display-xl-mobile text-display-xl-mobile md:font-display-xl md:text-display-xl uppercase">Tasks</h2>
+<div class="font-mono-stats text-mono-stats text-secondary tracking-widest text-right">
+<span class="text-primary-container">03</span> REMAINING
+                </div>
+</div>
+<!-- Quick Log Terminal (Full Width) -->
+<div class="col-span-4 md:col-span-12 border-[1px] border-surface-container-high p-6 bg-surface-container-low flex flex-col gap-2">
+<label class="font-label-bold text-label-bold uppercase tracking-widest text-secondary" for="quick-log">Quick Log Terminal</label>
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-0 top-1/2 -translate-y-1/2 text-secondary-container">add</span>
+<input class="w-full bg-transparent border-0 border-b-[1px] border-on-surface focus:border-primary-container focus:ring-0 pl-8 py-3 font-mono-stats text-mono-stats text-on-surface outline-none transition-colors duration-0 placeholder:text-secondary-container" id="quick-log" placeholder="ENTER TASK PROTOCOL..." type="text"/>
+</div>
+</div>
+<!-- Critical Priority Cell (Level 2/3 Highlight) -->
+<div class="col-span-4 md:col-span-12 border-2 border-primary-container p-6 bg-surface-container flex flex-col gap-6">
+<!-- Cell Header -->
+<div class="flex justify-between items-center border-b-[1px] border-primary-container pb-3">
+<h3 class="font-label-bold text-label-bold uppercase tracking-widest text-primary-container flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warning</span>
+                        Critical Payload
+                    </h3>
+</div>
+<!-- Task Items -->
+<div class="flex flex-col gap-0 border-[1px] border-primary-container divide-y-[1px] divide-primary-container">
+<!-- Task Row 1 -->
+<label class="flex items-center gap-6 p-4 cursor-pointer hover:bg-surface-container-high group transition-none">
+<input class="peer sr-only" type="checkbox"/>
+<div class="w-6 h-6 border-2 border-primary-container peer-checked:bg-primary-container peer-checked:border-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-tertiary-fixed opacity-0 peer-checked:opacity-100 font-bold" style="font-size: 18px; font-variation-settings: 'wght' 700;">check</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface group-hover:text-primary-container">Finalize Q3 Strategic Objectives</span>
+<span class="ml-auto font-mono-stats text-mono-stats text-primary-container bg-surface-container-lowest px-2 py-1 border-[1px] border-primary-container hidden md:block">T-02:00</span>
+</label>
+<!-- Task Row 2 -->
+<label class="flex items-center gap-6 p-4 cursor-pointer hover:bg-surface-container-high group transition-none">
+<input class="peer sr-only" type="checkbox"/>
+<div class="w-6 h-6 border-2 border-primary-container peer-checked:bg-primary-container peer-checked:border-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-tertiary-fixed opacity-0 peer-checked:opacity-100 font-bold" style="font-size: 18px; font-variation-settings: 'wght' 700;">check</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface group-hover:text-primary-container">Approve Deployment Sequence 08A</span>
+<span class="ml-auto font-mono-stats text-mono-stats text-primary-container bg-surface-container-lowest px-2 py-1 border-[1px] border-primary-container hidden md:block">T-04:30</span>
+</label>
+</div>
+</div>
+<!-- High Priority Cell (Half Width Desktop) -->
+<div class="col-span-4 md:col-span-6 border-[1px] border-surface-container-high p-6 flex flex-col gap-6 bg-surface-container-lowest">
+<!-- Cell Header -->
+<div class="flex justify-between items-center border-b-[1px] border-surface-container-high pb-3">
+<h3 class="font-label-bold text-label-bold uppercase tracking-widest text-on-surface">High Priority</h3>
+</div>
+<!-- Task Items -->
+<div class="flex flex-col gap-4">
+<label class="flex items-center gap-4 cursor-pointer hover:bg-surface-container-high p-2 -mx-2 transition-none group">
+<div class="w-6 h-6 border-2 border-secondary-container group-hover:border-on-surface flex items-center justify-center shrink-0"></div>
+<span class="font-body-md text-body-md text-on-surface">Review System Architecture Document</span>
+</label>
+<label class="flex items-center gap-4 cursor-pointer hover:bg-surface-container-high p-2 -mx-2 transition-none group">
+<div class="w-6 h-6 border-2 border-secondary-container group-hover:border-on-surface flex items-center justify-center shrink-0"></div>
+<span class="font-body-md text-body-md text-on-surface">Weekly Metric Alignment Call</span>
+</label>
+</div>
+</div>
+<!-- Normal Priority & Completed Cell (Half Width Desktop) -->
+<div class="col-span-4 md:col-span-6 border-[1px] border-surface-container-high p-6 flex flex-col gap-6 bg-surface-container-lowest">
+<!-- Cell Header -->
+<div class="flex justify-between items-center border-b-[1px] border-surface-container-high pb-3">
+<h3 class="font-label-bold text-label-bold uppercase tracking-widest text-secondary-fixed-dim">Standard &amp; Completed</h3>
+</div>
+<!-- Task Items -->
+<div class="flex flex-col gap-4">
+<label class="flex items-center gap-4 cursor-pointer hover:bg-surface-container-high p-2 -mx-2 transition-none group">
+<div class="w-6 h-6 border-2 border-secondary-container group-hover:border-on-surface flex items-center justify-center shrink-0"></div>
+<span class="font-body-md text-body-md text-secondary">Update dependencies in manifest</span>
+</label>
+<!-- Completed Task -->
+<label class="flex items-center gap-4 cursor-pointer p-2 -mx-2 opacity-50 transition-none">
+<div class="w-6 h-6 bg-surface-container-highest border-2 border-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary font-bold" style="font-size: 18px;">check</span>
+</div>
+<span class="font-body-md text-body-md text-secondary line-through">Morning Calibration Routine</span>
+</label>
+<!-- Completed Task -->
+<label class="flex items-center gap-4 cursor-pointer p-2 -mx-2 opacity-50 transition-none">
+<div class="w-6 h-6 bg-surface-container-highest border-2 border-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary font-bold" style="font-size: 18px;">check</span>
+</div>
+<span class="font-body-md text-body-md text-secondary line-through">Sync with Design Protocol</span>
+</label>
+</div>
+</div>
+</main>
+</div>
+</body></html>

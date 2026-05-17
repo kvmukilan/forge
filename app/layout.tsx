@@ -3,6 +3,9 @@ import { DM_Sans } from 'next/font/google'
 import { JotaiProvider } from '@/components/jotai-providers'
 import { JotaiHydrate } from '@/components/jotai-hydrate'
 import { loadSettings, loadHabitsData, loadCoinsData, loadWishlistData, loadUsersPublicData, loadServerSettings } from './actions/data'
+import { loadXPData, loadProjectsData, loadBossData } from './actions/gamification'
+import { loadGuildData } from '@/app/actions/guilds'
+import { loadPetData } from '@/app/actions/pets'
 import Layout from '@/components/Layout'
 import { Toaster } from '@/components/ui/toaster'
 import { ThemeProvider } from "@/components/theme-provider"
@@ -28,8 +31,8 @@ const dmSans = DM_Sans({
 const activeFont = dmSans
 
 export const metadata = {
-  title: 'HabitTrove',
-  description: 'Track your habits and get rewarded',
+  title: 'Forge',
+  description: 'Forge your best self — gamified habits, quests & guilds',
 }
 
 export const dynamic = 'force-dynamic' // needed to prevent nextjs from caching the load... functions in Layout component
@@ -44,13 +47,18 @@ export default async function RootLayout({
   // side is the easiest way to get started
   const messages = await getMessages();
 
-  const [initialSettings, initialHabits, initialCoins, initialWishlist, initialUsers, initialServerSettings] = await Promise.all([
+  const [initialSettings, initialHabits, initialCoins, initialWishlist, initialUsers, initialServerSettings, initialXP, initialProjects, initialBoss, initialGuild, initialPet] = await Promise.all([
     loadSettings(),
     loadHabitsData(),
     loadCoinsData(),
     loadWishlistData(),
     loadUsersPublicData(),
     loadServerSettings(),
+    loadXPData(),
+    loadProjectsData(),
+    loadBossData(),
+    loadGuildData(),
+    loadPetData(),
   ])
 
   return (
@@ -84,6 +92,11 @@ export default async function RootLayout({
                 wishlist: initialWishlist,
                 users: initialUsers,
                 serverSettings: initialServerSettings,
+                xp: initialXP,
+                projects: initialProjects,
+                boss: initialBoss,
+                guild: initialGuild,
+              pet: initialPet,
               }}
             >
               <NextIntlClientProvider locale={locale} messages={messages}>

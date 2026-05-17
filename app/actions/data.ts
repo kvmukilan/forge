@@ -424,6 +424,47 @@ export async function saveUsersData(data: UserData): Promise<void> {
   return saveData('auth', data)
 }
 
+export async function findOrCreateOAuthUser(oauthId: string, provider: 'google', email?: string, name?: string): Promise<User | null> {
+  const data = await loadUsersData()
+
+  // Find by oauthId + provider
+  let user = data.users.find(u => u.oauthId === oauthId && u.oauthProvider === provider)
+
+  // If not found, try to link by email to an existing account
+  if (!user && email) {
+    user = data.users.find(u => u.email === email)
+    if (user) {
+      user.oauthId = oauthId
+      user.oauthProvider = provider
+      await saveUsersData(data)
+    }
+  }
+
+  // Create a new user
+  if (!user) {
+    const isFirstUser = data.users.length === 0
+    const baseUsername = name?.replace(/\s+/g, '_').toLowerCase() || email?.split('@')[0] || 'user'
+    // Ensure unique username
+    let username = baseUsername
+    let suffix = 1
+    while (data.users.some(u => u.username === username)) {
+      username = `${baseUsername}_${suffix++}`
+    }
+    user = {
+      id: uuid(),
+      username,
+      email,
+      oauthProvider: provider,
+      oauthId,
+      isAdmin: isFirstUser,
+    }
+    data.users.push(user)
+    await saveUsersData(data)
+  }
+
+  return user
+}
+
 export async function getUser(username: string, plainTextPassword?: string): Promise<User | null> {
   const data = await loadUsersData()
 

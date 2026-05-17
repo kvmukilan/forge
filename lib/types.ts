@@ -32,13 +32,18 @@ export type SafeUser = SessionUser & {
 }
 
 export type User = SafeUser & {
-  password?: string // Optional: Allow users without passwords (e.g., initial setup)
-  lastNotificationReadTimestamp?: string // UTC ISO date string
+  password?: string
+  email?: string
+  oauthProvider?: 'google'
+  oauthId?: string
+  lastNotificationReadTimestamp?: string
 }
 
 export type PublicUser = Omit<User, 'password'> & {
   hasPassword: boolean
 }
+
+export type HabitCategory = 'fitness' | 'learning' | 'mindfulness' | 'social' | 'creative' | 'productivity' | 'health' | 'other'
 
 export type Habit = {
   id: string
@@ -53,6 +58,13 @@ export type Habit = {
   pinned?: boolean // mark the habit as pinned
   userIds?: UserId[]
   drawing?: string // Optional JSON string of drawing data
+  difficulty?: 'easy' | 'medium' | 'hard'
+  projectId?: string
+  priority?: 'p1' | 'p2' | 'p3'
+  intentionWhen?: string
+  intentionWhere?: string
+  isKeystone?: boolean
+  category?: HabitCategory
 }
 
 
@@ -70,7 +82,7 @@ export type WishlistItemType = {
   drawing?: string // Optional JSON string of drawing data
 }
 
-export type TransactionType = 'HABIT_COMPLETION' | 'HABIT_UNDO' | 'WISH_REDEMPTION' | 'MANUAL_ADJUSTMENT' | 'TASK_COMPLETION' | 'TASK_UNDO';
+export type TransactionType = 'HABIT_COMPLETION' | 'HABIT_UNDO' | 'WISH_REDEMPTION' | 'MANUAL_ADJUSTMENT' | 'TASK_COMPLETION' | 'TASK_UNDO' | 'TASK_OVERDUE_PENALTY';
 
 export interface CoinTransaction {
   id: string;
@@ -145,6 +157,8 @@ export const getDefaultSettings = (): Settings => ({
   ui: {
     useNumberFormatting: true,
     useGrouping: true,
+    notificationsEnabled: false,
+    notificationTime: '08:00',
   },
   system: {
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -159,6 +173,149 @@ export const getDefaultServerSettings = (): ServerSettings => ({
   isDemo: false
 })
 
+export type Project = {
+  id: string
+  name: string
+  description: string
+  color: string
+  emoji?: string
+  userIds?: UserId[]
+  createdAt: string
+  archived?: boolean
+}
+
+export interface ProjectsData {
+  projects: Project[]
+}
+
+export type XPTransactionSource = 'HABIT_COMPLETION' | 'TASK_COMPLETION' | 'STREAK_BONUS' | 'DAILY_CHALLENGE' | 'MANUAL'
+
+export type XPTransaction = {
+  id: string
+  amount: number
+  source: XPTransactionSource
+  relatedItemId?: string
+  timestamp: string
+  userId?: UserId
+}
+
+export interface XPBoost {
+  type: 'xp_2x' | 'coins_2x' | 'gem_boost'
+  expiresAt: string
+}
+
+export interface StreakMilestoneRecord {
+  habitId: string
+  milestone: number
+  claimedAt: string
+}
+
+export interface XPData {
+  totalXP: number
+  transactions: XPTransaction[]
+  unlockedAchievements: { id: string; unlockedAt: string }[]
+  gems: number
+  shields: number
+  shieldUsedDates: string[]
+  perfectDays: string[]
+  milestoneRewards: StreakMilestoneRecord[]
+  activeBoosts: XPBoost[]
+  activeTitle: string | null
+  equippedTitles: string[]
+  bossesDefeated: number
+  skillProgress?: Partial<Record<HabitCategory, number>>
+  unlockedSkills?: string[]
+}
+
+export type Boss = {
+  id: string
+  name: string
+  emoji: string
+  weekStart: string
+  maxHP: number
+  currentHP: number
+  isDefeated: boolean
+  rewardClaimed?: boolean
+  reward: { xp: number; coins: number }
+}
+
+export interface BossData {
+  boss: Boss | null
+}
+
+export type Guild = {
+  id: string
+  name: string
+  emoji: string
+  description?: string
+  inviteCode: string
+  memberIds: UserId[]
+  adminId: UserId
+  createdAt: string
+}
+
+export type GuildQuestType = 'habit_blitz' | 'coin_surge' | 'boss_assault' | 'perfect_streak' | 'level_up_rush'
+export type GuildQuestDifficulty = 'easy' | 'medium' | 'hard'
+
+export interface GuildQuest {
+  id: string
+  guildId: string
+  type: GuildQuestType
+  difficulty: GuildQuestDifficulty
+  title: string
+  description: string
+  emoji: string
+  target: number
+  weekStart: string
+  reward: { coins: number; xp: number; gems: number }
+  claimedBy: string[]
+}
+
+export interface GuildData {
+  guilds: Guild[]
+  quests: GuildQuest[]
+}
+
+export const getDefaultGuildData = (): GuildData => ({ guilds: [], quests: [] })
+
+export type PetForm = 'egg' | 'hatchling' | 'companion' | 'guardian' | 'legend'
+
+export type Pet = {
+  id: string
+  name: string
+  form: PetForm
+  hp: number
+  maxHp: number
+  xp: number
+  xpToNextForm: number
+  mood: 'ecstatic' | 'happy' | 'neutral' | 'sad' | 'distressed'
+  lastFedAt?: string
+  adoptedAt: string
+}
+
+export interface PetData {
+  pet: Pet | null
+}
+
+export const getDefaultPetData = (): PetData => ({ pet: null })
+
+export const getDefaultXPData = (): XPData => ({
+  totalXP: 0,
+  transactions: [],
+  unlockedAchievements: [],
+  gems: 0,
+  shields: 0,
+  shieldUsedDates: [],
+  perfectDays: [],
+  milestoneRewards: [],
+  activeBoosts: [],
+  activeTitle: null,
+  equippedTitles: [],
+  bossesDefeated: 0,
+})
+export const getDefaultProjectsData = (): ProjectsData => ({ projects: [] })
+export const getDefaultBossData = (): BossData => ({ boss: null })
+
 // Map of data types to their default values
 export const DATA_DEFAULTS = {
   wishlist: getDefaultWishlistData,
@@ -166,6 +323,10 @@ export const DATA_DEFAULTS = {
   coins: getDefaultCoinsData,
   settings: getDefaultSettings,
   auth: getDefaultUsersData,
+  xp: getDefaultXPData,
+  projects: getDefaultProjectsData,
+  boss: getDefaultBossData,
+  guild: getDefaultGuildData,
 } as const;
 
 // Type for all possible data types
@@ -174,6 +335,8 @@ export type DataType = keyof typeof DATA_DEFAULTS;
 export interface UISettings {
   useNumberFormatting: boolean;
   useGrouping: boolean;
+  notificationsEnabled?: boolean;
+  notificationTime?: string;
 }
 
 export type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = Sunday, 6 = Saturday
@@ -210,6 +373,11 @@ export interface JotaiHydrateInitialValues {
   wishlist: WishlistData;
   users: PublicUserData;
   serverSettings: ServerSettings;
+  xp: XPData;
+  projects: ProjectsData;
+  boss: BossData;
+  guild: GuildData;
+  pet: PetData;
 }
 
 export interface ServerSettings {

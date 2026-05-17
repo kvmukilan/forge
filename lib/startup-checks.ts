@@ -39,7 +39,7 @@ export async function checkStartupPermissions(): Promise<StartupPermissionResult
   }
 
   // Test read/write permissions with a temporary file
-  const testFilePath = join(dirPath, '.habittrove-permission-test')
+  const testFilePath = join(dirPath, '.forge-permission-test')
   const testContent = 'permission-test'
 
   try {

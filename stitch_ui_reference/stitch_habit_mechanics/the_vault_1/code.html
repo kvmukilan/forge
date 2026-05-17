@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic - The Vault</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700;800&amp;family=Geist+Mono:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#303030",
+                        "surface": "#131313",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#3a0b00",
+                        "secondary": "#c6c6c7",
+                        "on-secondary": "#2f3131",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#e2e2e2",
+                        "outline-variant": "#5c4037",
+                        "surface-container-highest": "#353535",
+                        "inverse-primary": "#ae3200",
+                        "primary": "#ffb59e",
+                        "secondary-container": "#454747",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#e5e2e1",
+                        "tertiary": "#c8c6c5",
+                        "surface-bright": "#393939",
+                        "on-primary-fixed-variant": "#852400",
+                        "on-secondary-fixed-variant": "#454747",
+                        "tertiary-container": "#929090",
+                        "on-tertiary": "#313030",
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "on-secondary-container": "#b4b5b5",
+                        "on-primary": "#5e1700",
+                        "on-surface": "#e2e2e2",
+                        "primary-container": "#ff571a",
+                        "background": "#131313",
+                        "surface-container-low": "#1b1b1b",
+                        "on-tertiary-container": "#2a2a2a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-fixed": "#ffdbd0",
+                        "secondary-fixed": "#e2e2e2",
+                        "outline": "#ad897e",
+                        "surface-variant": "#353535",
+                        "surface-tint": "#ffb59e",
+                        "surface-container-high": "#2a2a2a",
+                        "inverse-surface": "#e2e2e2",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "surface-dim": "#131313",
+                        "on-primary-container": "#521300",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "primary-fixed-dim": "#ffb59e",
+                        "on-surface-variant": "#e6beb2",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "surface-container": "#1f1f1f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "bento-gap": "12px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "mono-stats": ["Geist Mono", "monospace"],
+                        "label-bold": ["Geist", "sans-serif"],
+                        "headline-lg-mobile": ["Geist", "sans-serif"],
+                        "display-xl": ["Geist", "sans-serif"],
+                        "headline-lg": ["Geist", "sans-serif"],
+                        "display-xl-mobile": ["Geist", "sans-serif"],
+                        "body-md": ["Geist", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "mono-stats": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "label-bold": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-xl": ["80px", { "lineHeight": "72px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "headline-lg": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-xl-mobile": ["48px", { "lineHeight": "44px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .font-mono-stats { font-family: 'Geist Mono', monospace; }
+        /* Reset and enforce borders for bento */
+        * { border-color: #353535; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row antialiased">
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden flex justify-between items-center w-full px-margin-mobile py-unit h-16 bg-background dark:bg-background text-primary dark:text-primary font-label-bold text-label-bold fixed top-0 z-40 border-b-2 border-primary dark:border-primary">
+<div class="font-display-xl-mobile text-display-xl-mobile uppercase tracking-tighter text-primary dark:text-primary">KINETIC</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined hover:bg-primary hover:text-background dark:hover:bg-primary dark:hover:text-background transition-none cursor-pointer" data-icon="bolt">bolt</span>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-full fixed left-0 top-0 z-50 docked left-0 w-64 bg-background dark:bg-background text-primary dark:text-primary font-mono-stats text-mono-stats border-r-2 border-primary dark:border-primary">
+<div class="p-margin-desktop border-b-2 border-primary dark:border-primary">
+<div class="font-display-xl text-display-xl text-primary dark:text-primary tracking-tighter uppercase mb-4">KINETIC</div>
+<div class="text-secondary dark:text-secondary uppercase tracking-widest text-[10px] mb-2">VITALITY: 98%</div>
+<button class="w-full border-2 border-primary text-primary py-2 font-label-bold text-label-bold hover:bg-primary hover:text-background transition-none uppercase tracking-widest">LOG ACTION</button>
+</div>
+<div class="flex-1 overflow-y-auto py-8 flex flex-col gap-2 px-4">
+<a class="flex items-center gap-4 text-secondary dark:text-secondary px-4 py-3 hover:text-primary hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-none" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span>Dashboard</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center gap-4 bg-primary text-background dark:bg-primary dark:text-background font-bold px-4 py-3 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-none Active: border-l-4 border-white" href="#">
+<span class="material-symbols-outlined" data-icon="Receipt_long">receipt_long</span>
+<span>The Vault</span>
+</a>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary px-4 py-3 hover:text-primary hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-none" href="#">
+<span class="material-symbols-outlined" data-icon="swords">swords</span>
+<span>The Arena</span>
+</a>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary px-4 py-3 hover:text-primary hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-none" href="#">
+<span class="material-symbols-outlined" data-icon="add_box">add_box</span>
+<span>Forge</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full pt-20 pb-28 md:pt-0 md:pb-0 md:ml-64 min-h-screen px-margin-mobile md:px-margin-desktop py-margin-mobile md:py-margin-desktop flex flex-col gap-bento-gap">
+<header class="mb-8 mt-4 md:mt-8 flex justify-between items-end border-b-2 border-surface-container-highest pb-4">
+<div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background uppercase tracking-tight">The Vault</h1>
+<p class="font-mono-stats text-mono-stats text-secondary mt-2">HABIT DIRECTORY / SECTOR 4</p>
+</div>
+<div class="font-mono-stats text-mono-stats text-primary border border-primary px-3 py-1">
+                ACTIVE: 12
+            </div>
+</header>
+<!-- Habit List (Editorial Style) -->
+<div class="flex flex-col gap-bento-gap">
+<!-- Habit Item (Active/Pending) -->
+<div class="group flex items-center justify-between p-6 border border-surface-container-highest bg-surface hover:border-primary transition-none cursor-pointer">
+<div class="flex items-center gap-6">
+<div class="w-8 h-8 border border-secondary flex items-center justify-center group-hover:border-primary transition-none">
+<span class="w-4 h-4 bg-transparent group-hover:bg-primary transition-none"></span>
+</div>
+<div>
+<h3 class="font-label-bold text-label-bold text-on-background uppercase tracking-widest">Morning Calibration</h3>
+<p class="font-mono-stats text-mono-stats text-secondary mt-1">05:30 AM / 45 MIN</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right hidden sm:block">
+<span class="font-label-bold text-label-bold text-secondary uppercase text-[10px]">Current Streak</span>
+</div>
+<div class="font-display-xl-mobile text-display-xl-mobile text-on-background w-16 text-right">
+                        42
+                    </div>
+</div>
+</div>
+<!-- Habit Item (Done State #FF4D00 / primary) -->
+<div class="flex items-center justify-between p-6 border-2 border-primary bg-surface-container-low transition-none">
+<div class="flex items-center gap-6">
+<div class="w-8 h-8 bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-background text-sm" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div>
+<h3 class="font-label-bold text-label-bold text-primary uppercase tracking-widest line-through decoration-1 opacity-80">Deep Work Protocol</h3>
+<p class="font-mono-stats text-mono-stats text-secondary mt-1">09:00 AM / 120 MIN</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right hidden sm:block">
+<span class="font-label-bold text-label-bold text-primary uppercase text-[10px]">Current Streak</span>
+</div>
+<div class="font-display-xl-mobile text-display-xl-mobile text-primary w-16 text-right">
+                        18
+                    </div>
+</div>
+</div>
+<!-- Habit Item (Active/Pending) -->
+<div class="group flex items-center justify-between p-6 border border-surface-container-highest bg-surface hover:border-primary transition-none cursor-pointer">
+<div class="flex items-center gap-6">
+<div class="w-8 h-8 border border-secondary flex items-center justify-center group-hover:border-primary transition-none">
+<span class="w-4 h-4 bg-transparent group-hover:bg-primary transition-none"></span>
+</div>
+<div>
+<h3 class="font-label-bold text-label-bold text-on-background uppercase tracking-widest">Physical Training</h3>
+<p class="font-mono-stats text-mono-stats text-secondary mt-1">17:00 PM / 60 MIN</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right hidden sm:block">
+<span class="font-label-bold text-label-bold text-secondary uppercase text-[10px]">Current Streak</span>
+</div>
+<div class="font-display-xl-mobile text-display-xl-mobile text-on-background w-16 text-right">
+                        05
+                    </div>
+</div>
+</div>
+<!-- Habit Item (Missed/Degraded) -->
+<div class="flex items-center justify-between p-6 border border-dashed border-surface-container-highest bg-background opacity-50 grayscale transition-none">
+<div class="flex items-center gap-6">
+<div class="w-8 h-8 border border-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-surface-container-highest text-sm" data-icon="close">close</span>
+</div>
+<div>
+<h3 class="font-label-bold text-label-bold text-secondary uppercase tracking-widest">Evening Review</h3>
+<p class="font-mono-stats text-mono-stats text-surface-variant mt-1">MISSED YESTERDAY</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right hidden sm:block">
+<span class="font-label-bold text-label-bold text-surface-variant uppercase text-[10px]">Current Streak</span>
+</div>
+<div class="font-display-xl-mobile text-display-xl-mobile text-secondary w-16 text-right">
+                        00
+                    </div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Magic Plus) -->
+<button class="fixed bottom-24 md:bottom-8 right-margin-mobile md:right-margin-desktop w-16 h-16 bg-primary text-background border-2 border-background flex items-center justify-center hover:bg-background hover:text-primary hover:border-primary transition-none z-40">
+<span class="material-symbols-outlined text-[32px]" data-icon="add">add</span>
+</button>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 bg-background border-t-2 border-primary dark:border-primary">
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary p-2 hover:text-primary transition-none scale-100 active:scale-95 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+<span class="font-label-bold text-label-bold-mobile uppercase text-[10px]">Home</span>
+</a>
+<!-- Active Tab -->
+<a class="flex flex-col items-center justify-center bg-primary text-background dark:bg-primary dark:text-background p-2 hover:text-primary transition-none scale-100 active:scale-95 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="list_alt">list_alt</span>
+<span class="font-label-bold text-label-bold-mobile uppercase text-[10px]">Vault</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary p-2 hover:text-primary transition-none scale-100 active:scale-95 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="groups">groups</span>
+<span class="font-label-bold text-label-bold-mobile uppercase text-[10px]">Arena</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary p-2 hover:text-primary transition-none scale-100 active:scale-95 w-full h-full" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="add_circle">add_circle</span>
+<span class="font-label-bold text-label-bold-mobile uppercase text-[10px]">Forge</span>
+</a>
+</nav>
+</body></html>

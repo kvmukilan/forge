@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic - The Forge</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            font-feature-settings: 'liga';
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#972800",
+                        "secondary-container": "#d9371b",
+                        "inverse-on-surface": "#f3f0f5",
+                        "surface-variant": "#e4e1e7",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#fffbff",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#e5e8ff",
+                        "primary-container": "#0057ff",
+                        "inverse-primary": "#b6c4ff",
+                        "secondary-fixed-dim": "#ffb4a5",
+                        "surface-bright": "#fbf8fe",
+                        "primary": "#0043c8",
+                        "on-tertiary-container": "#ffe3db",
+                        "inverse-surface": "#303034",
+                        "surface-container-low": "#f6f2f8",
+                        "on-surface-variant": "#434656",
+                        "on-primary-fixed": "#001550",
+                        "on-primary-fixed-variant": "#003ab2",
+                        "tertiary-fixed": "#ffdbd1",
+                        "tertiary-container": "#c13600",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#862300",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e4e1e7",
+                        "background": "#fbf8fe",
+                        "surface-container": "#f0edf2",
+                        "surface-container-high": "#eae7ed",
+                        "surface-tint": "#004ee7",
+                        "tertiary-fixed-dim": "#ffb59f",
+                        "error": "#ba1a1a",
+                        "secondary": "#b51c01",
+                        "surface-dim": "#dcd9de",
+                        "on-error": "#ffffff",
+                        "on-background": "#1b1b1f",
+                        "primary-fixed": "#dce1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "on-secondary-fixed": "#3e0400",
+                        "secondary-fixed": "#ffdad3",
+                        "on-tertiary-fixed": "#3a0a00",
+                        "surface": "#fbf8fe",
+                        "on-secondary-fixed-variant": "#8e1300",
+                        "outline-variant": "#c3c5d9",
+                        "outline": "#737688",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1b1b1f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "stack-lg": "32px",
+                        "container-padding": "32px",
+                        "max-width-desktop": "1200px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Geist"],
+                        "body-md": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "display": ["Geist"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Geist"],
+                        "headline-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex selection:bg-primary-container selection:text-on-primary-container">
+<nav class="hidden md:flex flex-col h-screen w-64 border-r border-outline-variant bg-surface-container-lowest py-stack-md px-gutter shrink-0">
+<div class="mb-stack-lg flex items-center gap-stack-sm px-stack-sm">
+<div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary text-[18px]">bolt</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold tracking-tight text-primary">Kinetic</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Peak Performance</p>
+</div>
+</div>
+<div class="flex flex-col gap-unit flex-1">
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-body-md text-body-md">Habit Vault</span>
+</a>
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-body-md text-body-md">Social Arena</span>
+</a>
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm rounded-lg bg-surface-container text-primary font-bold opacity-90 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-body-md text-body-md">The Forge</span>
+</a>
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col gap-unit border-t border-outline-variant pt-stack-md">
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-stack-sm px-stack-md py-stack-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+<button class="mt-stack-sm w-full bg-primary text-on-primary font-label-sm text-label-sm py-stack-sm rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-colors duration-150">
+                New Ritual
+            </button>
+</div>
+</nav>
+<div class="flex-1 flex flex-col h-screen overflow-hidden">
+<header class="flex justify-between items-center px-container-padding py-stack-sm w-full bg-surface border-b border-outline-variant shrink-0 md:hidden">
+<div class="font-headline-md text-headline-md font-bold text-primary">Kinetic</div>
+<div class="flex items-center gap-stack-sm">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-unit rounded-full">
+<span class="material-symbols-outlined" data-icon="local_fire_department">local_fire_department</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-unit rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-unit rounded-full">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto w-full flex justify-center px-gutter py-stack-lg md:py-[64px]">
+<div class="w-full max-w-[640px] flex flex-col gap-[48px]">
+<div class="flex flex-col gap-stack-sm text-center">
+<h2 class="font-display text-display text-on-surface">The Forge</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Calibrate a new operational protocol.</p>
+</div>
+<div class="flex flex-col gap-[32px]">
+<div class="flex flex-col gap-stack-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant" for="target-action">Target Action</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg p-stack-md font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" id="target-action" placeholder="I will..." type="text"/>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Cadence</label>
+<div class="flex p-unit bg-surface-container-low rounded-lg border border-outline-variant">
+<button class="flex-1 py-stack-sm font-body-md text-body-md bg-surface text-on-surface rounded-md border border-outline-variant shadow-sm transition-all text-center">Daily</button>
+<button class="flex-1 py-stack-sm font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors text-center">Weekly</button>
+<button class="flex-1 py-stack-sm font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors text-center">Specific</button>
+</div>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Friction Level</label>
+<div class="grid grid-cols-3 gap-stack-sm">
+<button class="flex flex-col items-center justify-center p-stack-md rounded-lg border border-outline-variant bg-surface hover:bg-surface-container-low transition-colors gap-unit">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Easy</span>
+<div class="flex gap-1 mt-unit">
+<div class="w-2 h-2 rounded-full bg-primary-fixed-dim"></div>
+</div>
+</button>
+<button class="flex flex-col items-center justify-center p-stack-md rounded-lg border-2 border-primary bg-primary-fixed/10 transition-colors gap-unit relative">
+<span class="font-label-sm text-label-sm text-primary font-bold">Medium</span>
+<div class="flex gap-1 mt-unit">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+</div>
+</button>
+<button class="flex flex-col items-center justify-center p-stack-md rounded-lg border border-outline-variant bg-surface hover:bg-surface-container-low transition-colors gap-unit">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Hard</span>
+<div class="flex gap-1 mt-unit">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+</div>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-stack-md flex gap-stack-md items-start">
+<div class="w-10 h-10 rounded-full bg-error-container/20 border border-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-error text-[20px]" data-icon="gavel">gavel</span>
+</div>
+<div class="flex flex-col gap-unit">
+<h4 class="font-label-sm text-label-sm text-on-surface font-bold">Stakes Protocol</h4>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                Failure to execute this ritual at the Medium friction level will result in a <strong class="text-error font-normal">2.5% Vitality decay</strong>. Consistent execution yields compounding XP multipliers.
+                            </p>
+</div>
+</div>
+</div>
+<div class="mt-stack-md">
+<button class="w-full bg-primary text-on-primary font-body-lg text-body-lg font-bold py-[18px] rounded-lg hover:bg-[#003ab2] transition-colors duration-200 border border-transparent focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:outline-none flex justify-center items-center gap-stack-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="terminal">terminal</span>
+                        Commence Sequence
+                    </button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

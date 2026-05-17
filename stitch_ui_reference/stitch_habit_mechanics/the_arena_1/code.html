@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Arena</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#303030",
+                        "surface": "#131313",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#3a0b00",
+                        "secondary": "#c6c6c7",
+                        "on-secondary": "#2f3131",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#e2e2e2",
+                        "outline-variant": "#5c4037",
+                        "surface-container-highest": "#353535",
+                        "inverse-primary": "#ae3200",
+                        "primary": "#ffb59e",
+                        "secondary-container": "#454747",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#e5e2e1",
+                        "tertiary": "#c8c6c5",
+                        "surface-bright": "#393939",
+                        "on-primary-fixed-variant": "#852400",
+                        "on-secondary-fixed-variant": "#454747",
+                        "tertiary-container": "#929090",
+                        "on-tertiary": "#313030",
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "on-secondary-container": "#b4b5b5",
+                        "on-primary": "#5e1700",
+                        "on-surface": "#e2e2e2",
+                        "primary-container": "#ff571a",
+                        "background": "#131313",
+                        "surface-container-low": "#1b1b1b",
+                        "on-tertiary-container": "#2a2a2a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-fixed": "#ffdbd0",
+                        "secondary-fixed": "#e2e2e2",
+                        "outline": "#ad897e",
+                        "surface-variant": "#353535",
+                        "surface-tint": "#ffb59e",
+                        "surface-container-high": "#2a2a2a",
+                        "inverse-surface": "#e2e2e2",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "surface-dim": "#131313",
+                        "on-primary-container": "#521300",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "primary-fixed-dim": "#ffb59e",
+                        "on-surface-variant": "#e6beb2",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "surface-container": "#1f1f1f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "bento-gap": "12px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "margin-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "mono-stats": ["Geist"],
+                        "label-bold": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "display-xl": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "display-xl-mobile": ["Geist"],
+                        "body-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "mono-stats": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "label-bold": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-xl": ["80px", { "lineHeight": "72px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "headline-lg": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-xl-mobile": ["48px", { "lineHeight": "44px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md min-h-screen flex flex-col md:flex-row antialiased">
+<!-- SideNavBar (Desktop) -->
+<nav aria-label="Side Navigation" class="hidden md:flex flex-col h-full fixed left-0 top-0 z-50 docked left-0 w-64 border-r-2 border-primary bg-background text-primary">
+<div class="px-6 py-8 flex flex-col items-start gap-2">
+<div class="w-16 h-16 bg-surface-container-highest border border-primary flex items-center justify-center overflow-hidden">
+<img alt="User Vitality Profile" class="w-full h-full object-cover grayscale brightness-75 contrast-125" data-alt="A highly detailed monochrome headshot of an individual, high contrast, raw texture, dark aesthetic. The lighting is dramatic and directional, casting deep shadows that emphasize structural facial features. The overall tone is intense and uncompromising, matching a dark-mode, high-performance UI aesthetic without any soft filters." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj7j8oOoy0lKvPYS4gWdDr-fVOanUddInbAmBTjRTX4nlGyPrZLiqEnFQgTj5flffpxt5B-ID1A01eG0dAQhEDPA0PwzJlPVv1IfHgUNZGrUr1XfiDxoPGRM2TAdT_NERx9hrJGykDyAJgyvOuYHfAGEPoduBy1vJDOAedcloemV9_gmOE6eddoaAB7d4SjL2-uBHaEkT_w_dJPTbQhVsw3XsIWVozfn3B_hPEk2DJ2cCPmb_kkomdIZ3y8AmcLJHfZFYeE_FKaLM"/>
+</div>
+<h1 class="font-display-xl text-display-xl text-primary tracking-tighter uppercase mt-4">KINETIC</h1>
+<p class="font-mono-stats text-mono-stats text-primary mt-1 tracking-widest">VITALITY: 98%</p>
+</div>
+<ul class="flex flex-col w-full mt-8 flex-1">
+<li>
+<a class="block text-secondary px-4 py-3 hover:text-primary hover:bg-surface-container-highest transition-none border-l-4 border-transparent flex items-center gap-4" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="block text-secondary px-4 py-3 hover:text-primary hover:bg-surface-container-highest transition-none border-l-4 border-transparent flex items-center gap-4" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">The Vault</span>
+</a>
+</li>
+<li>
+<a class="block bg-primary text-background font-bold px-4 py-3 hover:bg-surface-container-highest transition-none border-l-4 border-white flex items-center gap-4" href="#">
+<span class="material-symbols-outlined fill-icon">swords</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">The Arena</span>
+</a>
+</li>
+<li>
+<a class="block text-secondary px-4 py-3 hover:text-primary hover:bg-surface-container-highest transition-none border-l-4 border-transparent flex items-center gap-4" href="#">
+<span class="material-symbols-outlined">add_box</span>
+<span class="font-label-bold text-label-bold uppercase tracking-widest">Forge</span>
+</a>
+</li>
+</ul>
+<div class="p-6 w-full">
+<button class="w-full bg-primary-container text-background font-label-bold text-label-bold uppercase tracking-widest py-4 border-2 border-primary-container hover:bg-transparent hover:text-primary-container hover:border-primary-container transition-none">
+                LOG ACTION
+            </button>
+</div>
+</nav>
+<!-- TopAppBar (Mobile & Desktop Context) -->
+<header class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-unit h-16 bg-background text-primary border-b-2 border-primary docked full-width top-0 z-40 md:ml-64 md:w-[calc(100%-16rem)]">
+<h1 class="font-display-xl-mobile text-display-xl-mobile uppercase tracking-tighter text-primary">KINETIC</h1>
+<div class="flex items-center gap-4">
+<button class="text-primary hover:bg-primary hover:text-background transition-none p-2 flex items-center justify-center">
+<span class="material-symbols-outlined">bolt</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full flex flex-col p-margin-mobile md:p-margin-desktop gap-bento-gap md:gap-[12px] md:ml-64 pb-24 md:pb-margin-desktop overflow-y-auto">
+<!-- Header Bento Box -->
+<div class="w-full border border-surface-container-highest bg-surface-container-lowest p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary uppercase tracking-tighter">Squad Alpha</h2>
+<p class="font-mono-stats text-mono-stats text-secondary mt-2">SOCIAL STAKES ACTIVE</p>
+</div>
+<div class="flex flex-col items-end gap-2">
+<div class="font-mono-stats text-mono-stats text-primary-container">SHIELD INTEGRITY: 74%</div>
+<!-- Shield Health Bar -->
+<div class="w-full md:w-64 h-8 border border-primary p-1 bg-background flex">
+<div class="h-full bg-primary-container" style="width: 74%;"></div>
+</div>
+</div>
+</div>
+<!-- Split Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-bento-gap lg:gap-[12px]">
+<!-- Left Column: Party Status (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-bento-gap lg:gap-[12px]">
+<div class="w-full border border-surface-container-highest bg-surface-container-lowest p-6">
+<h3 class="font-label-bold text-label-bold text-secondary uppercase tracking-widest mb-6">Party Members</h3>
+<div class="flex flex-col gap-4">
+<!-- Member 1 (Healthy) -->
+<div class="flex items-center justify-between p-4 border border-surface-container-highest bg-background">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 border border-primary overflow-hidden">
+<img alt="Member" class="w-full h-full object-cover grayscale brightness-75 contrast-125" data-alt="A gritty, high-contrast monochrome portrait of a man looking resolute. The lighting is harsh and direct, stripping away softness. The visual style fits a severe, gamified high-performance interface focusing on stark blacks and whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX_-uPV07aUri4g07bNLKVu_BjLaOMdqlIegZorNflBZxiJsb4gZt9HZbQZ_KqHHrve7j_TGvMI_mFEEaUaLV4coyl3FVS12O4o_ZL4Uj0ykFGbm1X2hCOHmTWq64DGNDcblUlD3ZgyYPcMCRbh4J6or5mcdJ0gysDjcBWm6PBNh5us9GlDj8ASBXCKfRxGIAqZLk1DJV0DXqtdHqkmCZQKpksUArxNP2SJjFw84_j59RchUytOTbw1e8-uwTsV4t8Vc74pdVlxTU"/>
+</div>
+<div>
+<div class="font-mono-stats text-mono-stats text-on-background">OPERATIVE 01</div>
+<div class="font-label-bold text-label-bold text-primary text-[10px]">12 DAY STREAK</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">shield</span>
+</div>
+<!-- Member 2 (Damaged) -->
+<div class="flex items-center justify-between p-4 border border-error bg-error-container/10">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 border border-error overflow-hidden">
+<img alt="Member" class="w-full h-full object-cover grayscale brightness-50 contrast-150" data-alt="A highly textured, monochrome portrait of a woman with a serious expression. Deep shadows obscure parts of her face, reinforcing a mood of tension and high stakes. The aesthetic is raw and uncompromising, suited for a dark-mode penalty state." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxaoMtpmGC6hvuIX_UpOrYztUn7Pm3e-eU9ZHLsYk8-Gxs-d_tdixv0dvWqUwzBN5U_CSckThc5sloOjqm1sTn9SqaPj0WHh2ZxjvbRY7hj8CggFnFCOaX7GurINvf0vwCmEhhmYJQiWZyvaE4nSQOTe8Z6gT-iP0U121JDtAe6zmm53ETFTempdnHrXowLp-smL-do1UPGPNnuDFHW1JwIIoU7XU6OQJHaH1F5xYDuMh3h1Hu_0AkwmI3L301-NOizpn-TyftonQ"/>
+</div>
+<div>
+<div class="font-mono-stats text-mono-stats text-error">OPERATIVE 02</div>
+<div class="font-label-bold text-label-bold text-error text-[10px]">MISSED CHECK-IN</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-error">warning</span>
+</div>
+<!-- Member 3 (Healthy) -->
+<div class="flex items-center justify-between p-4 border border-surface-container-highest bg-background">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 border border-primary overflow-hidden">
+<img alt="Member" class="w-full h-full object-cover grayscale brightness-75 contrast-125" data-alt="A stark, high-contrast black and white portrait of a person. The image is tightly cropped with dramatic shadows, exuding intensity and focus. The visual style aligns strictly with a brutalist, high-performance tactical interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe9fsbPM-dP_F-qZYh9XNYsgC8n5o_EHqWoUtQmTfyB--E_mVU-XEAosFI70rUNtfMjpbVc-S4lbkSiCKTdyU-wsI8dRC68F4_vfa0cBbdcbFwOD5f_BkPm0hMIzxQU9dptd93Za0I0vu7YEIYNYioE6Lyk4Kn-zm-erjx9HNJfhvm4_zULv3XpmPpnoHdR0MUvuqB6N3pthK9z8xIzkbvpMAHoFPQWgqVg31eeGV7nufjHrACFfMy1Nc9vQZtxX5BCgA6rvHWvj4"/>
+</div>
+<div>
+<div class="font-mono-stats text-mono-stats text-on-background">OPERATIVE 03</div>
+<div class="font-label-bold text-label-bold text-primary text-[10px]">8 DAY STREAK</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">shield</span>
+</div>
+</div>
+</div>
+<!-- Structural Integrity Block -->
+<div class="w-full border border-surface-container-highest bg-surface-container-lowest p-6">
+<h3 class="font-label-bold text-label-bold text-secondary uppercase tracking-widest mb-4">Integrity Matrix</h3>
+<div class="grid grid-cols-7 gap-1">
+<!-- Simulated streak grid -->
+<div class="aspect-square bg-surface-container-highest border border-surface-container-highest"></div>
+<div class="aspect-square bg-surface-container-highest border border-surface-container-highest"></div>
+<div class="aspect-square bg-primary/20 border border-primary/50"></div>
+<div class="aspect-square bg-primary/40 border border-primary/50"></div>
+<div class="aspect-square bg-primary/60 border border-primary/80"></div>
+<div class="aspect-square bg-primary border border-primary"></div>
+<div class="aspect-square bg-error border border-error flex items-center justify-center">
+<span class="material-symbols-outlined text-background text-[12px]">close</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Battle Log (8 cols) -->
+<div class="lg:col-span-8 flex flex-col h-full border border-surface-container-highest bg-surface-container-lowest">
+<div class="p-6 border-b border-surface-container-highest flex justify-between items-center">
+<h3 class="font-label-bold text-label-bold text-secondary uppercase tracking-widest">Battle Log</h3>
+<span class="font-mono-stats text-mono-stats text-secondary text-[12px]">LIVE</span>
+</div>
+<div class="flex-1 p-6 flex flex-col gap-4 overflow-y-auto min-h-[400px]">
+<!-- Log Item (Positive) -->
+<div class="flex items-start gap-4 p-4 border border-surface-container-highest bg-background">
+<div class="mt-1 text-primary">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-baseline mb-1">
+<span class="font-mono-stats text-mono-stats text-on-background">OPERATIVE 01 SECURED HABIT</span>
+<span class="font-mono-stats text-mono-stats text-secondary text-[10px]">10:42 AM</span>
+</div>
+<p class="font-body-md text-body-md text-secondary">Completed 'Deep Work Protocol'. Shield regeneration initiated.</p>
+</div>
+</div>
+<!-- Log Item (Damage) -->
+<div class="flex items-start gap-4 p-4 border border-error bg-error-container/10">
+<div class="mt-1 text-error">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-baseline mb-1">
+<span class="font-mono-stats text-mono-stats text-error">STRUCTURAL DAMAGE SUSTAINED</span>
+<span class="font-mono-stats text-mono-stats text-error text-[10px]">08:15 AM</span>
+</div>
+<p class="font-body-md text-body-md text-on-background">OPERATIVE 02 missed 'Morning Ruck'. Shield integrity reduced by 12%.</p>
+</div>
+</div>
+<!-- Log Item (Positive) -->
+<div class="flex items-start gap-4 p-4 border border-surface-container-highest bg-background">
+<div class="mt-1 text-primary">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-baseline mb-1">
+<span class="font-mono-stats text-mono-stats text-on-background">OPERATIVE 03 SECURED HABIT</span>
+<span class="font-mono-stats text-mono-stats text-secondary text-[10px]">06:30 AM</span>
+</div>
+<p class="font-body-md text-body-md text-secondary">Completed 'Zero Sugar Baseline'.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 bg-background border-t-2 border-primary">
+<a class="flex flex-col items-center justify-center text-secondary p-2 hover:text-primary transition-none scale-100 active:scale-95 w-full h-full" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary p-2 hover:text-primary transition-none scale-100 active:scale-95 w-full h-full" href="#">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Vault</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary text-background p-2 transition-none scale-100 active:scale-95 w-full h-full" href="#">
+<span class="material-symbols-outlined fill-icon">groups</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Arena</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary p-2 hover:text-primary transition-none scale-100 active:scale-95 w-full h-full" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-label-bold text-label-bold-mobile mt-1">Forge</span>
+</a>
+</nav>
+</body></html>

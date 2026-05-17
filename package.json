@@ -1,5 +1,5 @@
 {
-  "name": "habittrove",
+  "name": "forge",
   "version": "0.2.31",
   "private": true,
   "scripts": {
@@ -9,8 +9,8 @@
     "lint": "next lint",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "docker-build": "docker build -t habittrove .",
-    "docker-run": "docker run -p 3000:3000 -v $(pwd)/data:/app/data habittrove",
+    "docker-build": "docker build -t forge .",
+    "docker-run": "docker run -p 3000:3000 -v $(pwd)/data:/app/data forge",
     "prepare": "husky",
     "setup:dev": "if ! command -v bun > /dev/null; then echo 'Installing bun...'; curl -fsSL https://bun.sh/install | bash; fi && npm install --force && npm run typecheck && npm run lint"
   },

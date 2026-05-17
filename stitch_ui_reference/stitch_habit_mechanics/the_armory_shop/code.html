@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic - Shop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#131313",
+                        "on-tertiary-container": "#2a2a2a",
+                        "on-secondary": "#2f3131",
+                        "secondary-container": "#454747",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "surface-container": "#1f1f1f",
+                        "surface-tint": "#ffb59e",
+                        "inverse-primary": "#ae3200",
+                        "inverse-on-surface": "#303030",
+                        "surface-container-low": "#1b1b1b",
+                        "outline-variant": "#5c4037",
+                        "tertiary-fixed": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "on-primary-fixed-variant": "#852400",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary": "#5e1700",
+                        "tertiary": "#c8c6c5",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-primary-container": "#521300",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#b4b5b5",
+                        "on-primary-fixed": "#3a0b00",
+                        "on-error": "#690005",
+                        "on-background": "#e2e2e2",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#929090",
+                        "surface-container-high": "#2a2a2a",
+                        "primary": "#ffb59e",
+                        "background": "#131313",
+                        "surface-container-highest": "#353535",
+                        "outline": "#ad897e",
+                        "on-error-container": "#ffdad6",
+                        "on-surface": "#e2e2e2",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "surface-bright": "#393939",
+                        "on-secondary-fixed-variant": "#454747",
+                        "on-tertiary": "#313030",
+                        "surface-variant": "#353535",
+                        "inverse-surface": "#e2e2e2",
+                        "primary-fixed-dim": "#ffb59e",
+                        "secondary": "#c6c6c7",
+                        "on-surface-variant": "#e6beb2",
+                        "primary-fixed": "#ffdbd0",
+                        "secondary-fixed": "#e2e2e2",
+                        "primary-container": "#ff571a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "margin-desktop": "40px",
+                        "gutter": "16px",
+                        "bento-gap": "12px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Geist"],
+                        "mono-stats": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-md": ["Geist"],
+                        "display-xl-mobile": ["Geist"],
+                        "display-xl": ["Geist"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "mono-stats": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "display-xl-mobile": ["48px", { "lineHeight": "44px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "display-xl": ["80px", { "lineHeight": "72px", "letterSpacing": "-0.04em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md antialiased overflow-hidden selection:bg-primary-container selection:text-surface-container-lowest">
+<div class="flex h-screen w-full">
+<!-- Desktop SideNavBar -->
+<nav class="hidden md:flex flex-col h-full p-unit gap-bento-gap bg-surface-container-lowest w-64 shrink-0 border-r-[1px] border-on-tertiary-container z-10">
+<div class="px-4 pt-6 pb-8 border-b-[1px] border-on-tertiary-container mb-2">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-full bg-surface-container border-[1px] border-on-tertiary-container overflow-hidden shrink-0">
+<img alt="Kinetic User Profile" class="w-full h-full object-cover" data-alt="A striking portrait of a determined individual in high-contrast cinematic lighting. The scene uses a deep black background and sharp, high-key white highlights to emphasize facial structure. The mood is intense and highly focused, perfectly embodying the austere, competitive aesthetic of the Kinetic design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCE6BNg0-WEUZrVjEbFff7aGjKB4TKNDYjV6B-yCU0hpae23xCBTXjTfrxDpXGbH9R7u14GF8W3Qc9BDEOF2yre55zc0xnE0ayMbnhNLEJkOlh___js93LyizNSf08ZE-u4RVqg6t7uo26Ks5rG-_WHJQ8J3HLVpIL7UjcBAgT--bodJirtRFAXusqxzZTcaLQ_0piHBQ-JRHTLI--yUHUsRYKd3KpNqBIJxi3XGKPMCFy6eMOKs2vVjvFxHM-z3kj3Ect7VO25qaM"/>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg font-black text-primary leading-none tracking-tighter">RITUALS</h1>
+<p class="font-label-bold text-label-bold uppercase tracking-widest text-secondary-fixed-dim mt-1">VITALITY LEVEL 99</p>
+</div>
+</div>
+<button class="w-full py-3 px-4 bg-surface-container border-[1px] border-on-tertiary-container hover:border-primary-container text-on-surface font-label-bold text-label-bold uppercase tracking-widest text-center transition-none group">
+<span class="group-hover:text-primary-container transition-none">NEW HABIT</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-1 px-2">
+<a class="flex items-center gap-3 px-3 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface font-label-bold text-label-bold uppercase tracking-widest transition-none" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+<a class="flex items-center gap-3 px-3 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface font-label-bold text-label-bold uppercase tracking-widest transition-none" href="#">
+<span class="material-symbols-outlined">checklist</span>
+                    Tasks
+                </a>
+<a class="flex items-center gap-3 px-3 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface font-label-bold text-label-bold uppercase tracking-widest transition-none" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                    Calendar
+                </a>
+<a class="flex items-center gap-3 px-3 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface font-label-bold text-label-bold uppercase tracking-widest transition-none" href="#">
+<span class="material-symbols-outlined">favorite</span>
+                    Wishlist
+                </a>
+<a class="flex items-center gap-3 px-3 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface font-label-bold text-label-bold uppercase tracking-widest transition-none" href="#">
+<span class="material-symbols-outlined">payments</span>
+                    Coins
+                </a>
+<a class="flex items-center gap-3 px-3 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface font-label-bold text-label-bold uppercase tracking-widest transition-none" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+                    Projects
+                </a>
+<a class="flex items-center gap-3 px-3 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface font-label-bold text-label-bold uppercase tracking-widest transition-none" href="#">
+<span class="material-symbols-outlined">military_tech</span>
+                    Achievements
+                </a>
+<!-- ACTIVE NAV ITEM -->
+<a class="flex items-center gap-3 px-3 py-3 bg-primary text-on-primary font-bold border-2 border-primary font-label-bold text-label-bold uppercase tracking-widest transition-none" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+                    Shop
+                </a>
+</div>
+<div class="px-2 pb-4 pt-4 border-t-[1px] border-on-tertiary-container mt-auto">
+<a class="flex items-center gap-3 px-3 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface font-label-bold text-label-bold uppercase tracking-widest transition-none" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+<a class="flex items-center gap-3 px-3 py-3 text-secondary-fixed-dim border-2 border-transparent hover:border-on-secondary-container hover:text-on-surface font-label-bold text-label-bold uppercase tracking-widest transition-none" href="#">
+<span class="material-symbols-outlined">help</span>
+                    Support
+                </a>
+</div>
+</nav>
+<!-- Main Canvas Area -->
+<div class="flex-1 flex flex-col h-full overflow-hidden bg-background">
+<!-- Mobile TopNavBar -->
+<header class="md:hidden flex justify-between items-center px-margin-mobile py-4 w-full bg-surface-container-lowest border-b-[1px] border-on-tertiary-container shrink-0 z-10">
+<div class="font-headline-lg-mobile text-headline-lg-mobile font-black tracking-tighter text-primary uppercase">
+                    KINETIC
+                </div>
+<div class="flex items-center gap-4 text-primary">
+<button class="hover:text-primary-container transition-none flex items-center justify-center">
+<span class="material-symbols-outlined">monetization_on</span>
+</button>
+<button class="hover:text-primary-container transition-none flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="hover:text-primary-container transition-none flex items-center justify-center">
+<img alt="User profile avatar" class="w-8 h-8 rounded-full border-[1px] border-primary object-cover" data-alt="A striking portrait of a determined individual in high-contrast cinematic lighting. The scene uses a deep black background and sharp, high-key white highlights to emphasize facial structure. The mood is intense and highly focused, perfectly embodying the austere, competitive aesthetic of the Kinetic design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8M2Jh9IVs58kbSFHiukFKW1xpe97VhZdM6MKHMeIaEyrc2-q2T5kZL70WIg1833ETSTqzRP9sSfSxPkDgbr236ZTE8cqVYXqs40-EFvGRsBcyORkiFfo4zAzYu-aB_WxtdSjAy_QXb9ERDzSjjuKq7gSYdHSqJe0NM4L5ndo6SAzx0k1rf_FM_w-1v89Ad_Q2vu6upXh3RSovPTsIFqgXhOq3v5Kctx_eFDKgfkQq1E7K2EYf58xmNQ6pEZWjkGhF9qswqjWE6oQ"/>
+</button>
+</div>
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop">
+<div class="max-w-[1200px] mx-auto w-full flex flex-col gap-margin-mobile md:gap-margin-desktop pb-24">
+<!-- Top Banner / Coin Balance (Bento Grid 12 cols) -->
+<div class="grid grid-cols-4 md:grid-cols-12 gap-bento-gap">
+<div class="col-span-4 md:col-span-12 border-[1px] border-on-tertiary-container bg-surface-container-lowest p-6 md:p-8 flex flex-col md:flex-row md:items-end justify-between gap-6 relative overflow-hidden">
+<!-- Background Abstract Element -->
+<div class="absolute right-0 top-0 bottom-0 w-1/2 opacity-20 pointer-events-none bg-cover bg-center" data-alt="A highly abstract, dark, and geometric 3D rendering. Sharp metallic shards and glowing vibrant ember-orange light streaks cut across a pitch-black void. The composition feels kinetic and aggressive, adhering strictly to a high-contrast dark-mode gaming aesthetic without soft gradients or blurs." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBNOLOWmpMDqscw5LroDx9TDH22jpHadXDvCpiBh813-LGEsy9rZyLl_N1gr3OVA71hnATU5DaUo5yU6nYdRCrkLmvTpRlE420y7CVlYAr_th4t-NjicLfvQvOX0vIjcsfoCiON1Lqh75NWzM4JxNAAM1scHNjeQ4R8pgx9w29eDa-_nP4WY3yILBuZEhz-awDT4vdilWVLFHpgMt6G_G3MZTePd8qmSo4qRYZV_XITtITw4o8JN45Mo03lGep6r0jg25RktPnGTgQ');"></div>
+<div class="relative z-10">
+<h2 class="font-label-bold text-label-bold uppercase tracking-widest text-secondary-fixed-dim mb-2">Available Balance</h2>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container text-[40px] md:text-[64px]" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span class="font-display-xl-mobile text-display-xl-mobile md:font-display-xl md:text-display-xl text-on-surface tracking-tighter">12,450</span>
+</div>
+</div>
+<div class="relative z-10">
+<p class="font-mono-stats text-mono-stats text-secondary-fixed-dim text-right max-w-[200px] hidden md:block uppercase">Accrue coins by maintaining streaks and conquering daily rituals.</p>
+</div>
+</div>
+</div>
+<!-- Category: Power-ups -->
+<section class="flex flex-col gap-bento-gap">
+<div class="border-b-[1px] border-on-tertiary-container pb-4">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-bold text-on-surface tracking-tight uppercase">Power-ups</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-bento-gap">
+<!-- Shop Item: Streak Freeze -->
+<div class="border-[1px] border-on-tertiary-container bg-surface-container-lowest flex flex-col group hover:border-on-surface transition-none h-full">
+<div class="h-48 w-full bg-surface-container border-b-[1px] border-on-tertiary-container relative overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-luminosity" data-alt="A macro shot of shattered ice or glass suspended in a pure black void. Sharp, crystalline edges catch harsh white light, creating extreme contrast. The mood is frozen and uncompromising, entirely devoid of color except for the stark grayscale tones that fit the minimalist editorial framework." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCDqHuvRP7QBv1w9CVcz2yl8vC3OkLJDEz88l023yLsduWHTaUPXPa1bUWqDnmHLjADOEVpUuXPs224VlfHV-D28nHt-9vGmUMKx2S0e6lpiRDSNK1O1n8T4PayWmGeyF7DIIdhpJOLJMUhxoK09_p0q_X4wu9fJzLiCiI_p9oZvbi9GTWunViGzYX5vvCotDWuK44X3e5WtLhQ3i8WysZey5901qUR0sPfY-zhZf8Vw2LQFG_K9RNU5I0Hn267QtEGTf9tFyANdrw');"></div>
+<span class="material-symbols-outlined text-[64px] text-on-surface relative z-10 drop-shadow-[0_0_10px_rgba(0,0,0,1)]">ac_unit</span>
+</div>
+<div class="p-6 flex flex-col flex-1 justify-between gap-6">
+<div>
+<h4 class="font-label-bold text-label-bold uppercase text-on-surface tracking-widest mb-2">Streak Freeze</h4>
+<p class="font-mono-stats text-mono-stats text-secondary-fixed-dim">Prevents streak loss on a single missed day. Structural integrity remains intact.</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t-[1px] border-on-tertiary-container mt-auto">
+<div class="flex items-center gap-2 font-mono-stats text-mono-stats text-primary-container">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span>500</span>
+</div>
+<button class="bg-primary-container text-surface-container-lowest font-label-bold text-label-bold uppercase tracking-widest px-6 py-3 border-[2px] border-transparent hover:bg-transparent hover:border-on-surface hover:text-on-surface transition-none active:bg-on-surface active:text-surface-container-lowest">
+                                            Purchase
+                                        </button>
+</div>
+</div>
+</div>
+<!-- Shop Item: Double XP -->
+<div class="border-[1px] border-on-tertiary-container bg-surface-container-lowest flex flex-col group hover:border-on-surface transition-none h-full">
+<div class="h-48 w-full bg-surface-container border-b-[1px] border-on-tertiary-container relative overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-luminosity" data-alt="A high-contrast abstract image featuring aggressive upward-pointing chevron shapes in stark monochrome. Heavy shadows and harsh white highlights create a sense of mechanical acceleration and intense velocity. The composition is rigid, structured, and entirely without soft focus." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDVR2z2p31-gnmhPmLOKA50VMJg0xH39uCh5ASX61D3d9Zzxa3QDl4Glm1stjN1rmQTIuQqcbkkLYAbgDANS7IYBT9XTLyCHh-75P8x6Q1V-71peZMv2XLpseMH0xZ22S7xIiWNVr2tvWMdvDerFIzeY5EmroMB_o54cdXF9seIQWtWdkfJODRCVKGseD7DSF7I2Ww7Hq6YxrS_tEuWnNm1xOsl5ROymfuYu63Y7LpI4ObEjdday0Z1oKezSKB0DV9KDqvPl5wFAXs');"></div>
+<span class="material-symbols-outlined text-[64px] text-on-surface relative z-10 drop-shadow-[0_0_10px_rgba(0,0,0,1)]">keyboard_double_arrow_up</span>
+</div>
+<div class="p-6 flex flex-col flex-1 justify-between gap-6">
+<div>
+<h4 class="font-label-bold text-label-bold uppercase text-on-surface tracking-widest mb-2">Double Yield (24H)</h4>
+<p class="font-mono-stats text-mono-stats text-secondary-fixed-dim">Multiplies all task completion coins by 2.0x for a full 24-hour cycle.</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t-[1px] border-on-tertiary-container mt-auto">
+<div class="flex items-center gap-2 font-mono-stats text-mono-stats text-primary-container">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span>300</span>
+</div>
+<button class="bg-primary-container text-surface-container-lowest font-label-bold text-label-bold uppercase tracking-widest px-6 py-3 border-[2px] border-transparent hover:bg-transparent hover:border-on-surface hover:text-on-surface transition-none active:bg-on-surface active:text-surface-container-lowest">
+                                            Purchase
+                                        </button>
+</div>
+</div>
+</div>
+<!-- Shop Item: Shield -->
+<div class="border-[1px] border-on-tertiary-container bg-surface-container-lowest flex flex-col group hover:border-on-surface transition-none h-full">
+<div class="h-48 w-full bg-surface-container border-b-[1px] border-on-tertiary-container relative overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-luminosity" data-alt="A minimalist architectural shot of a massive, solid concrete brutalist structure against a black sky. The heavy, unyielding geometric forms convey absolute defense and structural integrity. High-contrast lighting exaggerates the texture of the concrete, creating a serious, imposing mood." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCFPlvsjltrRLBr7dnUVwDj9IvsyIiYCS1t28Wx46lngIksSdXuCVcK85xk4cfLVhvFxjpN5aXM4rKrHz3wwLC2rdV7zVs7OfrwRM7EpoGWWPOoTvB7-Q4E0Ct7USvqSIdk4UJtyvOitJUhIGAxxmCyvL1zzZhs4THHmsq-Xq6OIttU90NjAECyhMTV6OrvfzmgJy_G3XYUodzsrjoTLLiV3pTiqJWJYRb1rVcQcwgirnpovOFuxkOuPKRAK1gbSHWX1Enn56X63J0');"></div>
+<span class="material-symbols-outlined text-[64px] text-on-surface relative z-10 drop-shadow-[0_0_10px_rgba(0,0,0,1)]">shield</span>
+</div>
+<div class="p-6 flex flex-col flex-1 justify-between gap-6">
+<div>
+<h4 class="font-label-bold text-label-bold uppercase text-on-surface tracking-widest mb-2">Vitality Shield</h4>
+<p class="font-mono-stats text-mono-stats text-secondary-fixed-dim">Absorbs the penalty of a failed habit, preventing your Vitality Level from dropping.</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t-[1px] border-on-tertiary-container mt-auto">
+<div class="flex items-center gap-2 font-mono-stats text-mono-stats text-primary-container">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span>800</span>
+</div>
+<button class="bg-primary-container text-surface-container-lowest font-label-bold text-label-bold uppercase tracking-widest px-6 py-3 border-[2px] border-transparent hover:bg-transparent hover:border-on-surface hover:text-on-surface transition-none active:bg-on-surface active:text-surface-container-lowest">
+                                            Purchase
+                                        </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Category: Cosmetics -->
+<section class="flex flex-col gap-bento-gap">
+<div class="border-b-[1px] border-on-tertiary-container pb-4 mt-8">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-bold text-on-surface tracking-tight uppercase">Cosmetics</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-bento-gap">
+<!-- Cosmetic 1 -->
+<div class="border-[1px] border-on-tertiary-container bg-surface-container-lowest flex flex-row group hover:border-on-surface transition-none h-40">
+<div class="w-40 h-full bg-surface-container border-r-[1px] border-on-tertiary-container relative overflow-hidden flex items-center justify-center shrink-0">
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="A stark, minimalist 3D rendering of a perfect sphere with an extremely vibrant, solid red-orange (#FF4D00) matte surface, sitting on an infinite black plane. The lighting casts a razor-sharp black shadow. The aesthetic is hyper-clean, rigid, and entirely focused on the collision of pure color and pure blackness." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDhEHOFKfJGsvRqvnr7LqJOfw8LpApM4WbQaThrSRJBY7BzLkPj6-3sXG_nJ0AFeC_A5_r0-Au48T5uOvVv0paonpR89pYlQNyWAY3-WnpHyOpy8Cjh_b3GaZmKMHTmowAS6n2WGauuTy9k07pE_8Ac4lqfqSDhT3voFhvtOgLxVY0aC0I8HVKO1folvHaBPxteIvtHgL8slDYJfnnaLuMB8npcYw7UpX1WHpKqTQMI-7vn20-bNhzwz7-8PTX7SEjxwYNFK0fpYmE');"></div>
+</div>
+<div class="p-4 md:p-6 flex flex-col flex-1 justify-between">
+<div>
+<h4 class="font-label-bold text-label-bold uppercase text-on-surface tracking-widest mb-1">Ember Overdrive Theme</h4>
+<p class="font-mono-stats text-mono-stats text-secondary-fixed-dim line-clamp-2">Unlocks the high-intensity Ember color palette for all dashboard components.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-2 font-mono-stats text-mono-stats text-primary-container">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span>2500</span>
+</div>
+<button class="bg-primary-container text-surface-container-lowest font-label-bold text-label-bold uppercase tracking-widest px-4 py-2 border-[2px] border-transparent hover:bg-transparent hover:border-on-surface hover:text-on-surface transition-none active:bg-on-surface active:text-surface-container-lowest">
+                                            Unlock
+                                        </button>
+</div>
+</div>
+</div>
+<!-- Cosmetic 2 -->
+<div class="border-[1px] border-on-tertiary-container bg-surface-container-lowest flex flex-row group hover:border-on-surface transition-none h-40">
+<div class="w-40 h-full bg-surface-container border-r-[1px] border-on-tertiary-container relative overflow-hidden flex items-center justify-center shrink-0">
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="A macro shot of a complex circuit board or data matrix etched in absolute black and stark white. Sharp, geometric lines intersect at rigid 90-degree angles. The mood is highly technological, sterile, and perfectly aligned with a brutalist data-entry terminal aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_5q6loMEW49W3OwCnxnPVzimTmtCw00UcThoqVXX4KKwMTK7qypVoj0NkQyDm5BL0A6D7AAQJ20JZ8xE2RuTdVjsMLMYUBlfzocDCjx4PWUaF_kjJnQZuEh5SdCQpuOwlb8JtU2PJtKQJkosGKiAmHOn7-pagZMyVCIAwV8CWLlTp3NQINd-TLf88XssPoTrzykj66Kiagjo_-9sn1_GCkniiK_TysRdJaE5HFKRPSwfJL98DRiZaoTu3KCg4f6d9TqHl508CZac');"></div>
+</div>
+<div class="p-4 md:p-6 flex flex-col flex-1 justify-between">
+<div>
+<h4 class="font-label-bold text-label-bold uppercase text-on-surface tracking-widest mb-1">Terminal Font Pack</h4>
+<p class="font-mono-stats text-mono-stats text-secondary-fixed-dim line-clamp-2">Converts all primary typography to a strict, monospace terminal format.</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-2 font-mono-stats text-mono-stats text-primary-container">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span>1500</span>
+</div>
+<button class="bg-primary-container text-surface-container-lowest font-label-bold text-label-bold uppercase tracking-widest px-4 py-2 border-[2px] border-transparent hover:bg-transparent hover:border-on-surface hover:text-on-surface transition-none active:bg-on-surface active:text-surface-container-lowest">
+                                            Unlock
+                                        </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Category: Real-world Rewards -->
+<section class="flex flex-col gap-bento-gap">
+<div class="border-b-[1px] border-on-tertiary-container pb-4 mt-8">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-bold text-on-surface tracking-tight uppercase">Real-World Rewards</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-bento-gap">
+<!-- Reward 1 -->
+<div class="border-[1px] border-on-tertiary-container bg-surface-container-lowest p-6 flex flex-col md:flex-row gap-6 items-center group hover:border-primary-container transition-none relative overflow-hidden">
+<!-- Warning/Alert subtle styling -->
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary-container opacity-10 rounded-bl-full pointer-events-none"></div>
+<div class="w-full md:w-32 h-32 bg-surface-container border-[1px] border-on-tertiary-container shrink-0 flex items-center justify-center p-4">
+<span class="material-symbols-outlined text-[48px] text-on-surface">fitness_center</span>
+</div>
+<div class="flex-1 flex flex-col w-full">
+<h4 class="font-label-bold text-label-bold uppercase text-on-surface tracking-widest mb-2">Premium Gym Pass (1 Day)</h4>
+<p class="font-mono-stats text-mono-stats text-secondary-fixed-dim mb-4">Redeemable at any partnered High-Performance facility. Digital barcode generated instantly.</p>
+<div class="flex items-center justify-between w-full mt-auto">
+<div class="flex items-center gap-2 font-mono-stats text-mono-stats text-primary-container font-bold">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span class="text-lg">5000</span>
+</div>
+<button class="bg-primary-container text-surface-container-lowest font-label-bold text-label-bold uppercase tracking-widest px-6 py-3 border-[2px] border-transparent hover:bg-transparent hover:border-primary-container hover:text-primary-container transition-none active:bg-primary-container active:text-surface-container-lowest">
+                                            Claim
+                                        </button>
+</div>
+</div>
+</div>
+<!-- Reward 2 -->
+<div class="border-[1px] border-on-tertiary-container bg-surface-container-lowest p-6 flex flex-col md:flex-row gap-6 items-center group hover:border-primary-container transition-none relative overflow-hidden">
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary-container opacity-10 rounded-bl-full pointer-events-none"></div>
+<div class="w-full md:w-32 h-32 bg-surface-container border-[1px] border-on-tertiary-container shrink-0 flex items-center justify-center p-4">
+<span class="material-symbols-outlined text-[48px] text-on-surface">nutrition</span>
+</div>
+<div class="flex-1 flex flex-col w-full">
+<h4 class="font-label-bold text-label-bold uppercase text-on-surface tracking-widest mb-2">Nutrition Pack Shipped</h4>
+<p class="font-mono-stats text-mono-stats text-secondary-fixed-dim mb-4">A physical box of 12 engineered protein bars shipped to your designated headquarters.</p>
+<div class="flex items-center justify-between w-full mt-auto">
+<div class="flex items-center gap-2 font-mono-stats text-mono-stats text-primary-container font-bold">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">monetization_on</span>
+<span class="text-lg">12000</span>
+</div>
+<button class="bg-surface-container text-secondary-fixed-dim font-label-bold text-label-bold uppercase tracking-widest px-6 py-3 border-[1px] border-on-tertiary-container cursor-not-allowed opacity-50">
+                                            Insufficient Funds
+                                        </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</div>
+</body></html>

@@ -26,13 +26,6 @@ function ClientWrapperContent({ children }: { children: ReactNode }) {
 
 
   useEffect(() => {
-    if (status === 'loading') return
-    if (!currentUserId && !userSelect) {
-      setUserSelect(true)
-    }
-  }, [currentUserId, status, userSelect, setUserSelect])
-
-  useEffect(() => {
     setCurrentUserIdAtom(currentUserId)
   }, [currentUserId, setCurrentUserIdAtom])
 

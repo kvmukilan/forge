@@ -25,7 +25,7 @@ export default async function PermissionError() {
           <span className="text-sm">
             {getErrorMessage()}{" "}
             <a
-              href="https://docs.habittrove.com/troubleshooting"
+              href="https://github.com/dohsimpson/HabitTrove/wiki/troubleshooting"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-red-300"

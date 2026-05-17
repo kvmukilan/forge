@@ -7,13 +7,16 @@ import { useTranslations } from 'next-intl'
 import { settingsAtom, usersAtom, currentUserAtom } from '@/lib/atoms'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Zap, Brush } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Habit } from '@/lib/types'
+import { Habit, HabitCategory } from '@/lib/types'
+import { projectsAtom } from '@/lib/gamification-atoms'
 import EmojiPickerButton from './EmojiPickerButton'
 import ModalOverlay from './ModalOverlay' // Import the new component
 import DrawingModal from './DrawingModal'
@@ -53,6 +56,13 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
   const users = usersData.users
   const [drawing, setDrawing] = useState<string>(habit?.drawing || '')
   const [isDrawingModalOpen, setIsDrawingModalOpen] = useState(false)
+  const [priority, setPriority] = useState<'p1' | 'p2' | 'p3' | undefined>(habit?.priority)
+  const [intentionWhen, setIntentionWhen] = useState(habit?.intentionWhen || '')
+  const [intentionWhere, setIntentionWhere] = useState(habit?.intentionWhere || '')
+  const [isKeystone, setIsKeystone] = useState(habit?.isKeystone || false)
+  const [projectId, setProjectId] = useState<string | undefined>(habit?.projectId)
+  const [category, setCategory] = useState<HabitCategory | undefined>(habit?.category)
+  const [projectsData] = useAtom(projectsAtom)
 
   function getFrequencyUpdate() {
     if (ruleText === initialRuleText && habit?.frequency) {
@@ -88,7 +98,13 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
       completions: habit?.completions || [],
       frequency: getFrequencyUpdate(),
       userIds: selectedUserIds.length > 0 ? selectedUserIds.concat(currentUser?.id || []) : (currentUser && [currentUser.id]),
-      drawing: drawing && drawing !== '[]' ? drawing : undefined
+      drawing: drawing && drawing !== '[]' ? drawing : undefined,
+      priority: isTask ? priority : undefined,
+      projectId: isTask ? projectId : undefined,
+      intentionWhen: !isTask && intentionWhen ? intentionWhen : undefined,
+      intentionWhere: !isTask && intentionWhere ? intentionWhere : undefined,
+      isKeystone: !isTask ? isKeystone : undefined,
+      category: !isTask ? category : undefined,
     })
   }
 
@@ -143,6 +159,109 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                   className="col-span-3"
                 />
               </div>
+              {isTask && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label className="text-right text-sm">Priority</Label>
+                  <div className="col-span-3 flex gap-2 flex-wrap">
+                    {(['p1', 'p2', 'p3'] as const).map(p => {
+                      const labels = { p1: '🔴 Urgent', p2: '🟡 Normal', p3: '🔵 Low' }
+                      const active = priority === p
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => setPriority(prev => prev === p ? undefined : p)}
+                          className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                            active
+                              ? p === 'p1' ? 'bg-red-500 text-white border-red-500'
+                                : p === 'p2' ? 'bg-amber-400 text-black border-amber-400'
+                                : 'bg-blue-500 text-white border-blue-500'
+                              : 'border-muted-foreground text-muted-foreground hover:bg-muted'
+                          }`}
+                        >
+                          {labels[p]}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+              {isTask && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label className="text-right text-sm">Project</Label>
+                  <div className="col-span-3">
+                    <select
+                      value={projectId ?? ''}
+                      onChange={e => setProjectId(e.target.value || undefined)}
+                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      <option value=''>No project</option>
+                      {projectsData.projects.filter(p => !p.archived).length === 0
+                        ? <option disabled value=''>— Create a project first —</option>
+                        : projectsData.projects.filter(p => !p.archived).map(p => (
+                            <option key={p.id} value={p.id}>
+                              {p.emoji ? `${p.emoji} ${p.name}` : p.name}
+                            </option>
+                          ))
+                      }
+                    </select>
+                  </div>
+                </div>
+              )}
+              {!isTask && (
+                <>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right text-sm">When?</Label>
+                    <Input
+                      className="col-span-3"
+                      placeholder='e.g. "7:00 AM"'
+                      value={intentionWhen}
+                      onChange={e => setIntentionWhen(e.target.value)}
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right text-sm">Where?</Label>
+                    <Input
+                      className="col-span-3"
+                      placeholder='e.g. "Kitchen table"'
+                      value={intentionWhere}
+                      onChange={e => setIntentionWhere(e.target.value)}
+                    />
+                  </div>
+                </>
+              )}
+              {!isTask && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label className="text-right text-sm">Keystone</Label>
+                  <div className="col-span-3 flex items-center gap-3">
+                    <Switch checked={isKeystone} onCheckedChange={setIsKeystone} />
+                    <span className="text-xs text-muted-foreground">⭐ Completing this first gives +25% XP for the day</span>
+                  </div>
+                </div>
+              )}
+              {!isTask && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label className="text-right text-sm">Category</Label>
+                  <div className="col-span-3">
+                    <Select value={category ?? ''} onValueChange={(v) => setCategory(v ? v as HabitCategory : undefined)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">No category</SelectItem>
+                        <SelectItem value="fitness">💪 Fitness</SelectItem>
+                        <SelectItem value="learning">📖 Learning</SelectItem>
+                        <SelectItem value="mindfulness">🧘 Mindfulness</SelectItem>
+                        <SelectItem value="social">🤝 Social</SelectItem>
+                        <SelectItem value="creative">🎨 Creative</SelectItem>
+                        <SelectItem value="productivity">🎯 Productivity</SelectItem>
+                        <SelectItem value="health">🍎 Health</SelectItem>
+                        <SelectItem value="other">⭐ Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="recurrence" className="text-right">
                   {t('whenLabel')}

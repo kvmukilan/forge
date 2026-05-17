@@ -240,6 +240,31 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
+        {/* Notifications */}
+        <div className="glass-card p-5 space-y-4 mt-6">
+          <p className="section-label">Daily Reminder</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold">Enable daily reminder</p>
+              <p className="text-xs text-muted-foreground">Browser notification at your chosen time</p>
+            </div>
+            <Switch
+              checked={settings.ui.notificationsEnabled ?? false}
+              onCheckedChange={(checked) => updateSettings({ ...settings, ui: { ...settings.ui, notificationsEnabled: checked } })}
+            />
+          </div>
+          {settings.ui.notificationsEnabled && (
+            <div className="flex items-center gap-3">
+              <p className="text-sm font-medium">Reminder time</p>
+              <input
+                type="time"
+                value={settings.ui.notificationTime ?? '08:00'}
+                onChange={(e) => updateSettings({ ...settings, ui: { ...settings.ui, notificationTime: e.target.value } })}
+                className="bg-secondary border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
+              />
+            </div>
+          )}
+        </div>
         {/* Danger Zone Card Removed */}
       </div >
     </>
