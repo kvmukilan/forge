@@ -4,6 +4,9 @@ import { checkStartupPermissions } from '@/lib/startup-checks'
 import RecheckButton from './RecheckButton'
 
 export default async function PermissionError() {
+  // Vercel uses ephemeral /tmp — permission check is not meaningful there
+  if (process.env.VERCEL) return null
+
   const permissionResult = await checkStartupPermissions()
 
   // If everything is fine, render nothing
