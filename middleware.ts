@@ -1,6 +1,8 @@
-import { auth } from '@/auth'
+import NextAuth from 'next-auth'
+import { authConfig } from './auth.config'
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+
+const { auth } = NextAuth(authConfig)
 
 const PUBLIC_PATHS = ['/login', '/api/auth']
 
@@ -11,21 +13,18 @@ function isPublicPath(pathname: string) {
 export default auth((req) => {
   const { pathname } = req.nextUrl
 
-  // Block debug routes in production
   if (process.env.NODE_ENV !== 'development' && pathname.startsWith('/debug')) {
     return new NextResponse('Not Found', { status: 404 })
   }
 
   const isAuthenticated = !!req.auth
 
-  // Unauthenticated → redirect to login
   if (!isAuthenticated && !isPublicPath(pathname)) {
     const loginUrl = new URL('/login', req.url)
     loginUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(loginUrl)
   }
 
-  // Authenticated → redirect away from login page
   if (isAuthenticated && pathname.startsWith('/login')) {
     return NextResponse.redirect(new URL('/', req.url))
   }
