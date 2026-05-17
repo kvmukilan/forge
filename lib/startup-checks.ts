@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs'
 import { join } from 'path'
 
-const DEFAULT_DATA_DIR = 'data'
+const DEFAULT_DATA_DIR = process.env.VERCEL ? '/tmp/data' : 'data'
 
 /**
  * Checks startup permissions for the data directory

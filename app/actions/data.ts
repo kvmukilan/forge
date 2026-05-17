@@ -58,8 +58,14 @@ function getDefaultData<T>(type: DataType): T {
   return DATA_DEFAULTS[type]() as T;
 }
 
+function getDataDir(): string {
+  // Vercel filesystem is read-only; use /tmp for writable storage
+  if (process.env.VERCEL) return '/tmp/data'
+  return path.join(getDataDir())
+}
+
 async function ensureDataDir() {
-  const dataDir = path.join(process.cwd(), 'data')
+  const dataDir = getDataDir()
   try {
     await fs.access(dataDir)
   } catch {
@@ -97,7 +103,7 @@ export async function triggerManualBackup(): Promise<{ success: boolean; message
 async function loadData<T>(type: DataType): Promise<T> {
   try {
     await ensureDataDir()
-    const filePath = path.join(process.cwd(), 'data', `${type}.json`)
+    const filePath = path.join(getDataDir(), `${type}.json`)
 
     try {
       await fs.access(filePath)
@@ -124,7 +130,7 @@ async function saveData<T>(type: DataType, data: T): Promise<void> {
     if (!user) throw new Error('User not authenticated')
 
     await ensureDataDir()
-    const filePath = path.join(process.cwd(), 'data', `${type}.json`)
+    const filePath = path.join(getDataDir(), `${type}.json`)
     const saveData = data
     await fs.writeFile(filePath, JSON.stringify(saveData, null, 2))
   } catch (error) {
@@ -382,7 +388,7 @@ export async function uploadAvatar(formData: FormData): Promise<string> {
   }
 
   // Create avatars directory if it doesn't exist
-  const avatarsDir = path.join(process.cwd(), 'data', 'avatars')
+  const avatarsDir = path.join(getDataDir(), 'avatars')
   await fs.mkdir(avatarsDir, { recursive: true })
 
   // Generate unique filename

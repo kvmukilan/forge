@@ -8,14 +8,18 @@ import { getCurrentUser } from '@/lib/server-helpers'
 import { addCoins } from './data'
 import { addXP, addGems } from './gamification'
 
+function getDataDir() {
+  return process.env.VERCEL ? '/tmp/data' : path.join(process.cwd(), 'data')
+}
+
 async function ensureDataDir() {
-  const dataDir = path.join(process.cwd(), 'data')
+  const dataDir = getDataDir()
   try { await fs.access(dataDir) } catch { await fs.mkdir(dataDir, { recursive: true }) }
 }
 
 async function readJSON<T>(filename: string, defaultValue: T): Promise<T> {
   await ensureDataDir()
-  const filePath = path.join(process.cwd(), 'data', filename)
+  const filePath = path.join(getDataDir(), filename)
   try {
     const content = await fs.readFile(filePath, 'utf-8')
     return JSON.parse(content) as T
@@ -26,7 +30,7 @@ async function readJSON<T>(filename: string, defaultValue: T): Promise<T> {
 
 async function writeJSON<T>(filename: string, data: T): Promise<void> {
   await ensureDataDir()
-  const filePath = path.join(process.cwd(), 'data', filename)
+  const filePath = path.join(getDataDir(), filename)
   await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8')
 }
 
