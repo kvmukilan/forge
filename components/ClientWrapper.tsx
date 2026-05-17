@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useCallback, useState, Suspense } from 'react'
 import { useAtom, useSetAtom, useAtomValue } from 'jotai'
-import { aboutOpenAtom, pomodoroAtom, userSelectAtom, currentUserIdAtom, clientFreshnessTokenAtom } from '@/lib/atoms'
+import { aboutOpenAtom, pomodoroAtom, userSelectAtom, currentUserIdAtom, clientFreshnessTokenAtom, settingsAtom, habitsAtom, coinsAtom, wishlistAtom, usersAtom } from '@/lib/atoms'
 import PomodoroTimer from './PomodoroTimer'
 import UserSelectModal from './UserSelectModal'
 import { useSession } from 'next-auth/react'
@@ -10,19 +10,39 @@ import AboutModal from './AboutModal'
 import LoadingSpinner from './LoadingSpinner'
 import { checkDataFreshness as checkServerDataFreshness } from '@/app/actions/data'
 import RefreshBanner from './RefreshBanner'
+import { prepareDataForHashing, generateCryptoHash } from '@/lib/utils'
 
 function ClientWrapperContent({ children }: { children: ReactNode }) {
   const [pomo] = useAtom(pomodoroAtom)
   const [userSelect, setUserSelect] = useAtom(userSelectAtom)
   const [aboutOpen, setAboutOpen] = useAtom(aboutOpenAtom)
   const setCurrentUserIdAtom = useSetAtom(currentUserIdAtom)
+  const setClientToken = useSetAtom(clientFreshnessTokenAtom)
   const { data: session, status } = useSession()
   const currentUserId = session?.user.id
   const [showRefreshBanner, setShowRefreshBanner] = useState(false);
-
-  // clientFreshnessTokenAtom is async, useAtomValue will suspend until it's resolved.
-  // Suspense boundary is in app/layout.tsx or could be added here if needed more locally.
   const clientToken = useAtomValue(clientFreshnessTokenAtom);
+
+  const settings = useAtomValue(settingsAtom)
+  const habits = useAtomValue(habitsAtom)
+  const coins = useAtomValue(coinsAtom)
+  const wishlist = useAtomValue(wishlistAtom)
+  const users = useAtomValue(usersAtom)
+
+  useEffect(() => {
+    let cancelled = false
+    const compute = async () => {
+      try {
+        const dataString = prepareDataForHashing(settings, habits, coins, wishlist, users)
+        const hash = await generateCryptoHash(dataString)
+        if (!cancelled) setClientToken(hash)
+      } catch {
+        // ignore hash errors
+      }
+    }
+    compute()
+    return () => { cancelled = true }
+  }, [settings, habits, coins, wishlist, users, setClientToken])
 
 
   useEffect(() => {

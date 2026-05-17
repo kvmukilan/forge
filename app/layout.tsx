@@ -2,6 +2,7 @@ import './globals.css'
 import { DM_Sans } from 'next/font/google'
 import { JotaiProvider } from '@/components/jotai-providers'
 import { JotaiHydrate } from '@/components/jotai-hydrate'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import { loadSettings, loadHabitsData, loadCoinsData, loadWishlistData, loadUsersPublicData, loadServerSettings } from './actions/data'
 import { loadXPData, loadProjectsData, loadBossData } from './actions/gamification'
 import { loadGuildData } from '@/app/actions/guilds'
@@ -83,6 +84,7 @@ export default async function RootLayout({
           }}
         />
         <JotaiProvider>
+          <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <JotaiHydrate
               initialValues={{
@@ -115,6 +117,7 @@ export default async function RootLayout({
               </NextIntlClientProvider>
             </JotaiHydrate>
           </Suspense>
+          </ErrorBoundary>
         </JotaiProvider>
         <Toaster />
       </body>

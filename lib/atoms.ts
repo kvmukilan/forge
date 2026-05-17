@@ -124,26 +124,11 @@ export const pomodoroAtom = atom<PomodoroAtom>({
   minimized: false,
 })
 
-import { prepareDataForHashing, generateCryptoHash } from '@/lib/utils';
-
 export const userSelectAtom = atom<boolean>(false)
 export const aboutOpenAtom = atom<boolean>(false)
 
-/**
- * Asynchronous atom that calculates a freshness token (hash) based on the current client-side data.
- * This token can be compared with a server-generated token to detect data discrepancies.
- */
-export const clientFreshnessTokenAtom = atom(async (get) => {
-  const settings = get(settingsAtom);
-  const habits = get(habitsAtom);
-  const coins = get(coinsAtom);
-  const wishlist = get(wishlistAtom);
-  const users = get(usersAtom);
-
-  const dataString = prepareDataForHashing(settings, habits, coins, wishlist, users);
-  const hash = await generateCryptoHash(dataString);
-  return hash;
-});
+// Sync-writable atom for freshness token; computed via useEffect in ClientWrapper
+export const clientFreshnessTokenAtom = atom<string | null>(null);
 
 // Derived atom for completion cache
 export const completionCacheAtom = atom((get) => {
