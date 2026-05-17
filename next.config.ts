@@ -4,6 +4,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const nextConfig: NextConfig = {
   /* config options here */
   output: 'standalone',
+  serverExternalPackages: ['archiver', 'archiver-utils', 'glob', 'path-scurry'],
   webpack: (config) => {
     config.module.rules.push({
       test: /\.md$/,
