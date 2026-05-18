@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useCallback, useState, Suspense } from 'react'
 import { useAtom, useSetAtom, useAtomValue } from 'jotai'
-import { aboutOpenAtom, pomodoroAtom, userSelectAtom, currentUserIdAtom, clientFreshnessTokenAtom, settingsAtom, habitsAtom, coinsAtom, wishlistAtom, usersAtom } from '@/lib/atoms'
+import { aboutOpenAtom, pomodoroAtom, userSelectAtom, currentUserIdAtom, clientFreshnessTokenAtom, settingsAtom, habitsAtom, coinsAtom, wishlistAtom, usersAtom, browserSettingsAtom, BrowserSettings } from '@/lib/atoms'
 import PomodoroTimer from './PomodoroTimer'
 import UserSelectModal from './UserSelectModal'
 import { useSession } from 'next-auth/react'
@@ -11,6 +11,8 @@ import LoadingSpinner from './LoadingSpinner'
 import { checkDataFreshness as checkServerDataFreshness } from '@/app/actions/data'
 import RefreshBanner from './RefreshBanner'
 import { prepareDataForHashing, generateCryptoHash } from '@/lib/utils'
+
+const BROWSER_SETTINGS_KEY = 'browserSettings'
 
 function ClientWrapperContent({ children }: { children: ReactNode }) {
   const [pomo] = useAtom(pomodoroAtom)
@@ -22,6 +24,7 @@ function ClientWrapperContent({ children }: { children: ReactNode }) {
   const currentUserId = session?.user.id
   const [showRefreshBanner, setShowRefreshBanner] = useState(false);
   const clientToken = useAtomValue(clientFreshnessTokenAtom);
+  const [browserSettings, setBrowserSettings] = useAtom(browserSettingsAtom)
 
   const settings = useAtomValue(settingsAtom)
   const habits = useAtomValue(habitsAtom)
@@ -48,6 +51,21 @@ function ClientWrapperContent({ children }: { children: ReactNode }) {
   useEffect(() => {
     setCurrentUserIdAtom(currentUserId)
   }, [currentUserId, setCurrentUserIdAtom])
+
+  // Load browser settings from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(BROWSER_SETTINGS_KEY)
+      if (stored) setBrowserSettings(JSON.parse(stored) as BrowserSettings)
+    } catch {}
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Persist browser settings to localStorage on change
+  useEffect(() => {
+    try {
+      localStorage.setItem(BROWSER_SETTINGS_KEY, JSON.stringify(browserSettings))
+    } catch {}
+  }, [browserSettings])
 
   const performFreshnessCheck = useCallback(async () => {
     if (!clientToken || status !== 'authenticated') return;

@@ -24,7 +24,7 @@ import {
   getHabitFreq,
   roundToInteger
 } from "@/lib/utils";
-import { atomFamily, atomWithStorage } from "jotai/utils";
+import { atomFamily } from "jotai/utils";
 import { DateTime } from "luxon";
 import { Freq } from "./types";
 
@@ -35,12 +35,12 @@ export interface BrowserSettings {
   expandedWishlist: boolean
 }
 
-export const browserSettingsAtom = atomWithStorage('browserSettings', {
+export const browserSettingsAtom = atom<BrowserSettings>({
   viewType: 'habits',
   expandedHabits: false,
   expandedTasks: false,
-  expandedWishlist: false
-} as BrowserSettings)
+  expandedWishlist: false,
+})
 
 export const usersAtom = atom(getDefaultPublicUsersData())
 export const settingsAtom = atom(getDefaultSettings());
