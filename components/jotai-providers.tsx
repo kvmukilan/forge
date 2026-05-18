@@ -1,7 +1,17 @@
 'use client'
 
-import { useRef } from 'react'
+import React, { useRef } from 'react'
 import { createStore, Provider } from 'jotai'
+
+// Jotai 2.8.x accesses React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.assign
+// which existed in React 18 but was removed in React 19, causing a crash on every
+// useAtom call. Restore it as Object.assign so Jotai's useSyncExternalStore path works.
+try {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ri = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
+  if (ri && !ri.assign) ri.assign = Object.assign
+} catch {}
+
 import { settingsAtom, habitsAtom, coinsAtom, wishlistAtom, usersAtom, serverSettingsAtom } from '@/lib/atoms'
 import { xpAtom, projectsAtom, bossAtom, guildDataAtom, petDataAtom } from '@/lib/gamification-atoms'
 import { JotaiHydrateInitialValues } from '@/lib/types'
