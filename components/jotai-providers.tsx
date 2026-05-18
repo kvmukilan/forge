@@ -3,13 +3,17 @@
 import React, { useRef } from 'react'
 import { createStore, Provider } from 'jotai'
 
-// Jotai 2.8.x accesses React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.assign
-// which existed in React 18 but was removed in React 19, causing a crash on every
-// useAtom call. Restore it as Object.assign so Jotai's useSyncExternalStore path works.
+// Safety net: if Vercel's cache serves Jotai 2.8.x instead of 2.20.0, Jotai calls
+// React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.assign on every render.
+// React 19 removed this entirely, so we create it when absent.
 try {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const ri = (React as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
-  if (ri && !ri.assign) ri.assign = Object.assign
+  const R = React as any
+  if (!R.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED) {
+    R.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = { assign: Object.assign }
+  } else if (!R.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.assign) {
+    R.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.assign = Object.assign
+  }
 } catch {}
 
 import { settingsAtom, habitsAtom, coinsAtom, wishlistAtom, usersAtom, serverSettingsAtom } from '@/lib/atoms'
