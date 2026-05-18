@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   serverExternalPackages: ['archiver', 'archiver-utils', 'glob', 'path-scurry'],
   webpack: (config) => {
+    if (config.cache && typeof config.cache === 'object') {
+      (config.cache as Record<string, unknown>).version = `${(config.cache as Record<string, unknown>).version || ''}_jotai20`
+    }
     config.module.rules.push({
       test: /\.md$/,
       use: 'raw-loader'
