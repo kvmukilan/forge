@@ -4,7 +4,8 @@ import { useState, Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Eye, EyeOff, LogIn } from 'lucide-react'
+import { Eye, EyeOff, LogIn, UserPlus } from 'lucide-react'
+import { registerUser } from '@/app/actions/data'
 
 function GoogleIcon() {
   return (
@@ -27,12 +28,20 @@ function LoginForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
 
   const handleCredentials = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
     try {
+      if (mode === 'signup') {
+        const result = await registerUser(username, password)
+        if (!result.success) {
+          setError(result.message)
+          return
+        }
+      }
       const result = await signIn('credentials', {
         username,
         password,
@@ -68,8 +77,10 @@ function LoginForm() {
 
         <div className="glass-card p-7 space-y-5">
           <div className="text-center mb-1">
-            <h1 className="text-lg font-bold">Sign in</h1>
-            <p className="text-xs text-muted-foreground mt-1">Continue building your best self</p>
+            <h1 className="text-lg font-bold">{mode === 'signin' ? 'Sign in' : 'Create your account'}</h1>
+            <p className="text-xs text-muted-foreground mt-1">
+              {mode === 'signin' ? 'Continue building your best self' : 'Start building your best self'}
+            </p>
           </div>
 
           {/* Google OAuth */}
@@ -123,7 +134,9 @@ function LoginForm() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  autoComplete="current-password"
+                  autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+                  required={mode === 'signup'}
+                  minLength={mode === 'signup' ? 8 : undefined}
                   className={cn(
                     'w-full px-3 py-2.5 pr-10 rounded-lg bg-secondary border border-border text-sm',
                     'text-foreground placeholder:text-muted-foreground/50',
@@ -154,14 +167,38 @@ function LoginForm() {
                 (loading || !username) && 'opacity-60 cursor-not-allowed'
               )}
             >
-              <LogIn className="h-4 w-4" />
-              {loading ? 'Signing in...' : 'Sign in'}
+              {mode === 'signin' ? <LogIn className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+              {loading
+                ? (mode === 'signin' ? 'Signing in...' : 'Creating account...')
+                : (mode === 'signin' ? 'Sign in' : 'Create account')}
             </button>
           </form>
         </div>
 
         <p className="text-center text-[11px] text-muted-foreground mt-6">
-          New users can sign in with Google to auto-create an account.
+          {mode === 'signin' ? (
+            <>
+              New here?{' '}
+              <button
+                type="button"
+                onClick={() => { setMode('signup'); setError('') }}
+                className="text-primary font-semibold hover:underline"
+              >
+                Create an account
+              </button>
+            </>
+          ) : (
+            <>
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={() => { setMode('signin'); setError('') }}
+                className="text-primary font-semibold hover:underline"
+              >
+                Sign in
+              </button>
+            </>
+          )}
         </p>
       </div>
     </div>

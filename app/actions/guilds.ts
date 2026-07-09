@@ -1,65 +1,78 @@
 'use server'
 
-import fs from 'fs/promises'
-import path from 'path'
-import { Guild, GuildData, GuildQuest, GuildQuestType, GuildQuestDifficulty, getDefaultGuildData, UserId } from '@/lib/types'
+import { Guild, GuildData, GuildQuest, GuildQuestType, GuildQuestDifficulty, getDefaultGuildData } from '@/lib/types'
 import { v4 as uuid } from 'uuid'
 import { getCurrentUser } from '@/lib/server-helpers'
+import { getDb } from '@/lib/db'
+import { guilds, guildMembers, guildQuests, users, coinTransactions, xpTransactions, xpState } from '@/lib/db/schema'
+import { guildToWire } from '@/lib/db/mappers'
+import { and, eq, gte, inArray, desc, sql } from 'drizzle-orm'
 import { addCoins } from './data'
 import { addXP, addGems } from './gamification'
-
-function getDataDir() {
-  return process.env.VERCEL ? '/tmp/data' : path.join(process.cwd(), 'data')
-}
-
-async function ensureDataDir() {
-  const dataDir = getDataDir()
-  try { await fs.access(dataDir) } catch { await fs.mkdir(dataDir, { recursive: true }) }
-}
-
-async function readJSON<T>(filename: string, defaultValue: T): Promise<T> {
-  await ensureDataDir()
-  const filePath = path.join(getDataDir(), filename)
-  try {
-    const content = await fs.readFile(filePath, 'utf-8')
-    return JSON.parse(content) as T
-  } catch {
-    return defaultValue
-  }
-}
-
-async function writeJSON<T>(filename: string, data: T): Promise<void> {
-  await ensureDataDir()
-  const filePath = path.join(getDataDir(), filename)
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8')
-}
 
 function generateInviteCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
   return Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 }
 
-export async function loadGuildData(): Promise<GuildData> {
-  return readJSON('guilds.json', getDefaultGuildData())
+async function memberIdsOf(guildId: string): Promise<string[]> {
+  const db = await getDb()
+  const rows = await db.select({ userId: guildMembers.userId }).from(guildMembers).where(eq(guildMembers.guildId, guildId))
+  return rows.map(r => r.userId)
 }
 
-export async function saveGuildData(data: GuildData): Promise<void> {
-  await writeJSON('guilds.json', data)
+function questToWire(row: typeof guildQuests.$inferSelect): GuildQuest {
+  return {
+    id: row.id,
+    guildId: row.guildId,
+    type: row.type as GuildQuestType,
+    difficulty: row.difficulty as GuildQuestDifficulty,
+    title: row.title,
+    description: row.description,
+    emoji: row.emoji,
+    target: row.target,
+    weekStart: row.weekStart,
+    reward: row.reward as GuildQuest['reward'],
+    claimedBy: row.claimedBy as string[],
+  }
+}
+
+export async function loadGuildData(): Promise<GuildData> {
+  const user = await getCurrentUser()
+  if (!user) return getDefaultGuildData()
+  const db = await getDb()
+  const guildRows = await db.select().from(guilds)
+  const memberRows = await db.select().from(guildMembers)
+  const questRows = await db.select().from(guildQuests)
+  const membersByGuild = new Map<string, string[]>()
+  for (const m of memberRows) {
+    const list = membersByGuild.get(m.guildId) ?? []
+    list.push(m.userId)
+    membersByGuild.set(m.guildId, list)
+  }
+  return {
+    guilds: guildRows.map(g => guildToWire(g, membersByGuild.get(g.id) ?? [])),
+    quests: questRows.map(questToWire),
+  }
 }
 
 export async function getMyGuild(): Promise<Guild | null> {
   const user = await getCurrentUser()
   if (!user) return null
-  const data = await loadGuildData()
-  return data.guilds.find(g => g.memberIds.includes(user.id)) ?? null
+  const db = await getDb()
+  const membership = await db.select().from(guildMembers).where(eq(guildMembers.userId, user.id)).limit(1)
+  if (!membership[0]) return null
+  const guildRows = await db.select().from(guilds).where(eq(guilds.id, membership[0].guildId)).limit(1)
+  if (!guildRows[0]) return null
+  return guildToWire(guildRows[0], await memberIdsOf(guildRows[0].id))
 }
 
 export async function createGuild(name: string, emoji: string, description?: string): Promise<{ success: boolean; message: string; guild?: Guild }> {
   const user = await getCurrentUser()
   if (!user) return { success: false, message: 'Not authenticated' }
-  const data = await loadGuildData()
-  const alreadyInGuild = data.guilds.some(g => g.memberIds.includes(user.id))
-  if (alreadyInGuild) return { success: false, message: 'You are already in a guild' }
+  const db = await getDb()
+  const existing = await db.select().from(guildMembers).where(eq(guildMembers.userId, user.id)).limit(1)
+  if (existing[0]) return { success: false, message: 'You are already in a guild' }
   const guild: Guild = {
     id: uuid(),
     name: name.trim(),
@@ -70,41 +83,52 @@ export async function createGuild(name: string, emoji: string, description?: str
     adminId: user.id,
     createdAt: new Date().toISOString(),
   }
-  await saveGuildData({ guilds: [...data.guilds, guild], quests: data.quests ?? [] })
+  await db.insert(guilds).values({
+    id: guild.id,
+    name: guild.name,
+    emoji: guild.emoji,
+    description: guild.description ?? null,
+    inviteCode: guild.inviteCode,
+    adminId: guild.adminId,
+    createdAt: guild.createdAt,
+  })
+  await db.insert(guildMembers).values({ guildId: guild.id, userId: user.id })
   return { success: true, message: 'Guild created!', guild }
 }
 
 export async function joinGuildByCode(inviteCode: string): Promise<{ success: boolean; message: string; guild?: Guild }> {
   const user = await getCurrentUser()
   if (!user) return { success: false, message: 'Not authenticated' }
-  const data = await loadGuildData()
-  const alreadyInGuild = data.guilds.some(g => g.memberIds.includes(user.id))
-  if (alreadyInGuild) return { success: false, message: 'You are already in a guild. Leave it first.' }
-  const guildIdx = data.guilds.findIndex(g => g.inviteCode === inviteCode.trim().toUpperCase())
-  if (guildIdx === -1) return { success: false, message: 'Invalid invite code' }
-  const guild = data.guilds[guildIdx]
-  if (guild.memberIds.includes(user.id)) return { success: false, message: 'Already a member' }
-  const updatedGuild = { ...guild, memberIds: [...guild.memberIds, user.id] }
-  const updatedGuilds = data.guilds.map((g, i) => i === guildIdx ? updatedGuild : g)
-  await saveGuildData({ guilds: updatedGuilds, quests: data.quests ?? [] })
-  return { success: true, message: `Joined ${guild.name}!`, guild: updatedGuild }
+  const db = await getDb()
+  const existing = await db.select().from(guildMembers).where(eq(guildMembers.userId, user.id)).limit(1)
+  if (existing[0]) return { success: false, message: 'You are already in a guild. Leave it first.' }
+  const guildRows = await db.select().from(guilds).where(eq(guilds.inviteCode, inviteCode.trim().toUpperCase())).limit(1)
+  if (!guildRows[0]) return { success: false, message: 'Invalid invite code' }
+  await db.insert(guildMembers).values({ guildId: guildRows[0].id, userId: user.id }).onConflictDoNothing()
+  const guild = guildToWire(guildRows[0], await memberIdsOf(guildRows[0].id))
+  return { success: true, message: `Joined ${guild.name}!`, guild }
 }
 
 export async function leaveGuild(): Promise<{ success: boolean; message: string }> {
   const user = await getCurrentUser()
   if (!user) return { success: false, message: 'Not authenticated' }
-  const data = await loadGuildData()
-  const guildIdx = data.guilds.findIndex(g => g.memberIds.includes(user.id))
-  if (guildIdx === -1) return { success: false, message: 'Not in a guild' }
-  const guild = data.guilds[guildIdx]
-  if (guild.memberIds.length === 1) {
-    await saveGuildData({ guilds: data.guilds.filter((_, i) => i !== guildIdx), quests: (data.quests ?? []).filter(q => q.guildId !== guild.id) })
+  const db = await getDb()
+  const membership = await db.select().from(guildMembers).where(eq(guildMembers.userId, user.id)).limit(1)
+  if (!membership[0]) return { success: false, message: 'Not in a guild' }
+  const guildId = membership[0].guildId
+  const guildRows = await db.select().from(guilds).where(eq(guilds.id, guildId)).limit(1)
+  const memberIds = await memberIdsOf(guildId)
+
+  await db.delete(guildMembers).where(and(eq(guildMembers.guildId, guildId), eq(guildMembers.userId, user.id)))
+
+  if (memberIds.length === 1) {
+    await db.delete(guilds).where(eq(guilds.id, guildId)) // quests cascade
     return { success: true, message: 'Guild disbanded' }
   }
-  const newMembers = guild.memberIds.filter((id: UserId) => id !== user.id)
-  const newAdmin = guild.adminId === user.id ? newMembers[0] : guild.adminId
-  const updatedGuild = { ...guild, memberIds: newMembers, adminId: newAdmin }
-  await saveGuildData({ guilds: data.guilds.map((g, i) => i === guildIdx ? updatedGuild : g), quests: data.quests ?? [] })
+  if (guildRows[0] && guildRows[0].adminId === user.id) {
+    const remaining = memberIds.filter(id => id !== user.id)
+    await db.update(guilds).set({ adminId: remaining[0] }).where(eq(guilds.id, guildId))
+  }
   return { success: true, message: 'Left guild' }
 }
 
@@ -115,33 +139,45 @@ export interface GuildMemberStat {
   avatarPath?: string
 }
 
-export async function getGuildLeaderboard(guildId: string): Promise<GuildMemberStat[]> {
-  const data = await loadGuildData()
-  const guild = data.guilds.find(g => g.id === guildId)
-  if (!guild) return []
-
-  const { users } = await readJSON<{ users: Array<{ id: string; username: string; avatarPath?: string }> }>('auth.json', { users: [] })
-
-  const { transactions } = await readJSON<{ balance: number; transactions: Array<{ userId?: string; amount: number; type: string; timestamp: string }> }>('coins.json', { balance: 0, transactions: [] })
-
+function currentWeekStartISO(): string {
   const now = new Date()
-  const weekStart = new Date(now)
-  weekStart.setDate(now.getDate() - now.getDay())
-  weekStart.setHours(0, 0, 0, 0)
+  const day = now.getDay()
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1)
+  const monday = new Date(now)
+  monday.setDate(diff)
+  monday.setHours(0, 0, 0, 0)
+  return monday.toISOString().slice(0, 10)
+}
 
-  const stats: GuildMemberStat[] = guild.memberIds.map(userId => {
-    const user = users.find(u => u.id === userId)
-    const weeklyCompletions = transactions.filter(t =>
-      t.userId === userId &&
-      (t.type === 'HABIT_COMPLETION' || t.type === 'TASK_COMPLETION') &&
-      t.amount > 0 &&
-      new Date(t.timestamp) >= weekStart
-    ).length
+export async function getGuildLeaderboard(guildId: string): Promise<GuildMemberStat[]> {
+  const db = await getDb()
+  const memberIds = await memberIdsOf(guildId)
+  if (memberIds.length === 0) return []
+
+  const userRows = await db.select().from(users).where(inArray(users.id, memberIds))
+  const weekStart = currentWeekStartISO()
+
+  const counts = await db.select({
+    userId: coinTransactions.userId,
+    count: sql<number>`count(*)::int`,
+  }).from(coinTransactions)
+    .where(and(
+      inArray(coinTransactions.userId, memberIds),
+      inArray(coinTransactions.type, ['HABIT_COMPLETION', 'TASK_COMPLETION']),
+      sql`${coinTransactions.amount} > 0`,
+      gte(coinTransactions.timestamp, weekStart),
+    ))
+    .groupBy(coinTransactions.userId)
+
+  const countByUser = new Map(counts.map(c => [c.userId, Number(c.count)]))
+
+  const stats: GuildMemberStat[] = memberIds.map(userId => {
+    const user = userRows.find(u => u.id === userId)
     return {
       userId,
       username: user?.username ?? 'Unknown',
-      weeklyCompletions,
-      avatarPath: user?.avatarPath,
+      weeklyCompletions: countByUser.get(userId) ?? 0,
+      ...(user?.avatarPath ? { avatarPath: user.avatarPath } : {}),
     }
   })
 
@@ -157,31 +193,28 @@ export interface GuildActivityItem {
 }
 
 export async function getGuildActivity(guildId: string): Promise<GuildActivityItem[]> {
-  const data = await loadGuildData()
-  const guild = data.guilds.find(g => g.id === guildId)
-  if (!guild) return []
+  const db = await getDb()
+  const memberIds = await memberIdsOf(guildId)
+  if (memberIds.length === 0) return []
 
-  const { users } = await readJSON<{ users: Array<{ id: string; username: string }> }>('auth.json', { users: [] })
+  const userRows = await db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, memberIds))
 
-  const { transactions } = await readJSON<{ balance: number; transactions: Array<{ id: string; userId?: string; amount: number; type: string; description: string; timestamp: string }> }>('coins.json', { balance: 0, transactions: [] })
+  const txRows = await db.select().from(coinTransactions)
+    .where(and(
+      inArray(coinTransactions.userId, memberIds),
+      inArray(coinTransactions.type, ['HABIT_COMPLETION', 'TASK_COMPLETION']),
+      sql`${coinTransactions.amount} > 0`,
+    ))
+    .orderBy(desc(coinTransactions.timestamp))
+    .limit(20)
 
-  const memberSet = new Set(guild.memberIds)
-
-  return transactions
-    .filter(t =>
-      t.userId && memberSet.has(t.userId) &&
-      (t.type === 'HABIT_COMPLETION' || t.type === 'TASK_COMPLETION') &&
-      t.amount > 0
-    )
-    .slice(-20)
-    .reverse()
-    .map(t => ({
-      userId: t.userId!,
-      username: users.find(u => u.id === t.userId)?.username ?? 'Unknown',
-      description: t.description,
-      timestamp: t.timestamp,
-      amount: t.amount,
-    }))
+  return txRows.map(t => ({
+    userId: t.userId,
+    username: userRows.find(u => u.id === t.userId)?.username ?? 'Unknown',
+    description: t.description,
+    timestamp: t.timestamp,
+    amount: t.amount,
+  }))
 }
 
 // ---- GUILD QUESTS ----
@@ -276,58 +309,47 @@ function generateWeeklyQuests(guildId: string, weekStart: string): GuildQuest[] 
   })
 }
 
-async function getWeekStart(): Promise<string> {
-  const now = new Date()
-  const day = now.getDay()
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1)
-  const monday = new Date(now.setDate(diff))
-  return monday.toISOString().slice(0, 10)
-}
-
 async function calcQuestProgress(quest: GuildQuest, memberIds: string[]): Promise<number> {
+  const db = await getDb()
   const weekStart = quest.weekStart
   const weekEnd = new Date(new Date(weekStart).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString()
 
   if (quest.type === 'habit_blitz' || quest.type === 'boss_assault') {
-    const coinsData = await readJSON<{ transactions: Array<{ userId?: string; type: string; timestamp: string; amount: number }> }>(
-      'coins.json', { transactions: [] }
-    )
-    return coinsData.transactions.filter(t =>
-      t.userId && memberIds.includes(t.userId) &&
-      (t.type === 'HABIT_COMPLETION' || t.type === 'TASK_COMPLETION') &&
-      t.timestamp >= weekStart && t.timestamp < weekEnd
-    ).length
+    const [row] = await db.select({ count: sql<number>`count(*)::int` }).from(coinTransactions)
+      .where(and(
+        inArray(coinTransactions.userId, memberIds),
+        inArray(coinTransactions.type, ['HABIT_COMPLETION', 'TASK_COMPLETION']),
+        gte(coinTransactions.timestamp, weekStart),
+        sql`${coinTransactions.timestamp} < ${weekEnd}`,
+      ))
+    return Number(row?.count ?? 0)
   }
 
   if (quest.type === 'coin_surge') {
-    const coinsData = await readJSON<{ transactions: Array<{ userId?: string; type: string; timestamp: string; amount: number }> }>(
-      'coins.json', { transactions: [] }
-    )
-    return coinsData.transactions
-      .filter(t =>
-        t.userId && memberIds.includes(t.userId) &&
-        t.amount > 0 &&
-        t.timestamp >= weekStart && t.timestamp < weekEnd
-      )
-      .reduce((sum, t) => sum + t.amount, 0)
+    const [row] = await db.select({ total: sql<number>`coalesce(sum(${coinTransactions.amount}), 0)::int` }).from(coinTransactions)
+      .where(and(
+        inArray(coinTransactions.userId, memberIds),
+        sql`${coinTransactions.amount} > 0`,
+        gte(coinTransactions.timestamp, weekStart),
+        sql`${coinTransactions.timestamp} < ${weekEnd}`,
+      ))
+    return Number(row?.total ?? 0)
   }
 
   if (quest.type === 'perfect_streak') {
-    const xpData = await readJSON<{ perfectDays?: string[] }>('xp.json', { perfectDays: [] })
-    const perfectDays = xpData.perfectDays ?? []
-    return perfectDays.filter(d => d >= weekStart && d < weekEnd.slice(0, 10)).length
+    const states = await db.select({ perfectDays: xpState.perfectDays }).from(xpState).where(inArray(xpState.userId, memberIds))
+    return states.flatMap(s => (s.perfectDays as string[]) ?? [])
+      .filter(d => d >= weekStart && d < weekEnd.slice(0, 10)).length
   }
 
   if (quest.type === 'level_up_rush') {
-    const xpData = await readJSON<{ transactions?: Array<{ userId?: string; timestamp: string; amount: number }> }>(
-      'xp.json', { transactions: [] }
-    )
-    return (xpData.transactions ?? [])
-      .filter(t =>
-        t.userId && memberIds.includes(t.userId) &&
-        t.timestamp >= weekStart && t.timestamp < weekEnd
-      )
-      .reduce((sum, t) => sum + t.amount, 0)
+    const [row] = await db.select({ total: sql<number>`coalesce(sum(${xpTransactions.amount}), 0)::int` }).from(xpTransactions)
+      .where(and(
+        inArray(xpTransactions.userId, memberIds),
+        gte(xpTransactions.timestamp, weekStart),
+        sql`${xpTransactions.timestamp} < ${weekEnd}`,
+      ))
+    return Number(row?.total ?? 0)
   }
 
   return 0
@@ -339,54 +361,59 @@ export interface GuildQuestWithProgress extends GuildQuest {
 }
 
 export async function getGuildQuests(guildId: string): Promise<GuildQuestWithProgress[]> {
-  const data = await loadGuildData()
-  const guild = data.guilds.find(g => g.id === guildId)
-  if (!guild) return []
+  const db = await getDb()
+  const memberIds = await memberIdsOf(guildId)
+  if (memberIds.length === 0) return []
 
-  const weekStart = await getWeekStart()
+  const weekStart = currentWeekStartISO()
 
-  // Ensure quests exist for this week
-  let weekQuests = (data.quests ?? []).filter(q => q.guildId === guildId && q.weekStart === weekStart)
-  if (weekQuests.length === 0) {
-    weekQuests = generateWeeklyQuests(guildId, weekStart)
-    data.quests = [...(data.quests ?? []), ...weekQuests]
-    await saveGuildData(data)
+  let weekQuestRows = await db.select().from(guildQuests)
+    .where(and(eq(guildQuests.guildId, guildId), eq(guildQuests.weekStart, weekStart)))
+  if (weekQuestRows.length === 0) {
+    const generated = generateWeeklyQuests(guildId, weekStart)
+    await db.insert(guildQuests).values(generated.map(q => ({
+      id: q.id,
+      guildId: q.guildId,
+      type: q.type,
+      difficulty: q.difficulty,
+      title: q.title,
+      description: q.description,
+      emoji: q.emoji,
+      target: q.target,
+      weekStart: q.weekStart,
+      reward: q.reward,
+      claimedBy: [],
+    }))).onConflictDoNothing()
+    weekQuestRows = await db.select().from(guildQuests)
+      .where(and(eq(guildQuests.guildId, guildId), eq(guildQuests.weekStart, weekStart)))
   }
 
-  // Calculate progress for each quest
   const results: GuildQuestWithProgress[] = []
-  for (const quest of weekQuests) {
-    const progress = await calcQuestProgress(quest, guild.memberIds)
+  for (const row of weekQuestRows) {
+    const quest = questToWire(row)
+    const progress = await calcQuestProgress(quest, memberIds)
     const isComplete = progress >= quest.target
     results.push({ ...quest, progress, isComplete })
   }
 
   // Auto-distribute rewards for completed quests
   for (const quest of results) {
-    if (quest.isComplete) {
-      const unclaimedMembers = guild.memberIds.filter(uid => !quest.claimedBy.includes(uid))
-      if (unclaimedMembers.length > 0) {
-        for (const uid of unclaimedMembers) {
-          if (quest.reward.coins > 0) {
-            await addCoins({ amount: quest.reward.coins, type: 'MANUAL_ADJUSTMENT', description: `Guild Quest: ${quest.title}`, userId: uid })
-          }
-          if (quest.reward.xp > 0) {
-            await addXP({ amount: quest.reward.xp, source: 'DAILY_CHALLENGE', userId: uid })
-          }
-          if (quest.reward.gems > 0) {
-            await addGems(quest.reward.gems)
-          }
-        }
-        // Mark all members as claimed
-        const updatedData = await loadGuildData()
-        const qi = updatedData.quests.findIndex(q => q.id === quest.id)
-        if (qi !== -1) {
-          updatedData.quests[qi].claimedBy = guild.memberIds
-          await saveGuildData(updatedData)
-          quest.claimedBy = guild.memberIds
-        }
+    if (!quest.isComplete) continue
+    const unclaimedMembers = memberIds.filter(uid => !quest.claimedBy.includes(uid))
+    if (unclaimedMembers.length === 0) continue
+    for (const uid of unclaimedMembers) {
+      if (quest.reward.coins > 0) {
+        await addCoins({ amount: quest.reward.coins, type: 'MANUAL_ADJUSTMENT', description: `Guild Quest: ${quest.title}`, userId: uid })
+      }
+      if (quest.reward.xp > 0) {
+        await addXP({ amount: quest.reward.xp, source: 'DAILY_CHALLENGE', userId: uid })
+      }
+      if (quest.reward.gems > 0) {
+        await addGems(quest.reward.gems, uid)
       }
     }
+    await db.update(guildQuests).set({ claimedBy: memberIds }).where(eq(guildQuests.id, quest.id))
+    quest.claimedBy = memberIds
   }
 
   return results

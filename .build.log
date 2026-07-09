@@ -1,0 +1,86 @@
+
+> forge@0.2.31 build
+> next build
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\kvmuk\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * C:\Users\kvmuk\forge\package-lock.json
+
+   ▲ Next.js 15.5.12
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 29.0s
+   Linting and checking validity of types ...
+
+./app/guild/page.tsx
+41:6  Warning: React Hook useEffect has a missing dependency: 'myGuild'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/CoinsManager.tsx
+59:6  Warning: React Hook useEffect has a missing dependency: 'selectedUser'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/DrawingCanvas.tsx
+70:6  Warning: React Hook useEffect has a missing dependency: 'redrawCanvas'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/PartyStatusWidget.tsx
+33:6  Warning: React Hook useEffect has a missing dependency: 'myGuild'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./components/PomodoroTimer.tsx
+113:6  Warning: React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+138:6  Warning: React Hook useEffect has missing dependencies: 'handleTimerEnd' and 'timeLeft'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./lib/gamification-atoms.ts
+3:58  Warning: 'getMaxStreak' is defined but never used.  unused-imports/no-unused-imports
+
+./lib/gamification.ts
+2:17  Warning: 'XPData' is defined but never used.  unused-imports/no-unused-imports
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/5) ...
+   Generating static pages (1/5) 
+   Generating static pages (2/5) 
+   Generating static pages (3/5) 
+ ✓ Generating static pages (5/5)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ƒ /                                     118 kB         527 kB
+├ ƒ /_not-found                             1 kB         103 kB
+├ ƒ /achievements                        4.21 kB         207 kB
+├ ƒ /api/auth/[...nextauth]                147 B         102 kB
+├ ƒ /api/avatars/[...path]                 147 B         102 kB
+├ ƒ /api/cron/daily                        147 B         102 kB
+├ ƒ /api/user/delete                       147 B         102 kB
+├ ƒ /calendar                            19.9 kB         261 kB
+├ ƒ /coins                               8.37 kB         236 kB
+├ ƒ /debug/habits                          513 B         199 kB
+├ ƒ /debug/user                            147 B         102 kB
+├ ƒ /guild                               6.82 kB         210 kB
+├ ƒ /habits                              6.36 kB         403 kB
+├ ƒ /login                               5.26 kB         199 kB
+├ ○ /manifest.webmanifest                  147 B         102 kB
+├ ƒ /pet                                 4.88 kB         211 kB
+├ ƒ /projects                            5.93 kB         223 kB
+├ ƒ /season                              1.57 kB         205 kB
+├ ƒ /settings                            4.83 kB         249 kB
+├ ƒ /shop                                2.56 kB         206 kB
+├ ƒ /skills                              2.03 kB         205 kB
+├ ƒ /stats                               3.18 kB         206 kB
+├ ƒ /tasks                               4.41 kB         397 kB
+└ ƒ /wishlist                            14.3 kB         389 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/1255-ad409e5887c155b0.js      45.7 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js  54.2 kB
+  └ other shared chunks (total)          2.16 kB
+
+
+ƒ Middleware                             99.2 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

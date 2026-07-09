@@ -1,34 +1,12 @@
 'use server'
-import fs from 'fs/promises'
-import path from 'path'
-import { Pet, PetData, PetForm, getDefaultPetData, XPData, getDefaultXPData } from '@/lib/types'
+import { Pet, PetData, PetForm, getDefaultPetData, XPData } from '@/lib/types'
 import { v4 as uuid } from 'uuid'
-
-function getDataDir() {
-  return process.env.VERCEL ? '/tmp/data' : path.join(process.cwd(), 'data')
-}
-
-async function ensureDataDir() {
-  const dataDir = getDataDir()
-  try { await fs.access(dataDir) } catch { await fs.mkdir(dataDir, { recursive: true }) }
-}
-
-async function readJSON<T>(filename: string, defaultValue: T): Promise<T> {
-  await ensureDataDir()
-  const filePath = path.join(getDataDir(), filename)
-  try {
-    const content = await fs.readFile(filePath, 'utf-8')
-    return JSON.parse(content) as T
-  } catch {
-    return defaultValue
-  }
-}
-
-async function writeJSON<T>(filename: string, data: T): Promise<void> {
-  await ensureDataDir()
-  const filePath = path.join(getDataDir(), filename)
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8')
-}
+import { getCurrentUser } from '@/lib/server-helpers'
+import { getDb } from '@/lib/db'
+import { pets } from '@/lib/db/schema'
+import { petToWire, petToRow } from '@/lib/db/mappers'
+import { eq } from 'drizzle-orm'
+import { loadXPData, addGems } from './gamification'
 
 const FORM_ORDER: PetForm[] = ['egg', 'hatchling', 'companion', 'guardian', 'legend']
 const FORM_MAX_HP: Record<PetForm, number> = { egg: 50, hatchling: 80, companion: 120, guardian: 160, legend: 200 }
@@ -60,15 +38,32 @@ function checkEvolution(pet: Pet): Pet {
   })
 }
 
+async function savePetFor(userId: string, pet: Pet): Promise<void> {
+  const db = await getDb()
+  const row = petToRow(pet, userId)
+  await db.insert(pets).values(row).onConflictDoUpdate({
+    target: pets.userId,
+    set: { ...row, userId: undefined } as Record<string, unknown>,
+  })
+}
+
 export async function loadPetData(): Promise<PetData> {
-  return readJSON('pet.json', getDefaultPetData())
+  const user = await getCurrentUser()
+  if (!user) return getDefaultPetData()
+  const db = await getDb()
+  const rows = await db.select().from(pets).where(eq(pets.userId, user.id)).limit(1)
+  return { pet: rows[0] ? petToWire(rows[0]) : null }
 }
 
 export async function savePetData(data: PetData): Promise<void> {
-  await writeJSON('pet.json', data)
+  const user = await getCurrentUser()
+  if (!user || !data.pet) return
+  await savePetFor(user.id, data.pet)
 }
 
 export async function adoptPet(name: string): Promise<Pet> {
+  const user = await getCurrentUser()
+  if (!user) throw new Error('Not authenticated')
   const pet: Pet = {
     id: uuid(),
     name: name.trim() || 'Pip',
@@ -80,7 +75,7 @@ export async function adoptPet(name: string): Promise<Pet> {
     mood: 'happy',
     adoptedAt: new Date().toISOString(),
   }
-  await savePetData({ pet })
+  await savePetFor(user.id, pet)
   return pet
 }
 
@@ -88,17 +83,17 @@ export async function feedPet(gemCost: number): Promise<{ success: boolean; mess
   const petData = await loadPetData()
   if (!petData.pet) return { success: false, message: 'No pet to feed' }
 
-  const xpData: XPData = await readJSON('xp.json', getDefaultXPData())
+  const xpData = await loadXPData()
   const gems = xpData.gems ?? 0
   if (gems < gemCost) return { success: false, message: `Need ${gemCost} gems. You have ${gems}.` }
 
-  const updatedXP: XPData = { ...xpData, gems: gems - gemCost }
-  await writeJSON('xp.json', updatedXP)
+  const updatedXP = await addGems(-gemCost)
 
   const pet = petData.pet
   const newHp = Math.min(pet.maxHp, pet.hp + 20)
   const newXp = pet.xp + 50
   const evolved = checkEvolution({ ...pet, hp: newHp, mood: getMood(newHp, pet.maxHp), xp: newXp })
+  evolved.lastFedAt = new Date().toISOString()
   await savePetData({ pet: evolved })
   return { success: true, message: 'Pet fed!', pet: evolved, xpData: updatedXP }
 }

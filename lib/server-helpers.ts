@@ -1,19 +1,11 @@
 import { auth } from '@/auth'
 import 'server-only'
-import { User, UserData, UserId, getDefaultUsersData } from './types'
-import { randomBytes, scryptSync } from 'crypto'
-import fs from 'fs/promises'
-import path from 'path'
-
-async function loadUsersDataFromStore(): Promise<UserData> {
-  try {
-    const filePath = path.join(process.cwd(), 'data', 'auth.json')
-    const data = await fs.readFile(filePath, 'utf8')
-    return JSON.parse(data) as UserData
-  } catch {
-    return getDefaultUsersData()
-  }
-}
+import { User, UserId } from './types'
+import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
+import { eq } from 'drizzle-orm'
+import { getDb } from './db'
+import { users } from './db/schema'
+import { userToWire } from './db/mappers'
 
 export async function getCurrentUserId(): Promise<UserId | undefined> {
   const session = await auth()
@@ -26,9 +18,11 @@ export async function getCurrentUser(): Promise<User | undefined> {
   if (!currentUserId) {
     return undefined
   }
-  const usersData = await loadUsersDataFromStore()
-  return usersData.users.find((u) => u.id === currentUserId)
+  const db = await getDb()
+  const rows = await db.select().from(users).where(eq(users.id, currentUserId)).limit(1)
+  return rows[0] ? userToWire(rows[0]) : undefined
 }
+
 export function saltAndHashPassword(password: string, salt?: string): string {
   if (password.length === 0) throw new Error('Password must not be empty')
   salt = salt || randomBytes(16).toString('hex')
@@ -40,10 +34,10 @@ export function verifyPassword(password?: string, storedHash?: string): boolean 
   // Accounts without a stored hash (e.g. OAuth-created) cannot sign in with credentials
   if (!password || !storedHash) return false
 
-  // Split the stored hash into its salt and hash components
   const [salt, hash] = storedHash.split(':')
-  // Hash the input password with the same salt
+  if (!salt || !hash) return false
   const newHash = saltAndHashPassword(password, salt).split(':')[1]
-  // Compare the new hash with the stored hash
-  return newHash === hash
+  const a = Buffer.from(newHash, 'hex')
+  const b = Buffer.from(hash, 'hex')
+  return a.length === b.length && timingSafeEqual(a, b)
 }

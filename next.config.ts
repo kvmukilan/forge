@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   // Standalone output is required by the Dockerfile but breaks Vercel deploys,
   // so it is only enabled when building the Docker image (see docker-build script)
   output: process.env.DOCKER_BUILD ? 'standalone' : undefined,
-  serverExternalPackages: ['archiver', 'archiver-utils', 'glob', 'path-scurry'],
+  serverExternalPackages: ['@electric-sql/pglite'],
   webpack: (config) => {
     if (config.cache && typeof config.cache === 'object') {
       (config.cache as Record<string, unknown>).version = `${(config.cache as Record<string, unknown>).version || ''}_jotai20`

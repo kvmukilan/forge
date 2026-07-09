@@ -1,7 +1,6 @@
 import ClientWrapper from './ClientWrapper'
 import Header from './Header'
 import Navigation from './Navigation'
-import PermissionError from './PermissionError'
 import NotificationScheduler from './NotificationScheduler'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -16,7 +15,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background relative">
               {/* responsive container */}
               <div className="mx-auto px-4 py-8 max-w-5xl">
-                <PermissionError />
                 {children}
               </div>
             </main>

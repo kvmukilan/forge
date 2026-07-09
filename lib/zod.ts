@@ -15,3 +15,11 @@ export const signInSchema = object({
   username: usernameSchema,
   password: passwordSchema,
 })
+
+// Public self-serve signup requires a real password (unlike admin-created accounts)
+export const signUpSchema = object({
+  username: usernameSchema,
+  password: string()
+    .min(8, "Password must be at least 8 characters")
+    .max(64, "Password must be less than 64 characters"),
+})

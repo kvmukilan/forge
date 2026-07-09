@@ -128,7 +128,6 @@ export const userSelectAtom = atom<boolean>(false)
 export const aboutOpenAtom = atom<boolean>(false)
 
 // Sync-writable atom for freshness token; computed via useEffect in ClientWrapper
-export const clientFreshnessTokenAtom = atom<string | null>(null);
 
 // Derived atom for completion cache
 export const completionCacheAtom = atom((get) => {

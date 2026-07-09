@@ -1,0 +1,32 @@
+
+> forge@0.2.31 dev
+> next dev --turbopack --port 3111
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\kvmuk\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\kvmuk\forge\package-lock.json
+
+   ▲ Next.js 15.5.12 (Turbopack)
+   - Local:        http://localhost:3111
+   - Network:      http://172.16.0.2:3111
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Compiled instrumentation Node.js in 106ms
+ ✓ Compiled instrumentation Edge in 87ms
+ ✓ Compiled middleware in 292ms
+ ✓ Ready in 2.6s
+ ⚠ Your project has `@next/font` installed as a dependency, please use the built-in `next/font` instead. The `@next/font` package will be removed in Next.js 14. You can migrate by running `npx @next/codemod@latest built-in-next-font .`. Read more: https://nextjs.org/docs/messages/built-in-next-font
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 2.5s
+ GET /api/auth/csrf 200 in 4096ms
+ POST /api/auth/callback/credentials 302 in 1000ms
+ GET /api/auth/session 200 in 343ms
+ ○ Compiling / ...
+ ✓ Compiled / in 8.4s
+[DEPRECATED] atomFamily is deprecated and will be removed in v3. Please use the `jotai-family` package instead: https://github.com/jotaijs/jotai-family
+ GET / 200 in 9903ms
+[?25h

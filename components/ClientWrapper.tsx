@@ -1,52 +1,27 @@
 'use client'
 
-import { ReactNode, useEffect, useCallback, useState, Suspense } from 'react'
-import { useAtom, useSetAtom, useAtomValue } from 'jotai'
-import { aboutOpenAtom, pomodoroAtom, userSelectAtom, currentUserIdAtom, clientFreshnessTokenAtom, settingsAtom, habitsAtom, coinsAtom, wishlistAtom, usersAtom, browserSettingsAtom, BrowserSettings } from '@/lib/atoms'
+import { ReactNode, useEffect, useRef, useState, Suspense } from 'react'
+import { useAtom, useSetAtom } from 'jotai'
+import { aboutOpenAtom, pomodoroAtom, userSelectAtom, currentUserIdAtom, browserSettingsAtom, BrowserSettings } from '@/lib/atoms'
 import PomodoroTimer from './PomodoroTimer'
 import UserSelectModal from './UserSelectModal'
 import { useSession } from 'next-auth/react'
 import AboutModal from './AboutModal'
 import LoadingSpinner from './LoadingSpinner'
-import { checkDataFreshness as checkServerDataFreshness } from '@/app/actions/data'
-import RefreshBanner from './RefreshBanner'
-import { prepareDataForHashing, generateCryptoHash } from '@/lib/utils'
 
 const BROWSER_SETTINGS_KEY = 'browserSettings'
+// Reload data (full SSR hydration) when the tab comes back after being hidden this long
+const STALE_AFTER_MS = 30 * 60 * 1000
 
 function ClientWrapperContent({ children }: { children: ReactNode }) {
   const [pomo] = useAtom(pomodoroAtom)
   const [userSelect, setUserSelect] = useAtom(userSelectAtom)
   const [aboutOpen, setAboutOpen] = useAtom(aboutOpenAtom)
   const setCurrentUserIdAtom = useSetAtom(currentUserIdAtom)
-  const setClientToken = useSetAtom(clientFreshnessTokenAtom)
   const { data: session, status } = useSession()
   const currentUserId = session?.user.id
-  const [showRefreshBanner, setShowRefreshBanner] = useState(false);
-  const clientToken = useAtomValue(clientFreshnessTokenAtom);
   const [browserSettings, setBrowserSettings] = useAtom(browserSettingsAtom)
-
-  const settings = useAtomValue(settingsAtom)
-  const habits = useAtomValue(habitsAtom)
-  const coins = useAtomValue(coinsAtom)
-  const wishlist = useAtomValue(wishlistAtom)
-  const users = useAtomValue(usersAtom)
-
-  useEffect(() => {
-    let cancelled = false
-    const compute = async () => {
-      try {
-        const dataString = prepareDataForHashing(settings, habits, coins, wishlist, users)
-        const hash = await generateCryptoHash(dataString)
-        if (!cancelled) setClientToken(hash)
-      } catch {
-        // ignore hash errors
-      }
-    }
-    compute()
-    return () => { cancelled = true }
-  }, [settings, habits, coins, wishlist, users, setClientToken])
-
+  const hiddenAtRef = useRef<number | null>(null)
 
   useEffect(() => {
     setCurrentUserIdAtom(currentUserId)
@@ -67,34 +42,19 @@ function ClientWrapperContent({ children }: { children: ReactNode }) {
     } catch {}
   }, [browserSettings])
 
-  const performFreshnessCheck = useCallback(async () => {
-    if (!clientToken || status !== 'authenticated') return;
-
-    try {
-      const result = await checkServerDataFreshness(clientToken);
-      if (!result.isFresh) {
-        setShowRefreshBanner(true);
-      }
-    } catch (error) {
-      console.error("Failed to check data freshness with server:", error);
-    }
-  }, [clientToken, status]);
-
+  // Atoms are hydrated from the server on page load; if the tab was hidden for a
+  // long time (common on mobile/PWA), reload to pick up fresh server state
   useEffect(() => {
-    // Interval for polling data freshness
-    if (clientToken && !showRefreshBanner && status === 'authenticated') {
-      const intervalId = setInterval(() => {
-        performFreshnessCheck();
-      }, 30000); // Check every 30 seconds
-
-      return () => clearInterval(intervalId);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        hiddenAtRef.current = Date.now()
+      } else if (hiddenAtRef.current && Date.now() - hiddenAtRef.current > STALE_AFTER_MS && status === 'authenticated') {
+        window.location.reload()
+      }
     }
-  }, [clientToken, performFreshnessCheck, showRefreshBanner, status]);
-
-  const handleRefresh = () => {
-    setShowRefreshBanner(false);
-    window.location.reload();
-  };
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange)
+  }, [status])
 
   return (
     <>
@@ -102,7 +62,6 @@ function ClientWrapperContent({ children }: { children: ReactNode }) {
       {pomo.show && <PomodoroTimer />}
       {userSelect && <UserSelectModal onClose={() => setUserSelect(false)} />}
       {aboutOpen && <AboutModal onClose={() => setAboutOpen(false)} />}
-      {showRefreshBanner && <RefreshBanner onRefresh={handleRefresh} />}
     </>
   );
 }

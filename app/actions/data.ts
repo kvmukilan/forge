@@ -7,14 +7,10 @@ import {
   CoinsData,
   CoinTransaction,
   TransactionType,
-  WishlistItemType,
   WishlistData,
   Settings,
-  DataType,
-  DATA_DEFAULTS,
   getDefaultSettings,
   UserData,
-  getDefaultUsersData,
   User,
   PublicUser,
   PublicUserData,
@@ -25,255 +21,171 @@ import {
   ServerSettings
 } from '@/lib/types'
 import { d2t, getNow, uuid } from '@/lib/utils';
-import { verifyPassword } from "@/lib/server-helpers";
-import { saltAndHashPassword } from "@/lib/server-helpers";
-import { signInSchema } from '@/lib/zod';
-import _ from 'lodash';
-import { getCurrentUser } from '@/lib/server-helpers'
-import { prepareDataForHashing, generateCryptoHash } from '@/lib/utils';
+import { verifyPassword, saltAndHashPassword, getCurrentUser } from "@/lib/server-helpers";
+import { signInSchema, signUpSchema } from '@/lib/zod';
 import { sanitizeUserData } from '@/lib/user-sanitizer'
 import { ALLOWED_AVATAR_EXTENSIONS, ALLOWED_AVATAR_MIME_TYPES } from '@/lib/avatar'
-
-
+import { PermissionError } from '@/lib/exceptions'
+import { getDb } from '@/lib/db'
+import { habits, completions, wishlistItems, coinTransactions, users, userSettings, avatars } from '@/lib/db/schema'
+import { habitToWire, habitToRow, wishlistToWire, wishlistToRow, coinTxToWire, coinTxToRow, userToWire } from '@/lib/db/mappers'
+import { and, eq, desc, inArray, sql } from 'drizzle-orm'
 
 type ResourceType = 'habit' | 'wishlist' | 'coins'
 type ActionType = 'write' | 'interact'
 
-async function verifyPermission(
-  resource: ResourceType,
-  action: ActionType
-): Promise<void> {
-  // const user = await getCurrentUser()
-
-  // if (!user) throw new PermissionError('User not authenticated')
-  // if (user.isAdmin) return // Admins bypass permission checks
-
-  // if (!checkPermission(user.permissions, resource, action)) {
-  //   throw new PermissionError(`User does not have ${action} permission for ${resource}`)
-  // }
-  return
-}
-
-function getDefaultData<T>(type: DataType): T {
-  return DATA_DEFAULTS[type]() as T;
-}
-
-function getDataDir(): string {
-  // Vercel filesystem is read-only; use /tmp for writable storage
-  if (process.env.VERCEL) return '/tmp/data'
-  return path.join(process.cwd(), 'data')
-}
-
-async function ensureDataDir() {
-  const dataDir = getDataDir()
-  try {
-    await fs.access(dataDir)
-  } catch {
-    await fs.mkdir(dataDir, { recursive: true })
-  }
-}
-
-// --- Backup Debug Action ---
-export async function triggerManualBackup(): Promise<{ success: boolean; message: string }> {
-  if (process.env.NODE_ENV !== 'development') {
-    return { success: false, message: 'Permission denied.' }
-  }
-
+// Row-level ownership is enforced by the user-scoped queries below; this guards
+// that a session exists at all before any mutation.
+async function requireUser(): Promise<User> {
   const user = await getCurrentUser()
-  if (!user?.isAdmin) {
-    return { success: false, message: 'Permission denied.' }
-  }
-
-  console.log('Manual backup trigger requested...')
-  try {
-    // Import runBackup locally to avoid potential circular dependencies if moved
-    const { runBackup } = await import('@/lib/backup')
-    await runBackup()
-    console.log('Manual backup trigger completed successfully.')
-    return { success: true, message: 'Backup process completed successfully.' }
-  } catch (error) {
-    console.error('Manual backup trigger failed:', error)
-    return {
-      success: false,
-      message: `Backup failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    }
-  }
+  if (!user) throw new PermissionError('User not authenticated')
+  return user
 }
 
-async function loadData<T>(type: DataType): Promise<T> {
-  try {
-    await ensureDataDir()
-    const filePath = path.join(getDataDir(), `${type}.json`)
-
-    try {
-      await fs.access(filePath)
-    } catch {
-      // File doesn't exist, create it with default data
-      const initialData = getDefaultData(type)
-      await fs.writeFile(filePath, JSON.stringify(initialData, null, 2))
-      return initialData as T
-    }
-
-    // File exists, read and return its contents
-    const data = await fs.readFile(filePath, 'utf8')
-    const jsonData = JSON.parse(data) as T
-    return jsonData
-  } catch (error) {
-    console.error(`Error loading ${type} data:`, error)
-    return getDefaultData<T>(type)
-  }
-}
-
-async function saveData<T>(type: DataType, data: T): Promise<void> {
-  try {
-    const user = await getCurrentUser()
-    if (!user) throw new Error('User not authenticated')
-
-    await ensureDataDir()
-    const filePath = path.join(getDataDir(), `${type}.json`)
-    const saveData = data
-    await fs.writeFile(filePath, JSON.stringify(saveData, null, 2))
-  } catch (error) {
-    console.error(`Error saving ${type} data:`, error)
-  }
-}
-
-/**
- * Calculates the server's global freshness token based on all core data files.
- * This is an expensive operation as it reads all data files.
- */
-async function calculateServerFreshnessToken(): Promise<string | null> {
-  try {
-    const settings = await loadSettings();
-    const habits = await loadHabitsData();
-    const coins = await loadCoinsData();
-    const wishlist = await loadWishlistData();
-    const users = await loadUsersPublicData();
-
-    const dataString = prepareDataForHashing(
-      settings,
-      habits,
-      coins,
-      wishlist,
-      users
-    );
-    const serverToken = await generateCryptoHash(dataString);
-    return serverToken;
-  } catch (error) {
-    console.error("Error calculating server freshness token:", error);
-    throw error;
-  }
+async function verifyPermission(
+  _resource: ResourceType,
+  _action: ActionType
+): Promise<User> {
+  return requireUser()
 }
 
 // Wishlist specific functions
 export async function loadWishlistData(): Promise<WishlistData> {
   const user = await getCurrentUser()
   if (!user) return getDefaultWishlistData()
-
-  const data = await loadData<WishlistData>('wishlist')
-  return {
-    ...data,
-    items: data.items.filter(x => user.isAdmin || x.userIds?.includes(user.id))
-  }
+  const db = await getDb()
+  const rows = user.isAdmin
+    ? await db.select().from(wishlistItems)
+    : await db.select().from(wishlistItems).where(eq(wishlistItems.userId, user.id))
+  return { items: rows.map(wishlistToWire) }
 }
 
-export async function loadWishlistItems(): Promise<WishlistItemType[]> {
+export async function loadWishlistItems() {
   const data = await loadWishlistData()
   return data.items
 }
 
 export async function saveWishlistItems(data: WishlistData): Promise<void> {
-  await verifyPermission('wishlist', 'write')
-  const user = await getCurrentUser()
+  const user = await verifyPermission('wishlist', 'write')
+  const db = await getDb()
 
-  data.items = data.items.map(wishlist => ({
-    ...wishlist,
-    userIds: wishlist.userIds || (user ? [user.id] : undefined)
-  }))
+  const rows = data.items.map(item => wishlistToRow(item, user.id))
+  const keptIds = rows.map(r => r.id)
 
-  if (!user?.isAdmin) {
-    const existingData = await loadData<WishlistData>('wishlist')
-    existingData.items = existingData.items.filter(x => user?.id && !x.userIds?.includes(user?.id))
-    data.items = [
-      ...existingData.items,
-      ...data.items
-    ]
+  // Delete this user's items absent from the payload (admins round-trip the full set)
+  const scope = user.isAdmin ? undefined : eq(wishlistItems.userId, user.id)
+  const existing = scope
+    ? await db.select({ id: wishlistItems.id }).from(wishlistItems).where(scope)
+    : await db.select({ id: wishlistItems.id }).from(wishlistItems)
+  const toDelete = existing.map(r => r.id).filter(id => !keptIds.includes(id))
+  if (toDelete.length > 0) {
+    await db.delete(wishlistItems).where(inArray(wishlistItems.id, toDelete))
   }
 
-  return saveData('wishlist', data)
+  for (const row of rows) {
+    await db.insert(wishlistItems).values(row).onConflictDoUpdate({
+      target: wishlistItems.id,
+      set: { ...row, userId: undefined, id: undefined } as Record<string, unknown>,
+    })
+  }
 }
 
 // Habits specific functions
 export async function loadHabitsData(): Promise<HabitsData> {
   const user = await getCurrentUser()
   if (!user) return getDefaultHabitsData()
-  const data = await loadData<HabitsData>('habits')
-  return {
-    ...data,
-    habits: data.habits.filter(x => user.isAdmin || x.userIds?.includes(user.id))
+  const db = await getDb()
+  const scope = user.isAdmin ? undefined : eq(habits.userId, user.id)
+  const habitRows = scope
+    ? await db.select().from(habits).where(scope)
+    : await db.select().from(habits)
+  const habitIds = habitRows.map(h => h.id)
+  const completionRows = habitIds.length > 0
+    ? await db.select().from(completions).where(inArray(completions.habitId, habitIds))
+    : []
+  const byHabit = new Map<string, typeof completionRows>()
+  for (const c of completionRows) {
+    const list = byHabit.get(c.habitId) ?? []
+    list.push(c)
+    byHabit.set(c.habitId, list)
   }
+  return { habits: habitRows.map(h => habitToWire(h, byHabit.get(h.id) ?? [])) }
 }
 
 export async function saveHabitsData(data: HabitsData): Promise<void> {
-  await verifyPermission('habit', 'write')
+  const user = await verifyPermission('habit', 'write')
+  const db = await getDb()
 
-  const user = await getCurrentUser()
-  // Create clone of input data
-  const newData = _.cloneDeep(data)
-
-  // Map habits with user IDs
-  newData.habits = newData.habits.map(habit => ({
-    ...habit,
-    userIds: habit.userIds || (user ? [user.id] : undefined)
-  }))
-
-  if (!user?.isAdmin) {
-    const existingData = await loadData<HabitsData>('habits')
-    const existingHabits = existingData.habits.filter(x => user?.id && !x.userIds?.includes(user?.id))
-    newData.habits = [
-      ...existingHabits,
-      ...newData.habits
-    ]
+  const keptIds = data.habits.map(h => h.id)
+  const scope = user.isAdmin ? undefined : eq(habits.userId, user.id)
+  const existing = scope
+    ? await db.select({ id: habits.id }).from(habits).where(scope)
+    : await db.select({ id: habits.id }).from(habits)
+  const toDelete = existing.map(r => r.id).filter(id => !keptIds.includes(id))
+  if (toDelete.length > 0) {
+    await db.delete(habits).where(inArray(habits.id, toDelete))
   }
 
-  return saveData('habits', newData)
-}
+  for (const habit of data.habits) {
+    const row = habitToRow(habit, user.id)
+    await db.insert(habits).values(row).onConflictDoUpdate({
+      target: habits.id,
+      // Never reassign ownership on update
+      set: { ...row, userId: undefined, id: undefined } as Record<string, unknown>,
+    })
 
+    // Sync completions: the wire format is an array of UTC ISO strings
+    const existingCompletions = await db.select().from(completions).where(eq(completions.habitId, habit.id))
+    const existingSet = new Set(existingCompletions.map(c => c.completedAt))
+    const newSet = new Set(habit.completions ?? [])
+    const toInsert = [...newSet].filter(ts => !existingSet.has(ts))
+    const toRemove = [...existingSet].filter(ts => !newSet.has(ts))
+    if (toRemove.length > 0) {
+      await db.delete(completions).where(and(eq(completions.habitId, habit.id), inArray(completions.completedAt, toRemove)))
+    }
+    if (toInsert.length > 0) {
+      await db.insert(completions).values(toInsert.map(ts => ({
+        habitId: habit.id,
+        userId: row.userId,
+        completedAt: ts,
+      }))).onConflictDoNothing()
+    }
+  }
+}
 
 // Coins specific functions
 export async function loadCoinsData(): Promise<CoinsData> {
-  try {
-    const user = await getCurrentUser()
-    if (!user) return getDefaultCoinsData()
-    const data = await loadData<CoinsData>('coins')
-    return {
-      ...data,
-      transactions: user.isAdmin ? data.transactions : data.transactions.filter(x => x.userId === user.id)
-    }
-  } catch {
-    return getDefaultCoinsData()
-  }
+  const user = await getCurrentUser()
+  if (!user) return getDefaultCoinsData()
+  const db = await getDb()
+  const scope = user.isAdmin ? undefined : eq(coinTransactions.userId, user.id)
+  const rows = scope
+    ? await db.select().from(coinTransactions).where(scope).orderBy(desc(coinTransactions.timestamp))
+    : await db.select().from(coinTransactions).orderBy(desc(coinTransactions.timestamp))
+  const balance = rows.reduce((sum, r) => sum + r.amount, 0)
+  return { balance, transactions: rows.map(coinTxToWire) }
 }
 
 export async function saveCoinsData(data: CoinsData): Promise<void> {
-  const user = await getCurrentUser()
+  const user = await requireUser()
+  const db = await getDb()
 
-  // Create clones of the data
-  const newData = _.cloneDeep(data)
-  newData.transactions = newData.transactions.map(transaction => ({
-    ...transaction,
-    userId: transaction.userId || user?.id
-  }))
-
-  if (!user?.isAdmin) {
-    const existingData = await loadData<CoinsData>('coins')
-    const existingTransactions = existingData.transactions.filter(x => user?.id && x.userId !== user.id)
-    newData.transactions = [
-      ...newData.transactions,
-      ...existingTransactions
-    ]
+  // Append-only sync: insert transactions we don't have yet, remove the user's
+  // transactions absent from the payload (undo removes a transaction client-side)
+  const payloadIds = data.transactions.map(t => t.id)
+  const scope = user.isAdmin ? undefined : eq(coinTransactions.userId, user.id)
+  const existing = scope
+    ? await db.select({ id: coinTransactions.id }).from(coinTransactions).where(scope)
+    : await db.select({ id: coinTransactions.id }).from(coinTransactions)
+  const existingIds = new Set(existing.map(r => r.id))
+  const toDelete = [...existingIds].filter(id => !payloadIds.includes(id))
+  if (toDelete.length > 0) {
+    await db.delete(coinTransactions).where(inArray(coinTransactions.id, toDelete))
   }
-  return saveData('coins', newData)
+  const toInsert = data.transactions.filter(t => !existingIds.has(t.id))
+  if (toInsert.length > 0) {
+    await db.insert(coinTransactions).values(toInsert.map(t => coinTxToRow(t, user.id))).onConflictDoNothing()
+  }
 }
 
 export async function addCoins({
@@ -291,9 +203,8 @@ export async function addCoins({
   note?: string
   userId?: string
 }): Promise<CoinsData> {
-  await verifyPermission('coins', type === 'MANUAL_ADJUSTMENT' ? 'write' : 'interact')
-  const currentUser = await getCurrentUser()
-  const data = await loadCoinsData()
+  const currentUser = await verifyPermission('coins', type === 'MANUAL_ADJUSTMENT' ? 'write' : 'interact')
+  const db = await getDb()
   const newTransaction: CoinTransaction = {
     id: uuid(),
     amount,
@@ -302,33 +213,10 @@ export async function addCoins({
     timestamp: d2t({ dateTime: getNow({}) }),
     ...(relatedItemId && { relatedItemId }),
     ...(note && note.trim() !== '' && { note }),
-    userId: userId || currentUser?.id
+    userId: userId || currentUser.id
   }
-
-  const newData: CoinsData = {
-    balance: data.balance + amount,
-    transactions: [newTransaction, ...data.transactions]
-  }
-
-  await saveCoinsData(newData)
-  return newData
-}
-
-export async function loadSettings(): Promise<Settings> {
-  const defaultSettings = getDefaultSettings()
-
-  try {
-    const user = await getCurrentUser()
-    if (!user) return defaultSettings
-    const data = await loadData<Settings>('settings')
-    return { ...defaultSettings, ...data }
-  } catch {
-    return defaultSettings
-  }
-}
-
-export async function saveSettings(settings: Settings): Promise<void> {
-  return saveData('settings', settings)
+  await db.insert(coinTransactions).values(coinTxToRow(newTransaction, currentUser.id))
+  return loadCoinsData()
 }
 
 export async function removeCoins({
@@ -346,30 +234,34 @@ export async function removeCoins({
   note?: string
   userId?: string
 }): Promise<CoinsData> {
-  await verifyPermission('coins', type === 'MANUAL_ADJUSTMENT' ? 'write' : 'interact')
-  const currentUser = await getCurrentUser()
-  const data = await loadCoinsData()
-  const newTransaction: CoinTransaction = {
-    id: uuid(),
-    amount: -amount,
-    type,
-    description,
-    timestamp: d2t({ dateTime: getNow({}) }),
-    ...(relatedItemId && { relatedItemId }),
-    ...(note && note.trim() !== '' && { note }),
-    userId: userId || currentUser?.id
-  }
+  return addCoins({ amount: -amount, description, type, relatedItemId, note, userId })
+}
 
-  const newData: CoinsData = {
-    balance: Math.max(0, data.balance - amount),
-    transactions: [newTransaction, ...data.transactions]
+export async function loadSettings(): Promise<Settings> {
+  const defaultSettings = getDefaultSettings()
+  try {
+    const user = await getCurrentUser()
+    if (!user) return defaultSettings
+    const db = await getDb()
+    const rows = await db.select().from(userSettings).where(eq(userSettings.userId, user.id)).limit(1)
+    if (!rows[0]) return defaultSettings
+    return { ...defaultSettings, ...(rows[0].data as Settings) }
+  } catch {
+    return defaultSettings
   }
+}
 
-  await saveCoinsData(newData)
-  return newData
+export async function saveSettings(settings: Settings): Promise<void> {
+  const user = await requireUser()
+  const db = await getDb()
+  await db.insert(userSettings).values({ userId: user.id, data: settings }).onConflictDoUpdate({
+    target: userSettings.userId,
+    set: { data: settings },
+  })
 }
 
 export async function uploadAvatar(formData: FormData): Promise<string> {
+  const user = await requireUser()
   const file = formData.get('avatar') as File
   if (!file) throw new Error('No file provided')
 
@@ -387,19 +279,13 @@ export async function uploadAvatar(formData: FormData): Promise<string> {
     throw new Error('Unsupported avatar file extension')
   }
 
-  // Create avatars directory if it doesn't exist
-  const avatarsDir = path.join(getDataDir(), 'avatars')
-  await fs.mkdir(avatarsDir, { recursive: true })
+  const id = uuid()
+  const buffer = Buffer.from(await file.arrayBuffer())
+  const db = await getDb()
+  await db.insert(avatars).values({ id, userId: user.id, mimeType, data: buffer })
 
-  // Generate unique filename
-  const filename = `${Date.now()}-${uuid()}${ext}`
-  const filePath = path.join(avatarsDir, filename)
-
-  // Save file
-  const buffer = await file.arrayBuffer()
-  await fs.writeFile(filePath, Buffer.from(buffer))
-
-  return `/data/avatars/${filename}`
+  // Convention consumed by the UI: last path segment is requested at /api/avatars/<segment>
+  return `/data/avatars/${id}${ext}`
 }
 
 export async function getChangelog(): Promise<string> {
@@ -414,11 +300,9 @@ export async function getChangelog(): Promise<string> {
 
 // user logic
 async function loadUsersData(): Promise<UserData> {
-  try {
-    return await loadData<UserData>('auth')
-  } catch {
-    return getDefaultUsersData()
-  }
+  const db = await getDb()
+  const rows = await db.select().from(users)
+  return { users: rows.map(userToWire) }
 }
 
 export async function loadUsersPublicData(): Promise<PublicUserData> {
@@ -426,61 +310,79 @@ export async function loadUsersPublicData(): Promise<PublicUserData> {
   return sanitizeUserData(data)
 }
 
-export async function saveUsersData(data: UserData): Promise<void> {
-  return saveData('auth', data)
-}
-
 export async function findOrCreateOAuthUser(oauthId: string, provider: 'google', email?: string, name?: string): Promise<User | null> {
-  const data = await loadUsersData()
+  const db = await getDb()
 
   // Find by oauthId + provider
-  let user = data.users.find(u => u.oauthId === oauthId && u.oauthProvider === provider)
+  const byOauth = await db.select().from(users)
+    .where(and(eq(users.oauthId, oauthId), eq(users.oauthProvider, provider))).limit(1)
+  if (byOauth[0]) return userToWire(byOauth[0])
 
-  // If not found, try to link by email to an existing account
-  if (!user && email) {
-    user = data.users.find(u => u.email === email)
-    if (user) {
-      user.oauthId = oauthId
-      user.oauthProvider = provider
-      await saveUsersData(data)
+  // Link by email to an existing account
+  if (email) {
+    const byEmail = await db.select().from(users).where(eq(users.email, email)).limit(1)
+    if (byEmail[0]) {
+      await db.update(users)
+        .set({ oauthId, oauthProvider: provider })
+        .where(eq(users.id, byEmail[0].id))
+      return userToWire({ ...byEmail[0], oauthId, oauthProvider: provider })
     }
   }
 
-  // Create a new user
-  if (!user) {
-    const isFirstUser = data.users.length === 0
-    const baseUsername = name?.replace(/\s+/g, '_').toLowerCase() || email?.split('@')[0] || 'user'
-    // Ensure unique username
-    let username = baseUsername
-    let suffix = 1
-    while (data.users.some(u => u.username === username)) {
-      username = `${baseUsername}_${suffix++}`
-    }
-    user = {
-      id: uuid(),
-      username,
-      email,
-      oauthProvider: provider,
-      oauthId,
-      isAdmin: isFirstUser,
-    }
-    data.users.push(user)
-    await saveUsersData(data)
+  // Create a new user; the first user ever becomes admin
+  const [{ count }] = await db.select({ count: sql<number>`count(*)::int` }).from(users)
+  const isFirstUser = Number(count) === 0
+  const baseUsername = name?.replace(/\s+/g, '_').toLowerCase() || email?.split('@')[0] || 'user'
+  let username = baseUsername
+  let suffix = 1
+  while ((await db.select({ id: users.id }).from(users).where(eq(users.username, username)).limit(1)).length > 0) {
+    username = `${baseUsername}_${suffix++}`
+  }
+  const newUser: typeof users.$inferInsert = {
+    id: uuid(),
+    username,
+    email: email ?? null,
+    oauthProvider: provider,
+    oauthId,
+    isAdmin: isFirstUser,
+  }
+  const inserted = await db.insert(users).values(newUser).returning()
+  return userToWire(inserted[0])
+}
+
+// Public self-serve signup from the login page. The first account ever created
+// becomes the admin.
+export async function registerUser(username: string, password: string): Promise<{ success: boolean; message: string }> {
+  const parsed = await signUpSchema.safeParseAsync({ username, password })
+  if (!parsed.success) {
+    return { success: false, message: parsed.error.issues[0]?.message ?? 'Invalid username or password' }
   }
 
-  return user
+  const db = await getDb()
+  const dup = await db.select({ id: users.id }).from(users).where(eq(users.username, username)).limit(1)
+  if (dup.length > 0) {
+    return { success: false, message: 'Username already taken' }
+  }
+
+  const [{ count }] = await db.select({ count: sql<number>`count(*)::int` }).from(users)
+  const isFirstUser = Number(count) === 0
+
+  await db.insert(users).values({
+    id: uuid(),
+    username,
+    password: saltAndHashPassword(password),
+    isAdmin: isFirstUser,
+  })
+  return { success: true, message: 'Account created' }
 }
 
 export async function getUser(username: string, plainTextPassword?: string): Promise<User | null> {
-  const data = await loadUsersData()
-
-  const user = data.users.find(user => user.username === username)
-  if (!user) return null
-
-  // Verify the plaintext password against the stored salt:hash
+  const db = await getDb()
+  const rows = await db.select().from(users).where(eq(users.username, username)).limit(1)
+  if (!rows[0]) return null
+  const user = userToWire(rows[0])
   const isValidPassword = verifyPassword(plainTextPassword, user.password)
   if (!isValidPassword) return null
-
   return user
 }
 
@@ -493,223 +395,81 @@ export async function createUser(formData: FormData): Promise<PublicUser> {
     undefined;
 
   if (password === null) password = undefined
-  // Validate username and password against schema
   await signInSchema.parseAsync({ username, password });
 
-  const data = await loadUsersData();
-
-  // Check if username already exists
-  if (data.users.some(user => user.username === username)) {
+  const db = await getDb()
+  const dup = await db.select({ id: users.id }).from(users).where(eq(users.username, username)).limit(1)
+  if (dup.length > 0) {
     throw new Error('Username already exists');
   }
 
+  const [{ count }] = await db.select({ count: sql<number>`count(*)::int` }).from(users)
+  const isFirstUser = Number(count) === 0
   const hashedPassword = password ? saltAndHashPassword(password) : undefined;
 
-
-  const newUser: User = {
+  const inserted = await db.insert(users).values({
     id: uuid(),
     username,
-    password: hashedPassword,
-    permissions,
-    isAdmin: false,
-    lastNotificationReadTimestamp: undefined,
-    ...(avatarPath && { avatarPath })
-  };
+    password: hashedPassword ?? null,
+    permissions: permissions ?? null,
+    isAdmin: isFirstUser,
+    avatarPath: avatarPath || null,
+  }).returning()
 
-  const newData: UserData = {
-    users: [...data.users, newUser]
-  };
-
-  await saveUsersData(newData);
-  return sanitizeUserData({ users: [newUser] }).users[0]
+  return sanitizeUserData({ users: [userToWire(inserted[0])] }).users[0]
 }
 
 export async function updateUser(userId: string, updates: Partial<Omit<User, 'id' | 'password'>>): Promise<PublicUser> {
-  const data = await loadUsersData()
-  const userIndex = data.users.findIndex(user => user.id === userId)
+  const db = await getDb()
+  const rows = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+  if (!rows[0]) throw new Error('User not found')
 
-  if (userIndex === -1) {
-    throw new Error('User not found')
-  }
-
-  // If username is being updated, check for duplicates
   if (updates.username) {
-    const isDuplicate = data.users.some(
-      user => user.username === updates.username && user.id !== userId
-    )
-    if (isDuplicate) {
+    const dup = await db.select({ id: users.id }).from(users).where(eq(users.username, updates.username)).limit(1)
+    if (dup.length > 0 && dup[0].id !== userId) {
       throw new Error('Username already exists')
     }
   }
 
-  const updatedUser = {
-    ...data.users[userIndex],
-    ...updates
-  }
+  const set: Partial<typeof users.$inferInsert> = {}
+  if (updates.username !== undefined) set.username = updates.username
+  if (updates.avatarPath !== undefined) set.avatarPath = updates.avatarPath
+  if (updates.permissions !== undefined) set.permissions = updates.permissions
+  if (updates.isAdmin !== undefined) set.isAdmin = updates.isAdmin
+  if (updates.email !== undefined) set.email = updates.email
+  if (updates.lastNotificationReadTimestamp !== undefined) set.lastNotificationReadTimestamp = updates.lastNotificationReadTimestamp
 
-  const newData: UserData = {
-    users: [
-      ...data.users.slice(0, userIndex),
-      updatedUser,
-      ...data.users.slice(userIndex + 1)
-    ]
-  }
-
-  await saveUsersData(newData)
-  return sanitizeUserData({ users: [updatedUser] }).users[0]
+  const updated = await db.update(users).set(set).where(eq(users.id, userId)).returning()
+  return sanitizeUserData({ users: [userToWire(updated[0])] }).users[0]
 }
 
 export async function updateUserPassword(userId: string, newPassword?: string): Promise<void> {
-  const data = await loadUsersData()
-  const userIndex = data.users.findIndex(user => user.id === userId)
-
-  if (userIndex === -1) {
-    throw new Error('User not found')
-  }
-
-  const hashedPassword = newPassword ? saltAndHashPassword(newPassword) : ''
-
-  const updatedUser = {
-    ...data.users[userIndex],
-    password: hashedPassword
-  }
-
-  const newData: UserData = {
-    users: [
-      ...data.users.slice(0, userIndex),
-      updatedUser,
-      ...data.users.slice(userIndex + 1)
-    ]
-  }
-
-  await saveUsersData(newData)
+  const db = await getDb()
+  const hashedPassword = newPassword ? saltAndHashPassword(newPassword) : null
+  const updated = await db.update(users).set({ password: hashedPassword }).where(eq(users.id, userId)).returning({ id: users.id })
+  if (updated.length === 0) throw new Error('User not found')
 }
 
 export async function deleteUser(userId: string): Promise<void> {
-  // Load all necessary data
-  const wishlistData = await loadData<WishlistData>('wishlist')
-  const habitsData = await loadData<HabitsData>('habits')
-  const coinsData = await loadData<CoinsData>('coins')
-  const authData = await loadUsersData()
-
-  // Process Wishlist Data
-  const updatedWishlistItems = wishlistData.items.reduce((acc, item) => {
-    if (item.userIds?.includes(userId)) {
-      if (item.userIds.length === 1) {
-        // Remove item if this is the only user
-        return acc
-      } else {
-        // Remove userId from item's userIds
-        acc.push({
-          ...item,
-          userIds: item.userIds.filter(id => id !== userId)
-        })
-      }
-    } else {
-      // Keep item as is
-      acc.push(item)
-    }
-    return acc
-  }, [] as WishlistItemType[])
-  wishlistData.items = updatedWishlistItems
-  await saveData('wishlist', wishlistData)
-
-  // Process Habits Data
-  const updatedHabits = habitsData.habits.reduce((acc, habit) => {
-    if (habit.userIds?.includes(userId)) {
-      if (habit.userIds.length === 1) {
-        // Remove habit if this is the only user
-        return acc
-      } else {
-        // Remove userId from habit's userIds
-        acc.push({
-          ...habit,
-          userIds: habit.userIds.filter(id => id !== userId)
-        })
-      }
-    } else {
-      // Keep habit as is
-      acc.push(habit)
-    }
-    return acc
-  }, [] as HabitsData['habits'])
-  habitsData.habits = updatedHabits
-  await saveData('habits', habitsData)
-
-  // Process Coins Data
-  coinsData.transactions = coinsData.transactions.filter(
-    transaction => transaction.userId !== userId
-  )
-  // Recalculate balance
-  coinsData.balance = coinsData.transactions.reduce(
-    (sum, transaction) => sum + transaction.amount,
-    0
-  )
-  await saveData('coins', coinsData)
-
-  // Delete User from Auth Data
-  const userIndex = authData.users.findIndex(user => user.id === userId)
-
-  if (userIndex === -1) {
-    throw new Error('User not found')
-  }
-
-  authData.users = [
-    ...authData.users.slice(0, userIndex),
-    ...authData.users.slice(userIndex + 1)
-  ]
-
-  await saveUsersData(authData)
+  const db = await getDb()
+  // All user-owned rows (habits, completions, coins, xp, boss, pet, guild
+  // membership, settings, avatars, push subscriptions, retention rows) are
+  // removed via ON DELETE CASCADE foreign keys.
+  const deleted = await db.delete(users).where(eq(users.id, userId)).returning({ id: users.id })
+  if (deleted.length === 0) throw new Error('User not found')
 }
 
 export async function updateLastNotificationReadTimestamp(userId: string, timestamp: string): Promise<void> {
-  const data = await loadUsersData()
-  const userIndex = data.users.findIndex(user => user.id === userId)
-
-  if (userIndex === -1) {
-    throw new Error('User not found for updating notification timestamp')
-  }
-
-  const updatedUser = {
-    ...data.users[userIndex],
-    lastNotificationReadTimestamp: timestamp
-  }
-
-  const newData: UserData = {
-    users: [
-      ...data.users.slice(0, userIndex),
-      updatedUser,
-      ...data.users.slice(userIndex + 1)
-    ]
-  }
-
-  await saveUsersData(newData)
+  const db = await getDb()
+  const updated = await db.update(users)
+    .set({ lastNotificationReadTimestamp: timestamp })
+    .where(eq(users.id, userId))
+    .returning({ id: users.id })
+  if (updated.length === 0) throw new Error('User not found for updating notification timestamp')
 }
-
 
 export async function loadServerSettings(): Promise<ServerSettings> {
   return {
     isDemo: !!process.env.DEMO,
-  }
-}
-
-/**
- * Checks if the client's data is fresh by comparing its token with the server's token.
- * @param clientToken The freshness token calculated by the client.
- * @returns A promise that resolves to an object { isFresh: boolean }.
- */
-export async function checkDataFreshness(clientToken: string): Promise<{ isFresh: boolean }> {
-  try {
-    const serverToken = await calculateServerFreshnessToken();
-    const isFresh = clientToken === serverToken;
-    if (!isFresh) {
-      console.log(`Data freshness check: Stale. Client token: ${clientToken}, Server token: ${serverToken}`);
-    }
-    return { isFresh };
-  } catch (error) {
-    console.error("Error in checkDataFreshness:", error);
-    // If server fails to determine its token, assume client might be stale to be safe,
-    // or handle error reporting differently.
-    return { isFresh: false };
   }
 }
