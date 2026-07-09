@@ -24,6 +24,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
+# Enables output:'standalone' in next.config.ts (required by the runner stage below)
+ARG DOCKER_BUILD=1
+ENV DOCKER_BUILD=$DOCKER_BUILD
 
 # Use cache mount for Next.js cache
 RUN --mount=type=cache,target=/app/.next/cache \

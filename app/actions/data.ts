@@ -61,7 +61,7 @@ function getDefaultData<T>(type: DataType): T {
 function getDataDir(): string {
   // Vercel filesystem is read-only; use /tmp for writable storage
   if (process.env.VERCEL) return '/tmp/data'
-  return path.join(getDataDir())
+  return path.join(process.cwd(), 'data')
 }
 
 async function ensureDataDir() {

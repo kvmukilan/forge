@@ -37,9 +37,7 @@ export function saltAndHashPassword(password: string, salt?: string): string {
 }
 
 export function verifyPassword(password?: string, storedHash?: string): boolean {
-  // if both password and storedHash is undefined, return true
-  if (!password && !storedHash) return true
-  // else if either password or storedHash is undefined, return false
+  // Accounts without a stored hash (e.g. OAuth-created) cannot sign in with credentials
   if (!password || !storedHash) return false
 
   // Split the stored hash into its salt and hash components

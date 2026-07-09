@@ -3,6 +3,9 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // Standalone output is required by the Dockerfile but breaks Vercel deploys,
+  // so it is only enabled when building the Docker image (see docker-build script)
+  output: process.env.DOCKER_BUILD ? 'standalone' : undefined,
   serverExternalPackages: ['archiver', 'archiver-utils', 'glob', 'path-scurry'],
   webpack: (config) => {
     if (config.cache && typeof config.cache === 'object') {

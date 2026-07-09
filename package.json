@@ -9,7 +9,7 @@
     "lint": "next lint",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "docker-build": "docker build -t forge .",
+    "docker-build": "DOCKER_BUILD=1 docker build -t forge --build-arg DOCKER_BUILD=1 .",
     "docker-run": "docker run -p 3000:3000 -v $(pwd)/data:/app/data forge",
     "prepare": "husky",
     "setup:dev": "if ! command -v bun > /dev/null; then echo 'Installing bun...'; curl -fsSL https://bun.sh/install | bash; fi && npm install --force && npm run typecheck && npm run lint"
