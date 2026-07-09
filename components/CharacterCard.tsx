@@ -1,9 +1,10 @@
 'use client'
 
 import { useAtomValue } from 'jotai'
-import { currentLevelAtom, xpProgressAtom, maxStreakAtom, xpEarnedTodayAtom, xpAtom } from '@/lib/gamification-atoms'
+import { currentLevelAtom, xpProgressAtom, maxStreakAtom, xpEarnedTodayAtom, xpAtom, shieldsAtom } from '@/lib/gamification-atoms'
 import { currentUserAtom, coinsAtom } from '@/lib/atoms'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Shield } from 'lucide-react'
 import LevelUpModal from './LevelUpModal'
 
 export default function CharacterCard() {
@@ -11,6 +12,7 @@ export default function CharacterCard() {
   const level = useAtomValue(currentLevelAtom)
   const progress = useAtomValue(xpProgressAtom)
   const maxStreak = useAtomValue(maxStreakAtom)
+  const shields = useAtomValue(shieldsAtom)
   const xpToday = useAtomValue(xpEarnedTodayAtom)
   const coinsData = useAtomValue(coinsAtom)
   const xpData = useAtomValue(xpAtom)
@@ -53,7 +55,21 @@ export default function CharacterCard() {
         <div className="grid grid-cols-4 gap-2 pt-3 border-t border-border">
           {[
             { label: 'Level', value: level, color: 'text-primary' },
-            { label: 'Streak', value: `${maxStreak}d`, color: 'text-primary' },
+            {
+              label: 'Streak',
+              value: (
+                <span className="inline-flex items-center gap-1">
+                  {maxStreak}d
+                  {shields > 0 && (
+                    <span className="inline-flex items-center text-xs font-bold text-sky-400" title={`${shields} streak shield${shields > 1 ? 's' : ''} active`}>
+                      <Shield className="h-3.5 w-3.5 fill-current" />
+                      {shields > 1 && <span className="ml-0.5">{shields}</span>}
+                    </span>
+                  )}
+                </span>
+              ),
+              color: 'text-primary',
+            },
             { label: 'Coins', value: balance.toLocaleString(), color: 'text-amber-400' },
             { label: 'XP Today', value: `+${xpToday}`, color: 'text-emerald-400' },
           ].map(({ label, value, color }) => (

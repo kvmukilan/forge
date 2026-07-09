@@ -137,7 +137,7 @@ export function useHabits() {
       playSound()
 
       // Award XP (with boost multiplier + season + skill)
-      const streak = calculateStreak(habit, settings.system.timezone)
+      const streak = calculateStreak(habit, settings.system.timezone, xpData.shieldUsedDates)
       const baseXP = calculateHabitXP(habit)
       const bonusXP = streak >= 7 ? Math.round(baseXP * 0.5) : 0
       const xpAmount = Math.round((hasXPBoost ? (baseXP + bonusXP) * 2 : (baseXP + bonusXP)) * keystoneMultiplier * seasonXPMultiplier * skillXPMultiplier)
@@ -188,7 +188,7 @@ export function useHabits() {
       }
 
       // Streak milestone check
-      const newStreak = calculateStreak(updatedHabit, settings.system.timezone)
+      const newStreak = calculateStreak(updatedHabit, settings.system.timezone, xpData.shieldUsedDates)
       const milestone = getStreakMilestone(newStreak)
       if (milestone) {
         const milestoneXP = await claimStreakMilestone(habit.id, milestone.days, milestone.coins)

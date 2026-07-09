@@ -2,7 +2,7 @@
 
 import { useAtomValue } from 'jotai'
 import { currentSeasonAtom, xpAtom } from '@/lib/gamification-atoms'
-import { SEASONS, getDaysRemainingInSeason, Season } from '@/lib/seasons'
+import { getSeasonTimeline, getDaysRemainingInSeason, Season } from '@/lib/seasons'
 import { Calendar, Trophy } from 'lucide-react'
 
 function SeasonLeaderboard({ season }: { season: Season }) {
@@ -99,9 +99,9 @@ export default function SeasonPage() {
 
       {/* Past Seasons */}
       <div>
-        <p className="section-label mb-3">All Seasons</p>
+        <p className="section-label mb-3">Season Timeline</p>
         <div className="space-y-2">
-          {SEASONS.map(s => (
+          {getSeasonTimeline().map(s => (
             <div key={s.id} className={`glass-card p-3 flex items-center gap-3 ${s.id === season.id ? 'border-primary/40' : 'opacity-60'}`}>
               <span className="text-lg">{s.emoji}</span>
               <div className="flex-1">

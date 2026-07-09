@@ -1,6 +1,6 @@
 import { atom } from 'jotai'
 import { XPData, ProjectsData, BossData, GuildData, PetData, getDefaultXPData, getDefaultProjectsData, getDefaultBossData, getDefaultGuildData, getDefaultPetData } from '@/lib/types'
-import { getLevelFromXP, getXPProgress, calculateStreak, getMaxStreak, generateDailyChallenge, computeWeeklyDNA, StreakMilestone } from '@/lib/gamification'
+import { getLevelFromXP, getXPProgress, calculateStreak, generateDailyChallenge, computeWeeklyDNA, StreakMilestone } from '@/lib/gamification'
 import { habitsAtom, settingsAtom, coinsAtom } from '@/lib/atoms'
 import { DateTime } from 'luxon'
 
@@ -15,9 +15,10 @@ export const xpProgressAtom = atom(get => getXPProgress(get(xpAtom).totalXP))
 export const habitStreaksAtom = atom(get => {
   const habits = get(habitsAtom).habits
   const timezone = get(settingsAtom).system.timezone
+  const shieldedDates = get(xpAtom).shieldUsedDates ?? []
   const map = new Map<string, number>()
   habits.filter(h => !h.isTask && !h.archived).forEach(h => {
-    map.set(h.id, calculateStreak(h, timezone))
+    map.set(h.id, calculateStreak(h, timezone, shieldedDates))
   })
   return map
 })

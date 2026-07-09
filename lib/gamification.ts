@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { Habit, XPData, Boss } from '@/lib/types'
+import { Habit, Boss } from '@/lib/types'
 
 // --- XP Calculations ---
 export function calculateHabitXP(habit: Habit): number {
@@ -40,10 +40,11 @@ export function getXPProgress(totalXP: number): { current: number; needed: numbe
 }
 
 // --- Streak Calculation ---
-export function calculateStreak(habit: Habit, timezone: string): number {
+export function calculateStreak(habit: Habit, timezone: string, shieldedDates?: string[]): number {
   if (habit.isTask || habit.archived || !habit.completions.length) return 0
 
   const target = habit.targetCompletions ?? 1
+  const shielded = new Set(shieldedDates ?? [])
 
   // Count completions per day
   const countsByDay = new Map<string, number>()
@@ -73,6 +74,9 @@ export function calculateStreak(habit: Habit, timezone: string): number {
     if (fullyCompleted.has(dateStr)) {
       streak++
       cursor = cursor.minus({ days: 1 })
+    } else if (shielded.has(dateStr)) {
+      // A streak shield covers this day: the streak survives but the day adds no count
+      cursor = cursor.minus({ days: 1 })
     } else {
       break
     }
@@ -81,8 +85,8 @@ export function calculateStreak(habit: Habit, timezone: string): number {
   return streak
 }
 
-export function getMaxStreak(habits: Habit[], timezone: string): number {
-  return Math.max(0, ...habits.filter(h => !h.isTask && !h.archived).map(h => calculateStreak(h, timezone)))
+export function getMaxStreak(habits: Habit[], timezone: string, shieldedDates?: string[]): number {
+  return Math.max(0, ...habits.filter(h => !h.isTask && !h.archived).map(h => calculateStreak(h, timezone, shieldedDates)))
 }
 
 // --- Daily Challenge ---
