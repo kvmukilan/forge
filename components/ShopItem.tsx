@@ -1,5 +1,7 @@
 'use client'
 
+import { Coins } from 'lucide-react'
+
 interface ShopItemProps {
   emoji: string
   name: string
@@ -16,7 +18,7 @@ export default function ShopItem({ emoji, name, description, cost, badge, onBuy,
       <div className="flex items-start justify-between">
         <div className="text-3xl">{emoji}</div>
         {badge && (
-          <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-400 border border-violet-500/20 font-semibold">
+          <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold">
             {badge}
           </span>
         )}
@@ -28,9 +30,9 @@ export default function ShopItem({ emoji, name, description, cost, badge, onBuy,
       <button
         onClick={onBuy}
         disabled={disabled}
-        className="w-full py-2 rounded-lg bg-gradient-to-r from-amber-500/80 to-orange-500/80 hover:from-amber-500 hover:to-orange-500 disabled:opacity-40 disabled:cursor-not-allowed text-black font-bold text-xs transition-all flex items-center justify-center gap-1.5"
+        className="w-full py-2 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed text-primary-foreground font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
       >
-        🪙 {cost} coins
+        <Coins className="h-3.5 w-3.5" /> {cost} coins
       </button>
     </div>
   )

@@ -67,15 +67,15 @@ export default function SkillsPage() {
                             : 'border-border/30 bg-card/50 opacity-50'
                       )}>
                         <div className="text-lg mb-1">{node.emoji}</div>
-                        <p className={cn('text-[10px] font-bold', isUnlocked ? 'text-primary' : 'text-foreground')}>{node.name}</p>
-                        <p className="text-[9px] text-muted-foreground mt-0.5">{node.requiredCompletions} habits</p>
+                        <p className={cn('text-xs font-bold', isUnlocked ? 'text-primary' : 'text-foreground')}>{node.name}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{node.requiredCompletions} habits</p>
                         {isInProgress && !isUnlocked && (
-                          <div className="mt-1.5 h-1 rounded-full bg-white/5 overflow-hidden">
+                          <div className="mt-1.5 h-1 rounded-full bg-secondary overflow-hidden">
                             <div className="h-full bg-primary rounded-full" style={{ width: `${Math.min(100, pct)}%` }} />
                           </div>
                         )}
                         {isUnlocked && (
-                          <p className="text-[9px] text-primary font-bold mt-1">+{node.xpBonusPct}% XP</p>
+                          <p className="text-xs text-primary font-bold mt-1">+{node.xpBonusPct}% XP</p>
                         )}
                       </div>
                       {i < nodes.length - 1 && (

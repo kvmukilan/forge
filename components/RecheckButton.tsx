@@ -13,7 +13,7 @@ export default function RecheckButton() {
       onClick={handleRecheck}
       variant="outline" 
       size="sm"
-      className="bg-red-50 border-red-300 text-red-700 hover:bg-red-100"
+      className="rounded-lg bg-destructive/10 border-destructive/40 text-red-400 hover:bg-destructive/20 hover:text-red-400"
     >
       <RefreshCw className="h-4 w-4 mr-2" />
       Recheck

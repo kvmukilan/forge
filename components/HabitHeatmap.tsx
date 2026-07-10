@@ -46,8 +46,8 @@ export default function HabitHeatmap({ habit, timezone }: HabitHeatmapProps) {
 
   const getColor = (count: number) => {
     if (count === 0) return 'bg-muted/40'
-    if (count >= target) return 'bg-green-500 dark:bg-green-400'
-    return 'bg-green-800/60 dark:bg-green-700/60'
+    if (count >= target) return 'bg-primary'
+    return 'bg-primary/40'
   }
 
   return (

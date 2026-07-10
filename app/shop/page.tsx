@@ -6,7 +6,7 @@ import { coinsAtom } from '@/lib/atoms'
 import ShopItem from '@/components/ShopItem'
 import { buyStreakShield, buyBoost } from '@/app/actions/gamification'
 import { toast } from '@/hooks/use-toast'
-import { ShoppingBag } from 'lucide-react'
+import { ShoppingBag, Coins, Gem, Shield } from 'lucide-react'
 
 export default function ShopPage() {
   const [xpData, setXPData] = useAtom(xpAtom)
@@ -46,22 +46,22 @@ export default function ShopPage() {
   return (
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-amber-500/20 border border-amber-500/20">
-          <ShoppingBag className="h-5 w-5 text-amber-400" />
+        <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20">
+          <ShoppingBag className="h-5 w-5 text-primary" />
         </div>
         <div>
           <h1 className="text-2xl font-bold">Power-Up Shop</h1>
           <p className="text-sm text-muted-foreground">Spend coins to boost your progress</p>
         </div>
         <div className="ml-auto flex items-center gap-3 text-sm">
-          <span className="text-amber-400 font-bold">🪙 {Math.max(0, balance)}</span>
-          <span className="text-cyan-400 font-bold">💎 {gems}</span>
-          <span className="text-blue-400 font-bold">🛡️ {shields}/3</span>
+          <span className="text-amber-400 font-bold inline-flex items-center gap-1"><Coins className="h-4 w-4" /> {Math.max(0, balance)}</span>
+          <span className="text-primary font-bold inline-flex items-center gap-1"><Gem className="h-4 w-4" /> {gems}</span>
+          <span className="text-sky-400 font-bold inline-flex items-center gap-1"><Shield className="h-4 w-4" /> {shields}/3</span>
         </div>
       </div>
 
       <div>
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Protection</h2>
+        <h2 className="section-label mb-3">Protection</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <ShopItem
             emoji="🛡️"
@@ -76,7 +76,7 @@ export default function ShopPage() {
       </div>
 
       <div>
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+        <h2 className="section-label mb-3">
           Boosts (Time-Limited)
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

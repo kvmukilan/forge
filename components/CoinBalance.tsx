@@ -18,10 +18,10 @@ export default function CoinBalance({ coinBalance }: { coinBalance: number }) {
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-center">
-          <Coins className="h-12 w-12 text-yellow-400 mr-4" />
+          <Coins className="h-12 w-12 text-amber-400 mr-4" />
           <div className="flex flex-col">
             <div className="flex flex-col">
-              <span className="text-4xl font-bold">
+              <span className="stat-number">
                 <FormattedNumber amount={coinBalance} settings={settings} />
               </span>
               <div className="flex items-center gap-1">

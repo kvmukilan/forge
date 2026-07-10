@@ -43,7 +43,7 @@ export default function HabitCalendar() {
 
   return (
     <div>
-      <h1 className="text-xl xs:text-3xl font-semibold mb-6">{t('title')}</h1>
+      <h1 className="page-title mb-6">{t('title')}</h1>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -55,7 +55,7 @@ export default function HabitCalendar() {
               selected={selectedDateTime.toJSDate()}
               onSelect={(e) => e && setSelectedDateTime(DateTime.fromJSDate(e))}
               weekStartsOn={settings.system.weekStartDay}
-              className="rounded-md border"
+              className="rounded-lg border"
               modifiers={{
                 completed: (date) => completedDates.has(
                   getISODate({
@@ -65,7 +65,7 @@ export default function HabitCalendar() {
                 )
               }}
               modifiersClassNames={{
-                completed: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 font-medium rounded-md',
+                completed: 'bg-emerald-500/15 text-emerald-400 font-medium rounded-lg',
               }}
             />
           </CardContent>
@@ -117,12 +117,12 @@ export default function HabitCalendar() {
                                     className="relative h-4 w-4 hover:opacity-70 transition-opacity disabled:opacity-100"
                                   >
                                     {isCompleted ? (
-                                      <CircleCheck className="h-4 w-4 text-green-500" />
+                                      <CircleCheck className="h-4 w-4 text-emerald-500" />
                                     ) : (
                                       <div className="relative h-4 w-4">
                                         <Circle className="absolute h-4 w-4 text-muted-foreground" />
                                         <div
-                                          className="absolute h-4 w-4 rounded-full overflow-hidden"
+                                          className="absolute h-4 w-4 rounded-full overflow-hidden text-primary"
                                           style={{
                                             background: `conic-gradient(
                                               currentColor ${(completions / (habit.targetCompletions ?? 1)) * 360}deg,
@@ -176,12 +176,12 @@ export default function HabitCalendar() {
                                   className="relative h-4 w-4 hover:opacity-70 transition-opacity disabled:opacity-100"
                                 >
                                   {isCompleted ? (
-                                    <CircleCheck className="h-4 w-4 text-green-500" />
+                                    <CircleCheck className="h-4 w-4 text-emerald-500" />
                                   ) : (
                                     <div className="relative h-4 w-4">
                                       <Circle className="absolute h-4 w-4 text-muted-foreground" />
                                       <div
-                                        className="absolute h-4 w-4 rounded-full overflow-hidden"
+                                        className="absolute h-4 w-4 rounded-full overflow-hidden text-primary"
                                         style={{
                                           background: `conic-gradient(
                                         currentColor ${(completions / (habit.targetCompletions ?? 1)) * 360}deg,

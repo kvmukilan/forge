@@ -1,4 +1,4 @@
-import { Circle, Coins, ArrowRight, CircleCheck, ChevronDown, ChevronUp, Plus, Pin, AlertTriangle } from 'lucide-react' // Removed unused icons
+import { Circle, Coins, ArrowRight, CircleCheck, CheckCheck, ChevronDown, ChevronUp, Plus, Pin, AlertTriangle } from 'lucide-react'
 import CompletionCountBadge from './CompletionCountBadge'
 import {
   ContextMenu,
@@ -11,7 +11,7 @@ import { useState } from 'react'
 import { useAtom } from 'jotai'
 import { useTranslations } from 'next-intl'
 import { pomodoroAtom, settingsAtom, completedHabitsMapAtom, browserSettingsAtom, hasTasksAtom } from '@/lib/atoms'
-import { getTodayInTimezone, isSameDate, t2d, d2t, getNow, isHabitDue, isTaskOverdue } from '@/lib/utils'
+import { getTodayInTimezone, isSameDate, t2d, d2t, getNow, isHabitDue, isTaskOverdue, getCompletionsForDate } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -177,7 +177,7 @@ const ItemSection = ({
             const isCompleted = completionsToday >= target || (isTask && habit.archived)
             return (
               <li
-                className={`flex items-center justify-between text-sm p-2 rounded-md
+                className={`flex items-center justify-between text-sm p-2 rounded-lg
                 ${isCompleted ? 'bg-secondary/50' : 'bg-secondary/20'}`}
                 key={habit.id}
               >
@@ -199,12 +199,12 @@ const ItemSection = ({
                             className="relative hover:opacity-70 transition-opacity w-4 h-4"
                           >
                             {isCompleted ? (
-                              <CircleCheck className="h-4 w-4 text-green-500" />
+                              <CircleCheck className="h-4 w-4 text-emerald-500" />
                             ) : (
                               <div className="relative h-4 w-4">
                                 <Circle className="absolute h-4 w-4 text-muted-foreground" />
                                 <div
-                                  className="absolute h-4 w-4 rounded-full overflow-hidden"
+                                  className="absolute h-4 w-4 rounded-full overflow-hidden text-primary"
                                   style={{
                                     background: `conic-gradient(
                                   currentColor ${(completionsToday / target) * 360}deg,
@@ -220,7 +220,7 @@ const ItemSection = ({
                         </div>
                         <span className="flex items-center gap-1">
                           {habit.pinned && (
-                            <Pin className="h-4 w-4 text-yellow-500" />
+                            <Pin className="h-4 w-4 text-muted-foreground" />
                           )}
                           <Link
                             href={`/habits?highlight=${habit.id}`}
@@ -237,7 +237,7 @@ const ItemSection = ({
                                 <Tooltip delayDuration={0}>
                                   <TooltipTrigger asChild>
                                     {/* The AlertTriangle itself doesn't need hover styles if the parent Link handles it */}
-                                    <AlertTriangle className="h-4 w-4 flex-shrink-0 text-red-600 dark:text-red-500" />
+                                    <AlertTriangle className="h-4 w-4 flex-shrink-0 text-destructive" />
                                   </TooltipTrigger>
                                   <TooltipContent>
                                     <p>{t('overdueTooltip')}</p>
@@ -292,14 +292,14 @@ const ItemSection = ({
                     <Coins className={cn(
                       "h-3 w-3 mr-1 transition-all",
                       isCompleted
-                        ? "text-yellow-500 drop-shadow-[0_0_2px_rgba(234,179,8,0.3)]"
-                        : "text-gray-400"
+                        ? "text-amber-400"
+                        : "text-muted-foreground"
                     )} />
                     <span className={cn(
                       "transition-all",
                       isCompleted
-                        ? "text-yellow-500 font-medium"
-                        : "text-gray-400"
+                        ? "text-amber-400 font-medium"
+                        : "text-muted-foreground"
                     )}>
                       {habit.coinReward}
                     </span>
@@ -419,12 +419,43 @@ export default function DailyOverview({
     isOpen: false,
     isTask: false
   });
+  const [completingAll, setCompletingAll] = useState(false)
+
+  const remainingHabits = dailyHabits.filter(habit => {
+    const done = getCompletionsForDate({ habit, date: today, timezone })
+    return done < (habit.targetCompletions ?? 1)
+  })
+
+  // Runs each remaining habit through the normal reward pipeline sequentially
+  // (they share XP/coin state, so parallel writes would race)
+  const completeAllRemaining = async () => {
+    setCompletingAll(true)
+    try {
+      for (const habit of remainingHabits) {
+        await completeHabit(habit)
+      }
+    } finally {
+      setCompletingAll(false)
+    }
+  }
 
   return (
     <>
       <Card>
         <CardHeader>
-          <CardTitle>{t('todaysOverviewTitle')}</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>{t('todaysOverviewTitle')}</CardTitle>
+            {remainingHabits.length > 1 && (
+              <button
+                onClick={completeAllRemaining}
+                disabled={completingAll}
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+              >
+                <CheckCheck className="h-3.5 w-3.5" />
+                {completingAll ? 'Logging…' : `Complete all (${remainingHabits.length})`}
+              </button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
@@ -477,8 +508,8 @@ export default function DailyOverview({
                               key={item.id}
                               href={`/wishlist?highlight=${item.id}`}
                               className={cn(
-                                "block p-3 rounded-md hover:bg-secondary/30 transition-colors",
-                                isRedeemable ? 'bg-green-500/10' : 'bg-secondary/20'
+                                "block p-3 rounded-lg hover:bg-secondary/30 transition-colors",
+                                isRedeemable ? 'bg-emerald-500/10' : 'bg-secondary/20'
                               )}
                             >
                               <div className="flex items-center justify-between mb-2">
@@ -499,14 +530,14 @@ export default function DailyOverview({
                                   <Coins className={cn(
                                     "h-3 w-3 mr-1 transition-all",
                                     isRedeemable
-                                      ? "text-yellow-500 drop-shadow-[0_0_2px_rgba(234,179,8,0.3)]"
-                                      : "text-gray-400"
+                                      ? "text-amber-400"
+                                      : "text-muted-foreground"
                                   )} />
                                   <span className={cn(
                                     "transition-all",
                                     isRedeemable
-                                      ? "text-yellow-500 font-medium"
-                                      : "text-gray-400"
+                                      ? "text-amber-400 font-medium"
+                                      : "text-muted-foreground"
                                   )}>
                                     {item.coinCost}
                                   </span>
@@ -514,10 +545,7 @@ export default function DailyOverview({
                               </div>
                               <Progress
                                 value={(coinBalance / item.coinCost) * 100}
-                                className={cn(
-                                  "h-2",
-                                  isRedeemable ? "bg-green-500/20" : ""
-                                )}
+                                className="h-2"
                               />
                               <p className="text-xs text-muted-foreground mt-2">
                                 {isRedeemable

@@ -55,8 +55,8 @@ export default function AchievementsPage() {
   return (
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-violet-500/20 border border-violet-500/20">
-          <Trophy className="h-5 w-5 text-violet-400" />
+        <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20">
+          <Trophy className="h-5 w-5 text-primary" />
         </div>
         <div>
           <h1 className="text-2xl font-bold">Achievements</h1>
@@ -90,8 +90,8 @@ export default function AchievementsPage() {
 
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <Crown className="h-4 w-4 text-amber-400" />
-          <h2 className="text-sm font-semibold text-amber-400 uppercase tracking-wider">Titles</h2>
+          <Crown className="h-4 w-4 text-primary" />
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Titles</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {allTitles.map(title => (
@@ -99,14 +99,14 @@ export default function AchievementsPage() {
               key={title.id}
               className={`glass-card p-4 flex items-start gap-3 transition-all ${
                 !title.isEarned ? 'opacity-50' : ''
-              } ${title.isEquipped ? 'border border-amber-500/40' : ''}`}
+              } ${title.isEquipped ? 'border border-primary/40' : ''}`}
             >
               <div className="text-3xl">{title.emoji}</div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
                   <p className="font-bold text-sm">{title.title}</p>
                   {title.isEquipped && (
-                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/20 font-semibold">
+                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold">
                       Active
                     </span>
                   )}
@@ -115,10 +115,10 @@ export default function AchievementsPage() {
                 {title.isEarned ? (
                   <button
                     onClick={() => handleEquipTitle(title.id)}
-                    className={`text-xs px-3 py-1 rounded-lg font-semibold transition-all ${
+                    className={`text-xs px-3 py-1 rounded-lg font-semibold transition-colors ${
                       title.isEquipped
-                        ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
-                        : 'bg-violet-500/20 text-violet-400 hover:bg-violet-500/30'
+                        ? 'bg-secondary text-foreground hover:bg-muted'
+                        : 'bg-primary text-primary-foreground hover:bg-primary/90'
                     }`}
                   >
                     {title.isEquipped ? 'Remove' : 'Equip'}

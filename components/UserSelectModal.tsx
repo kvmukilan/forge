@@ -38,7 +38,7 @@ function UserCard({
       <button
         onClick={onSelect}
         className={cn(
-          "flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors w-full",
+          "flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-secondary transition-colors w-full",
           isCurrentUser && "ring-2 ring-primary"
         )}
       >
@@ -53,7 +53,7 @@ function UserCard({
         </Avatar>
         <span className="text-sm font-medium flex items-center gap-1">
           {user.username}
-          {user.isAdmin && <Crown className="h-4 w-4 text-yellow-500" />}
+          {user.isAdmin && <Crown className="h-4 w-4 text-primary" />}
         </span>
       </button>
       {showEdit && (
@@ -64,7 +64,7 @@ function UserCard({
                 e.stopPropagation(); // Prevent card selection
                 onEdit();
               }}
-              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+              className="p-1 rounded-full bg-secondary hover:bg-muted transition-colors"
               title={t('editUserTooltip')}
             >
               <UserRoundPen className="h-4 w-4" />
@@ -81,7 +81,7 @@ function AddUserButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      className="flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-secondary transition-colors"
     >
       <Avatar className="h-16 w-16">
         <AvatarFallback>

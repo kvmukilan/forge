@@ -29,7 +29,7 @@ export default function ChangelogModal({ isOpen, onClose }: ChangelogModalProps)
         <DialogHeader>
           <DialogTitle></DialogTitle>
         </DialogHeader>
-        <div className="prose dark:prose-invert prose-sm max-w-none">
+        <div className="prose prose-invert prose-sm max-w-none">
           <ReactMarkdown>{changelog}</ReactMarkdown>
         </div>
       </DialogContent>

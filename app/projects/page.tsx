@@ -35,12 +35,12 @@ export default function ProjectsPage() {
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Projects</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Organize your tasks into projects</p>
+          <h1 className="page-title">Projects</h1>
+          <p className="section-label mt-1">Organize your tasks into projects</p>
         </div>
         <Button
           onClick={() => { setEditingProject(undefined); setModalOpen(true) }}
-          className="gap-2 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 border-0"
+          className="gap-2"
         >
           <Plus className="h-4 w-4" />
           New Project

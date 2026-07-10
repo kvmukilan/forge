@@ -11,7 +11,7 @@ import {
   getHabitCorrelations,
 } from '@/lib/analytics'
 import { useMemo } from 'react'
-import { BarChart3, Calendar, TrendingUp, Zap } from 'lucide-react'
+import { BarChart3, Calendar, Coins, Flame, TrendingUp, Zap } from 'lucide-react'
 import { DateTime } from 'luxon'
 import { cn } from '@/lib/utils'
 
@@ -32,10 +32,10 @@ function YearlyHeatmap({ completionMap, timezone }: { completionMap: Map<string,
   }
 
   const getColor = (count: number) => {
-    if (count === 0) return 'bg-white/5'
-    if (count === 1) return 'bg-green-800/70'
-    if (count <= 3) return 'bg-green-600/80'
-    return 'bg-green-500'
+    if (count === 0) return 'bg-muted'
+    if (count === 1) return 'bg-primary/30'
+    if (count <= 3) return 'bg-primary/60'
+    return 'bg-primary'
   }
 
   const monthLabels: { label: string; weekIndex: number }[] = []
@@ -57,7 +57,7 @@ function YearlyHeatmap({ completionMap, timezone }: { completionMap: Map<string,
             const label = monthLabels.find(m => m.weekIndex === wi)
             return (
               <div key={wi} className="flex-1">
-                {label && <span className="text-[8px] text-muted-foreground">{label.label}</span>}
+                {label && <span className="text-xs text-muted-foreground">{label.label}</span>}
               </div>
             )
           })}
@@ -67,7 +67,7 @@ function YearlyHeatmap({ completionMap, timezone }: { completionMap: Map<string,
           <div className="flex flex-col gap-0.5 mr-1">
             {['M', '', 'W', '', 'F', '', 'S'].map((d, i) => (
               <div key={i} className="h-2.5 flex items-center">
-                <span className="text-[8px] text-muted-foreground w-4">{d}</span>
+                <span className="text-xs text-muted-foreground w-4">{d}</span>
               </div>
             ))}
           </div>
@@ -86,11 +86,11 @@ function YearlyHeatmap({ completionMap, timezone }: { completionMap: Map<string,
         </div>
       </div>
       <div className="flex items-center gap-2 mt-2 justify-end">
-        <span className="text-[9px] text-muted-foreground">Less</span>
+        <span className="text-xs text-muted-foreground">Less</span>
         {[0, 1, 2, 4].map(c => (
           <div key={c} className={cn('h-2 w-2 rounded-[2px]', getColor(c))} />
         ))}
-        <span className="text-[9px] text-muted-foreground">More</span>
+        <span className="text-xs text-muted-foreground">More</span>
       </div>
     </div>
   )
@@ -110,8 +110,8 @@ function DayOfWeekChart({ stats }: { stats: { day: string; avg: number }[] }) {
                 style={{ height: `${Math.max(2, (avg / max) * 80)}px` }}
               />
             </div>
-            <span className="text-[9px] text-muted-foreground uppercase">{day}</span>
-            <span className="text-[9px] font-bold tabular-nums">{avg}%</span>
+            <span className="text-xs text-muted-foreground uppercase">{day}</span>
+            <span className="text-xs font-bold tabular-nums">{avg}%</span>
           </div>
         ))}
       </div>
@@ -150,12 +150,12 @@ export default function StatsPage() {
         {[
           { label: 'Total Completions', value: totalCompletions.toLocaleString(), color: 'text-primary', icon: <TrendingUp className="h-4 w-4" /> },
           { label: 'Best Streak', value: `${maxStreak}d`, color: 'text-primary', icon: <Zap className="h-4 w-4" /> },
-          { label: '30-Day Rate', value: `${avgRate}%`, color: 'text-emerald-400', icon: <BarChart3 className="h-4 w-4" /> },
-          { label: 'Total XP', value: xpData.totalXP.toLocaleString(), color: 'text-violet-400', icon: <Calendar className="h-4 w-4" /> },
+          { label: '30-Day Rate', value: `${avgRate}%`, color: 'text-primary', icon: <BarChart3 className="h-4 w-4" /> },
+          { label: 'Total XP', value: xpData.totalXP.toLocaleString(), color: 'text-primary', icon: <Calendar className="h-4 w-4" /> },
         ].map(({ label, value, color, icon }) => (
           <div key={label} className="glass-card p-4">
             <div className="flex items-center gap-2 mb-2 text-muted-foreground">{icon}<span className="section-label">{label}</span></div>
-            <p className={cn('text-2xl font-black tabular-nums', color)}>{value}</p>
+            <p className={cn('text-2xl font-extrabold tabular-nums', color)}>{value}</p>
           </div>
         ))}
       </div>
@@ -175,8 +175,8 @@ export default function StatsPage() {
               <div key={habit.id} className="flex items-center gap-3 text-sm">
                 <span className="flex-1 font-medium truncate">{habit.name}</span>
                 <span className="text-muted-foreground tabular-nums w-12 text-right">{total}×</span>
-                <span className="text-amber-400 tabular-nums w-12 text-right">{bs}d 🔥</span>
-                <span className="text-emerald-400 tabular-nums w-12 text-right">{rate30d}%</span>
+                <span className="text-primary tabular-nums w-14 inline-flex items-center justify-end gap-0.5">{bs}d <Flame className="h-3 w-3" /></span>
+                <span className="text-foreground tabular-nums w-12 text-right">{rate30d}%</span>
               </div>
             ))}
           </div>
@@ -192,9 +192,9 @@ export default function StatsPage() {
             {correlations.slice(0, 5).map(c => (
               <div key={`${c.habitAId}-${c.habitBId}`} className="flex items-center gap-3">
                 <span className="text-xs font-medium flex-1 truncate">{c.habitAName}</span>
-                <span className="text-[10px] text-muted-foreground">+</span>
+                <span className="text-xs text-muted-foreground">+</span>
                 <span className="text-xs font-medium flex-1 truncate">{c.habitBName}</span>
-                <span className="text-sm font-black text-primary tabular-nums w-10 text-right">{c.pct}%</span>
+                <span className="text-sm font-extrabold text-primary tabular-nums w-10 text-right">{c.pct}%</span>
               </div>
             ))}
           </div>
@@ -207,11 +207,11 @@ export default function StatsPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-xs text-muted-foreground">Total Earned</p>
-            <p className="text-xl font-black text-amber-400 tabular-nums">🪙 {coinBreakdown.earned.toLocaleString()}</p>
+            <p className="text-2xl font-extrabold text-amber-400 tabular-nums inline-flex items-center gap-1.5"><Coins className="h-4 w-4" /> {coinBreakdown.earned.toLocaleString()}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Total Spent</p>
-            <p className="text-xl font-black text-red-400 tabular-nums">🪙 {coinBreakdown.spent.toLocaleString()}</p>
+            <p className="text-2xl font-extrabold text-red-400 tabular-nums inline-flex items-center gap-1.5"><Coins className="h-4 w-4" /> {coinBreakdown.spent.toLocaleString()}</p>
           </div>
         </div>
       </div>

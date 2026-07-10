@@ -18,14 +18,14 @@ export default function SeasonBanner() {
         <span className="text-xl flex-shrink-0">{season.emoji}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Season {season.number}</span>
+            <span className="section-label text-primary">Season {season.number}</span>
             <span className="text-xs font-bold truncate">{season.name}</span>
           </div>
-          <p className="text-[10px] text-muted-foreground mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             {daysLeft}d remaining
             {hasBonuses && (
               <>
-                {season.xpBonus > 0 && <span className="ml-2 text-violet-400">+{season.xpBonus}% XP</span>}
+                {season.xpBonus > 0 && <span className="ml-2 text-primary">+{season.xpBonus}% XP</span>}
                 {season.coinBonus > 0 && <span className="ml-2 text-amber-400">+{season.coinBonus}% Coins</span>}
               </>
             )}

@@ -7,7 +7,7 @@ import { currentUserAtom } from '@/lib/atoms'
 import { createGuild, joinGuildByCode, leaveGuild, getGuildLeaderboard, getGuildActivity, getGuildQuests, GuildMemberStat, GuildActivityItem, GuildQuestWithProgress, loadGuildData } from '@/app/actions/guilds'
 import GuildQuestCard from '@/components/GuildQuestCard'
 import { toast } from '@/hooks/use-toast'
-import { Users, Plus, LogOut, Copy, Check, Shield, Trophy, Zap } from 'lucide-react'
+import { Users, Plus, LogOut, Copy, Check, Shield, Trophy, Zap, Crown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -94,8 +94,8 @@ export default function GuildPage() {
     return (
       <div className="space-y-5 animate-fade-in">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-violet-500/20 border border-violet-500/20">
-            <Users className="h-5 w-5 text-violet-400" />
+          <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20">
+            <Users className="h-5 w-5 text-primary" />
           </div>
           <div>
             <h1 className="page-title">Guild</h1>
@@ -106,33 +106,33 @@ export default function GuildPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="glass-card p-5 space-y-4">
             <div className="flex items-center gap-2 mb-1">
-              <Shield className="h-4 w-4 text-violet-400" />
+              <Shield className="h-4 w-4 text-primary" />
               <p className="font-bold">Create a Guild</p>
             </div>
             <div className="flex gap-2">
               <Input
                 value={createEmoji}
                 onChange={e => setCreateEmoji(e.target.value)}
-                className="w-16 text-center text-xl bg-white/5 border-white/10"
+                className="w-16 text-center text-lg bg-secondary border-border rounded-lg"
                 maxLength={2}
               />
               <Input
                 value={createName}
                 onChange={e => setCreateName(e.target.value)}
                 placeholder="Guild name"
-                className="flex-1 bg-white/5 border-white/10"
+                className="flex-1 bg-secondary border-border rounded-lg"
               />
             </div>
             <Input
               value={createDesc}
               onChange={e => setCreateDesc(e.target.value)}
               placeholder="Description (optional)"
-              className="bg-white/5 border-white/10"
+              className="bg-secondary border-border rounded-lg"
             />
             <Button
               onClick={handleCreate}
               disabled={loading || !createName.trim()}
-              className="w-full bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 border-0"
+              className="w-full bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-colors"
             >
               <Plus className="h-4 w-4 mr-2" />
               Create Guild
@@ -141,7 +141,7 @@ export default function GuildPage() {
 
           <div className="glass-card p-5 space-y-4">
             <div className="flex items-center gap-2 mb-1">
-              <Zap className="h-4 w-4 text-amber-400" />
+              <Zap className="h-4 w-4 text-primary" />
               <p className="font-bold">Join by Invite Code</p>
             </div>
             <p className="text-sm text-muted-foreground">Enter an 8-character code from a guild member.</p>
@@ -149,14 +149,14 @@ export default function GuildPage() {
               value={joinCode}
               onChange={e => setJoinCode(e.target.value.toUpperCase())}
               placeholder="XXXXXXXX"
-              className="bg-white/5 border-white/10 font-mono text-center tracking-widest text-lg"
+              className="bg-secondary border-border rounded-lg font-mono text-center tracking-widest text-lg"
               maxLength={8}
             />
             <Button
               onClick={handleJoin}
               disabled={loading || joinCode.length < 6}
               variant="outline"
-              className="w-full border-white/10"
+              className="w-full border-border bg-secondary hover:bg-muted rounded-lg"
             >
               Join Guild
             </Button>
@@ -176,7 +176,7 @@ export default function GuildPage() {
           <div className="flex items-center gap-3">
             <span className="text-4xl">{myGuild.emoji}</span>
             <div>
-              <h1 className="text-2xl font-black">{myGuild.name}</h1>
+              <h1 className="text-2xl font-extrabold">{myGuild.name}</h1>
               {myGuild.description && (
                 <p className="text-sm text-muted-foreground mt-0.5">{myGuild.description}</p>
               )}
@@ -195,10 +195,10 @@ export default function GuildPage() {
           </Button>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-white/5 flex items-center gap-3">
+        <div className="mt-4 pt-4 border-t border-border flex items-center gap-3">
           <div>
             <p className="section-label">Invite Code</p>
-            <p className="font-mono font-bold text-lg tracking-widest text-violet-300">{myGuild.inviteCode}</p>
+            <p className="font-mono font-bold text-lg tracking-widest text-primary">{myGuild.inviteCode}</p>
           </div>
           <button
             onClick={copyInviteCode}
@@ -215,7 +215,7 @@ export default function GuildPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <p className="section-label">Weekly Quests</p>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {quests.filter(q => q.isComplete).length}/{quests.length} complete
             </p>
           </div>
@@ -230,7 +230,7 @@ export default function GuildPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="glass-card p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Trophy className="h-4 w-4 text-amber-400" />
+            <Trophy className="h-4 w-4 text-primary" />
             <div>
               <p className="section-label">Weekly Leaderboard</p>
               <p className="text-xs text-muted-foreground">Habit completions this week</p>
@@ -244,23 +244,21 @@ export default function GuildPage() {
                 <div key={member.userId} className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
-                      <span className={cn('font-bold tabular-nums w-5 text-center',
-                        i === 0 ? 'text-amber-400' : i === 1 ? 'text-slate-300' : i === 2 ? 'text-amber-700' : 'text-muted-foreground'
+                      <span className={cn('font-bold tabular-nums w-5 text-center inline-flex justify-center',
+                        i === 0 ? 'text-primary' : 'text-muted-foreground'
                       )}>
-                        {i === 0 ? '👑' : `#${i + 1}`}
+                        {i === 0 ? <Crown className="h-3.5 w-3.5" /> : `#${i + 1}`}
                       </span>
-                      <span className={cn('font-semibold', isMe ? 'text-violet-300' : '')}>
+                      <span className={cn('font-semibold', isMe ? 'text-primary' : '')}>
                         {member.username}{isMe ? ' ★' : ''}
                       </span>
                     </div>
                     <span className="text-muted-foreground tabular-nums text-xs">{member.weeklyCompletions} done</span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
                     <div
                       className={cn('h-full rounded-full transition-all duration-700',
-                        i === 0 ? 'bg-gradient-to-r from-amber-500 to-amber-400' :
-                        isMe ? 'bg-gradient-to-r from-violet-600 to-violet-400' :
-                        'bg-white/20'
+                        i === 0 || isMe ? 'bg-primary' : 'bg-muted-foreground/40'
                       )}
                       style={{ width: `${pct}%` }}
                     />
@@ -273,7 +271,7 @@ export default function GuildPage() {
 
         <div className="glass-card p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Zap className="h-4 w-4 text-emerald-400" />
+            <Zap className="h-4 w-4 text-primary" />
             <div>
               <p className="section-label">Party Activity</p>
               <p className="text-xs text-muted-foreground">Recent completions</p>
@@ -287,10 +285,10 @@ export default function GuildPage() {
                 const isMe = item.userId === currentUser?.id
                 const time = DateTime.fromISO(item.timestamp).toRelative() ?? ''
                 return (
-                  <div key={i} className="flex items-start gap-2.5 text-xs py-1.5 border-b border-white/5 last:border-0">
+                  <div key={i} className="flex items-start gap-2.5 text-xs py-1.5 border-b border-border last:border-0">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <span className={cn('font-semibold', isMe ? 'text-violet-300' : 'text-foreground')}>
+                      <span className={cn('font-semibold', isMe ? 'text-primary' : 'text-foreground')}>
                         {item.username}
                       </span>
                       <span className="text-muted-foreground"> · {item.description}</span>

@@ -183,7 +183,7 @@ export default function AddEditWishlistItemModal({
                       <button
                         type="button"
                         onClick={() => setCoinCost(prev => Math.max(0, prev - 1))}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
                       >
                         -
                       </button>
@@ -203,7 +203,7 @@ export default function AddEditWishlistItemModal({
                       <button
                         type="button"
                         onClick={() => setCoinCost(prev => Math.min(prev + 1, MAX_COIN_LIMIT))}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
                       >
                         +
                       </button>
@@ -226,7 +226,7 @@ export default function AddEditWishlistItemModal({
                       <button
                         type="button"
                         onClick={() => setTargetCompletions(prev => prev !== undefined && prev > 1 ? prev - 1 : undefined)}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
                       >
                         -
                       </button>
@@ -245,7 +245,7 @@ export default function AddEditWishlistItemModal({
                       <button
                         type="button"
                         onClick={() => setTargetCompletions(prev => Math.min(10, (prev || 0) + 1))}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
                       >
                         +
                       </button>
@@ -255,7 +255,7 @@ export default function AddEditWishlistItemModal({
                     </span>
                   </div>
                   {errors.targetCompletions && (
-                    <div className="text-sm text-red-500">
+                    <div className="text-sm text-destructive">
                       {errors.targetCompletions}
                     </div>
                   )}
@@ -275,7 +275,7 @@ export default function AddEditWishlistItemModal({
                     className="col-span-3"
                   />
                   {errors.link && (
-                    <div className="text-sm text-red-500">
+                    <div className="text-sm text-destructive">
                       {errors.link}
                     </div>
                   )}

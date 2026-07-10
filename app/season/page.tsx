@@ -18,7 +18,7 @@ function SeasonLeaderboard({ season }: { season: Season }) {
     <div className="glass-card p-4">
       <p className="section-label mb-3">Your Season Progress</p>
       <div className="flex items-center gap-3">
-        <div className="text-3xl font-black text-primary tabular-nums">{xpThisSeason.toLocaleString()}</div>
+        <div className="stat-number text-primary">{xpThisSeason.toLocaleString()}</div>
         <div>
           <p className="text-sm font-semibold">XP earned this season</p>
           <p className="text-xs text-muted-foreground">Keep grinding to unlock the season title</p>
@@ -47,7 +47,7 @@ export default function SeasonPage() {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Season {season.number}</span>
+          <span className="section-label text-primary">Season {season.number}</span>
         </div>
         <h1 className="page-title">{season.name.toUpperCase()}</h1>
         <p className="text-muted-foreground text-sm mt-2 italic">"{season.theme}"</p>
@@ -57,22 +57,22 @@ export default function SeasonPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="glass-card p-3 text-center">
           <p className="section-label mb-1">Days Left</p>
-          <p className="text-2xl font-black text-primary tabular-nums">{daysLeft}</p>
+          <p className="text-2xl font-extrabold text-primary tabular-nums">{daysLeft}</p>
         </div>
         <div className="glass-card p-3 text-center">
           <p className="section-label mb-1">Season</p>
-          <p className="text-2xl font-black">{season.emoji}</p>
+          <p className="text-2xl font-extrabold">{season.emoji}</p>
         </div>
         {season.xpBonus > 0 && (
           <div className="glass-card p-3 text-center">
             <p className="section-label mb-1">XP Bonus</p>
-            <p className="text-2xl font-black text-violet-400">+{season.xpBonus}%</p>
+            <p className="text-2xl font-extrabold text-primary">+{season.xpBonus}%</p>
           </div>
         )}
         {season.coinBonus > 0 && (
           <div className="glass-card p-3 text-center">
             <p className="section-label mb-1">Coin Bonus</p>
-            <p className="text-2xl font-black text-amber-400">+{season.coinBonus}%</p>
+            <p className="text-2xl font-extrabold text-amber-400">+{season.coinBonus}%</p>
           </div>
         )}
       </div>
@@ -91,7 +91,7 @@ export default function SeasonPage() {
       {/* Season Title unlock */}
       <div className="glass-card p-4">
         <div className="flex items-center gap-2 mb-2">
-          <Trophy className="h-4 w-4 text-amber-400" />
+          <Trophy className="h-4 w-4 text-primary" />
           <p className="text-sm font-bold">Season Title</p>
         </div>
         <p className="text-xs text-muted-foreground">Complete 50 habits this season to unlock the season-exclusive title.</p>
@@ -108,7 +108,7 @@ export default function SeasonPage() {
                 <p className="text-sm font-bold">{s.name}</p>
                 <p className="text-xs text-muted-foreground">{s.startDate} → {s.endDate}</p>
               </div>
-              {s.id === season.id && <span className="text-[10px] font-bold text-primary uppercase">Active</span>}
+              {s.id === season.id && <span className="text-xs font-bold text-primary uppercase">Active</span>}
             </div>
           ))}
         </div>

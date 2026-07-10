@@ -69,18 +69,18 @@ export default function WishlistItem({
   return (
     <Card
       id={`wishlist-${item.id}`}
-      className={`h-full flex flex-col transition-all duration-500 ${isHighlighted ? 'bg-yellow-100 dark:bg-yellow-900' : ''
+      className={`h-full flex flex-col transition-all duration-500 ${isHighlighted ? 'ring-2 ring-primary bg-primary/10' : ''
         } ${isRecentlyRedeemed ? 'animate-[celebrate_1s_ease-in-out] shadow-lg ring-2 ring-primary' : ''
         } ${item.archived ? 'opacity-75' : ''}`}
     >
       <CardHeader className="flex-shrink-0">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <CardTitle className={`line-clamp-1 ${item.archived ? 'text-gray-400 dark:text-gray-500' : ''}`}>
+            <CardTitle className={`line-clamp-1 ${item.archived ? 'text-muted-foreground' : ''}`}>
               {item.name}
             </CardTitle>
             {item.targetCompletions && (
-              <span className="text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">
+              <span className="text-sm text-muted-foreground flex-shrink-0">
                 ({item.targetCompletions === 1 ? t('usesLeftSingular') : t('usesLeftPlural', { count: item.targetCompletions })})
               </span>
             )}
@@ -90,7 +90,7 @@ export default function WishlistItem({
         {(item.description || item.drawing) && (
           <div className={`flex gap-4 mt-2 ${!item.description ? 'justify-end' : ''}`}>
             {item.description && (
-              <CardDescription className={`whitespace-pre-line flex-1 min-w-0 break-words ${item.archived ? 'text-gray-400 dark:text-gray-500' : ''}`}>
+              <CardDescription className={`whitespace-pre-line flex-1 min-w-0 break-words ${item.archived ? 'text-muted-foreground' : ''}`}>
                 {item.description}
               </CardDescription>
             )}
@@ -110,8 +110,8 @@ export default function WishlistItem({
       <CardContent className="flex-grow flex flex-col justify-end">
         <div className="mt-auto">
           <div className="flex items-center gap-2">
-            <Coins className={`h-4 w-4 ${item.archived ? 'text-gray-400 dark:text-gray-500' : 'text-yellow-400'}`} />
-            <span className={`text-sm font-medium ${item.archived ? 'text-gray-400 dark:text-gray-500' : ''}`}>
+            <Coins className={`h-4 w-4 ${item.archived ? 'text-muted-foreground' : 'text-amber-400'}`} />
+            <span className={`text-sm font-medium ${item.archived ? 'text-muted-foreground' : ''}`}>
               {item.coinCost} {t('coinsSuffix')}
             </span>
           </div>
@@ -124,7 +124,7 @@ export default function WishlistItem({
             size="sm"
             onClick={onRedeem}
             disabled={!canRedeem || !canInteract || item.archived}
-            className={`transition-all duration-300 w-24 sm:w-auto ${isRecentlyRedeemed ? 'bg-green-500 hover:bg-green-600' : ''} ${item.archived ? 'cursor-not-allowed' : ''}`}
+            className={`transition-all duration-300 w-24 sm:w-auto ${isRecentlyRedeemed ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : ''} ${item.archived ? 'cursor-not-allowed' : ''}`}
           >
             <Gift className={`h-4 w-4 sm:mr-2 ${isRecentlyRedeemed ? 'animate-spin' : ''}`} />
             <span>
@@ -180,7 +180,7 @@ export default function WishlistItem({
               </DropdownMenuItem>
               <DropdownMenuSeparator className="sm:hidden" />
               <DropdownMenuItem
-                className="text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400"
+                className="text-destructive focus:text-destructive"
                 onClick={onDelete}
                 disabled={!canWrite}
               >

@@ -1,5 +1,5 @@
 import './globals.css'
-import { DM_Sans } from 'next/font/google'
+import { Geist } from 'next/font/google'
 import { JotaiProvider } from '@/components/jotai-providers'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { loadSettings, loadHabitsData, loadCoinsData, loadWishlistData, loadUsersPublicData, loadServerSettings } from './actions/data'
@@ -16,19 +16,12 @@ import { Suspense } from 'react'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
 
-// Inter (clean, modern, excellent readability)
-// const inter = Inter({
-//   subsets: ['latin'],
-//   weight: ['400', '500', '600', '700']
-// })
-
-// Clean and contemporary
-const dmSans = DM_Sans({
+const geist = Geist({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700']
+  weight: ['400', '500', '600', '700', '800'],
 })
 
-const activeFont = dmSans
+const activeFont = geist
 
 export const metadata = {
   title: 'Forge',
@@ -63,25 +56,8 @@ export default async function RootLayout({
 
   return (
     // set suppressHydrationWarning to true to prevent hydration errors when using ThemeProvider (https://ui.shadcn.com/docs/dark-mode/next)
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} className="dark" suppressHydrationWarning>
       <body className={activeFont.className}>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                      console.log('ServiceWorker registration successful');
-                    })
-                    .catch(err => {
-                      console.log('ServiceWorker registration failed: ', err);
-                    });
-                });
-              }
-            `,
-          }}
-        />
         <JotaiProvider
           initialValues={{
             settings: initialSettings,
@@ -102,8 +78,7 @@ export default async function RootLayout({
               <NextIntlClientProvider locale={locale} messages={messages}>
                 <ThemeProvider
                   attribute="class"
-                  defaultTheme="system"
-                  enableSystem
+                  forcedTheme="dark"
                   disableTransitionOnChange
                 >
                   <SessionProvider>

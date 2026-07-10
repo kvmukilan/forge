@@ -10,14 +10,14 @@ import AddEditHabitModal from './AddEditHabitModal'
 import ConfirmDialog from './ConfirmDialog'
 import { Habit } from '@/lib/types'
 import { Button } from './ui/button'
-import { Plus } from 'lucide-react'
+import { Plus, AlertTriangle } from 'lucide-react'
 
 const PRIORITY_ORDER: Record<string, number> = { p1: 0, p2: 1, p3: 2 }
 
 const PRIORITY_META: Record<string, { label: string; color: string }> = {
-  p1: { label: '🔴 P1 — Urgent', color: 'text-red-400' },
-  p2: { label: '🟡 P2 — Normal', color: 'text-amber-400' },
-  p3: { label: '🔵 P3 — Low', color: 'text-blue-400' },
+  p1: { label: 'P1 — Urgent', color: 'text-red-400' },
+  p2: { label: 'P2 — Normal', color: 'text-amber-400' },
+  p3: { label: 'P3 — Low', color: 'text-muted-foreground' },
   none: { label: 'No Priority', color: 'text-muted-foreground' },
 }
 
@@ -74,7 +74,7 @@ export default function TaskList() {
           <h1 className="page-title">TASKS</h1>
           <p className="section-label mt-1">MISSION DIRECTORY · {activeTasks.length} REMAINING</p>
         </div>
-        <Button onClick={() => openModal()} className="mt-2 bg-gradient-to-r from-orange-600 to-orange-500 border-0 text-white gap-2">
+        <Button onClick={() => openModal()} className="mt-2 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-colors gap-2">
           <Plus className="h-4 w-4" /> NEW TASK
         </Button>
       </div>
@@ -96,9 +96,9 @@ export default function TaskList() {
               return (
                 <div key={key} className="critical-section mb-6">
                   <div className="critical-header flex items-center gap-2">
-                    <span className="text-orange-400">⚠</span>
-                    <span className="section-label text-orange-400">CRITICAL PAYLOAD</span>
-                    <span className="ml-auto section-label text-orange-400">{tasks.length} REMAINING</span>
+                    <AlertTriangle className="h-3.5 w-3.5 text-primary" />
+                    <span className="section-label text-primary">CRITICAL PAYLOAD</span>
+                    <span className="ml-auto section-label text-primary">{tasks.length} REMAINING</span>
                   </div>
                   <div className="p-3 flex flex-col gap-2">
                     {tasks.map(task => (
@@ -139,9 +139,9 @@ export default function TaskList() {
       {archivedTasks.length > 0 && (
         <div>
           <div className="relative flex items-center my-4">
-            <div className="flex-grow border-t border-white/10" />
+            <div className="flex-grow border-t border-border" />
             <span className="mx-4 text-xs text-muted-foreground">Archived</span>
-            <div className="flex-grow border-t border-white/10" />
+            <div className="flex-grow border-t border-border" />
           </div>
           <div className="flex flex-col gap-2 opacity-60">
             {archivedTasks.map(task => (

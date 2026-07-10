@@ -85,7 +85,7 @@ export default function WishlistManager() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl xs:text-3xl font-bold">{t('title')}</h1>
+        <h1 className="page-title">{t('title')}</h1>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> {t('addRewardButton')}
         </Button>
@@ -130,9 +130,9 @@ export default function WishlistManager() {
         {archivedItems.length > 0 && (
           <>
             <div className="col-span-1 lg:col-span-2 relative flex items-center my-6">
-              <div className="flex-grow border-t border-gray-300 dark:border-gray-600" />
-              <span className="mx-4 text-sm text-gray-500 dark:text-gray-400">{t('archivedSectionTitle')}</span>
-              <div className="flex-grow border-t border-gray-300 dark:border-gray-600" />
+              <div className="flex-grow border-t border-border" />
+              <span className="mx-4 section-label">{t('archivedSectionTitle')}</span>
+              <div className="flex-grow border-t border-border" />
             </div>
             {archivedItems.map((item) => (
               <WishlistItem

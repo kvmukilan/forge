@@ -31,7 +31,7 @@ export default function DesktopNavDisplay({ navItems, className }: DesktopNavDis
           'group flex items-center px-3 py-2 text-sm font-semibold transition-all duration-100 gap-3 border-l-2',
           isActive
             ? 'border-primary bg-primary/8 text-primary'
-            : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'
+            : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary'
         )}
       >
         <item.icon className={cn('h-4 w-4 flex-shrink-0 transition-colors', isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
@@ -49,9 +49,9 @@ export default function DesktopNavDisplay({ navItems, className }: DesktopNavDis
             <div className="px-4 py-5 mb-2">
               <div className="flex items-center gap-2">
                 <div className="h-7 w-7 rounded-sm bg-primary flex items-center justify-center flex-shrink-0">
-                  <span className="text-primary-foreground text-xs font-black">F</span>
+                  <span className="text-primary-foreground text-xs font-extrabold">F</span>
                 </div>
-                <span className="font-black text-sm tracking-widest uppercase text-foreground">Forge</span>
+                <span className="font-extrabold text-sm tracking-widest uppercase text-foreground">Forge</span>
               </div>
             </div>
 

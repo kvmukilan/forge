@@ -49,3 +49,7 @@ certificates
 CLAUDE.md
 
 CHANGELOG.md.tmp
+
+# local dev logs
+.devserver.log
+.build.log

@@ -15,7 +15,7 @@ import HabitDNA from './HabitDNA'
 import PerfectDayModal from './PerfectDayModal'
 import MilestoneModal from './MilestoneModal'
 import SeasonBanner from './SeasonBanner'
-import { Coins } from 'lucide-react'
+import { Coins, Sun, CloudSun, Moon, Star } from 'lucide-react'
 import { useAchievements } from '@/hooks/useAchievements'
 import { getOrSpawnBoss } from '@/app/actions/gamification'
 import { useEffect, useState } from 'react'
@@ -53,17 +53,23 @@ function CoinBalanceCard() {
 function GreetingHeader() {
   const currentUser = useAtomValue(currentUserAtom)
   const [greeting, setGreeting] = useState('')
+  const [period, setPeriod] = useState<'morning' | 'afternoon' | 'evening' | null>(null)
 
   useEffect(() => {
     const hour = new Date().getHours()
     const name = currentUser?.username ?? 'Hero'
-    if (hour < 12) setGreeting(`Good morning, ${name} ☀️`)
-    else if (hour < 17) setGreeting(`Good afternoon, ${name} 🌤️`)
-    else setGreeting(`Good evening, ${name} 🌙`)
+    if (hour < 12) { setGreeting(`Good morning, ${name}`); setPeriod('morning') }
+    else if (hour < 17) { setGreeting(`Good afternoon, ${name}`); setPeriod('afternoon') }
+    else { setGreeting(`Good evening, ${name}`); setPeriod('evening') }
   }, [currentUser])
 
+  const PeriodIcon = period === 'morning' ? Sun : period === 'afternoon' ? CloudSun : Moon
+
   return greeting ? (
-    <p className="text-sm text-muted-foreground font-medium">{greeting}</p>
+    <p className="text-sm text-muted-foreground font-medium flex items-center gap-1.5">
+      <PeriodIcon className="h-4 w-4" />
+      {greeting}
+    </p>
   ) : null
 }
 
@@ -83,20 +89,24 @@ function DailyVitality() {
   const vitality = total > 0 ? Math.round((completed / total) * 100) : 0
   const remaining = total - completed
 
-  const vitalityColor = vitality >= 80 ? 'text-emerald-400' : vitality >= 50 ? 'text-amber-400' : 'text-red-400'
-  const barColor = vitality >= 80 ? 'from-emerald-500 to-emerald-400' : vitality >= 50 ? 'from-amber-500 to-amber-400' : 'from-red-500 to-red-400'
-
   return (
     <div className="glass-card p-5">
       <div className="flex items-end justify-between mb-4">
         <div>
           <p className="section-label mb-1">Daily Vitality</p>
           <div className="flex items-end gap-2">
-            <span className={cn('text-6xl font-black tabular-nums leading-none', vitalityColor)}>{vitality}</span>
-            <span className={cn('text-2xl font-bold mb-1', vitalityColor)}>%</span>
+            <span className="streak-number">{vitality}</span>
+            <span className="text-2xl font-bold mb-1 text-primary">%</span>
           </div>
-          <p className="section-label mt-1">
-            {vitality === 100 ? '✦ PERFECT DAY' : `${remaining} habit${remaining !== 1 ? 's' : ''} remaining`}
+          <p className="section-label mt-1 flex items-center gap-1">
+            {vitality === 100 ? (
+              <>
+                <Star className="h-3 w-3" />
+                PERFECT DAY
+              </>
+            ) : (
+              `${remaining} habit${remaining !== 1 ? 's' : ''} remaining`
+            )}
           </p>
         </div>
         <div className="flex gap-1 items-end">
@@ -113,12 +123,12 @@ function DailyVitality() {
               <div key={i} className="flex flex-col items-center gap-1">
                 <div className={cn(
                   'w-6 rounded-sm transition-all',
-                  isToday ? 'h-12 border border-white/20' : 'h-8',
-                  dayPct >= 1 ? 'bg-emerald-500' :
-                  dayPct >= 0.5 ? 'bg-emerald-700/60' :
-                  dayPct > 0 ? 'bg-white/10' : 'bg-white/5'
+                  isToday ? 'h-12 border border-border' : 'h-8',
+                  dayPct >= 1 ? 'bg-primary' :
+                  dayPct >= 0.5 ? 'bg-primary/40' :
+                  dayPct > 0 ? 'bg-muted' : 'bg-secondary'
                 )} />
-                <span className="text-[8px] text-muted-foreground uppercase">
+                <span className="text-xs text-muted-foreground uppercase">
                   {day.toFormat('EEE')[0]}
                 </span>
               </div>
@@ -126,8 +136,8 @@ function DailyVitality() {
           })}
         </div>
       </div>
-      <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-        <div className={cn('h-full rounded-full bg-gradient-to-r transition-all duration-700', barColor)}
+      <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+        <div className="h-full rounded-full bg-primary transition-all duration-700"
           style={{ width: `${vitality}%` }} />
       </div>
     </div>

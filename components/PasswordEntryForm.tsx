@@ -58,7 +58,7 @@ export default function PasswordEntryForm({
           <button 
             type="button"
             onClick={onCancel}
-            className="text-sm text-blue-500 hover:text-blue-600 mt-1"
+            className="text-sm text-primary hover:text-primary/80 mt-1"
           >
             {t('notYouButton')}
           </button>
@@ -74,10 +74,10 @@ export default function PasswordEntryForm({
             placeholder={t('passwordPlaceholder')}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={error ? 'border-red-500' : ''}
+            className={error ? 'border-destructive' : ''}
           />
           {error && (
-            <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/50 p-2 rounded">{error}</p>
+            <p className="text-sm text-destructive bg-destructive/10 p-2 rounded-lg">{error}</p>
           )}
         </div>
       </div>}

@@ -299,7 +299,7 @@ export default function UserForm({ userId, onCancel, onSuccess }: UserFormProps)
             placeholder={t('usernamePlaceholder')}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className={error ? 'border-red-500' : ''}
+            className={error ? 'border-destructive' : ''}
           />
         </div>
 
@@ -314,11 +314,11 @@ export default function UserForm({ userId, onCancel, onSuccess }: UserFormProps)
               placeholder={isEditing ? t('passwordPlaceholderEdit') : t('passwordPlaceholderCreate')}
               value={password || ''}
               onChange={(e) => setPassword(e.target.value)}
-              className={error ? 'border-red-500' : ''}
+              className={error ? 'border-destructive' : ''}
               disabled={disablePassword}
             />
             {serverSettings.isDemo && (
-              <p className="text-sm text-red-500">{t('demoPasswordDisabledMessage')}</p>
+              <p className="text-sm text-destructive">{t('demoPasswordDisabledMessage')}</p>
             )}
           </div>
 
@@ -334,7 +334,7 @@ export default function UserForm({ userId, onCancel, onSuccess }: UserFormProps)
         </div>
 
         {error && (
-          <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/50 p-2 rounded">{error}</p>
+          <p className="text-sm text-destructive bg-destructive/10 p-2 rounded-lg">{error}</p>
         )}
 
 

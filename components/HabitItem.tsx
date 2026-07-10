@@ -5,7 +5,7 @@ import { habitStreaksAtom } from '@/lib/gamification-atoms'
 import { calculateHabitXP, getBestStreak, getCompletionRate30Days } from '@/lib/gamification'
 import { getCompletionsForToday, isTaskOverdue, convertMachineReadableFrequencyToHumanReadable } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Check, Undo2, MoreVertical, Pin, ChevronDown, ChevronUp } from 'lucide-react'
+import { Check, Undo2, MoreVertical, Pin, ChevronDown, ChevronUp, Coins, Zap, Star, Clock, MapPin } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useEffect, useState } from 'react'
 import { useHabits } from '@/hooks/useHabits'
+import { useSwipeComplete } from '@/hooks/useSwipeComplete'
 import { useTranslations } from 'next-intl'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { hasPermission } from '@/lib/utils'
@@ -69,6 +70,18 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
   const bestStreak = getBestStreak(habit, settings.system.timezone)
   const completionRate = getCompletionRate30Days(habit, settings.system.timezone)
 
+  // Touch swipe: right completes, left undoes (mobile quick-log)
+  const { offset, swiping, handlers: swipeHandlers } = useSwipeComplete({
+    onSwipeRight: !isCompletedToday && canInteract && !habit.archived ? () => completeHabit(habit) : undefined,
+    onSwipeLeft: completionsToday > 0 && canWrite && !habit.archived ? () => undoComplete(habit) : undefined,
+    disabled: habit.archived || (!canInteract && !canWrite),
+  })
+  const swipeStyle = {
+    transform: offset !== 0 ? `translateX(${offset}px)` : undefined,
+    transition: swiping ? 'none' : 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+    touchAction: 'pan-y' as const,
+  }
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const highlightId = params.get('highlight')
@@ -93,9 +106,12 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
         id={`habit-${habit.id}`}
         className={cn(
           'vault-row group',
-          isHighlighted && 'ring-1 ring-amber-400',
+          isHighlighted && 'ring-1 ring-primary',
           habit.archived && 'opacity-40',
+          offset > 0 && 'border-primary/50',
         )}
+        style={swipeStyle}
+        {...swipeHandlers}
       >
         {/* Complete button - square checkbox */}
         <button
@@ -105,7 +121,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
             'h-6 w-6 rounded border-2 flex-shrink-0 flex items-center justify-center transition-all',
             isCompletedToday
               ? 'bg-emerald-500 border-emerald-500'
-              : 'border-white/20 hover:border-white/60'
+              : 'border-border hover:border-muted-foreground'
           )}
         >
           {isCompletedToday && <Check className="h-3.5 w-3.5 text-white" />}
@@ -114,7 +130,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            {habit.pinned && <Pin className="h-3 w-3 text-amber-400 flex-shrink-0" />}
+            {habit.pinned && <Pin className="h-3 w-3 text-muted-foreground flex-shrink-0" />}
             <h3 className={cn(
               'font-bold text-base leading-tight',
               isCompletedToday && 'line-through text-muted-foreground'
@@ -122,22 +138,27 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
               {habit.name}
             </h3>
             {isTaskOverdue(habit, settings.system.timezone) && (
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 uppercase tracking-wider">{t('overdue')}</span>
+              <span className="text-xs font-bold px-1.5 py-0.5 rounded-full bg-destructive/20 text-red-400 uppercase tracking-wider">{t('overdue')}</span>
             )}
             {isCompletedToday && (
-              <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">logged</span>
+              <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">logged</span>
             )}
           </div>
           <div className="flex items-center gap-3 mt-0.5 flex-wrap">
             <span className="section-label">
               {convertMachineReadableFrequencyToHumanReadable({ frequency: habit.frequency, isRecurRule: !habit.isTask, timezone: settings.system.timezone })}
             </span>
-            <span className="section-label text-amber-400/60">🪙 {habit.coinReward}</span>
-            <span className="section-label text-violet-400/60">⚡ +{xpReward} XP</span>
+            <span className="section-label text-amber-400/60 flex items-center gap-1"><Coins className="h-3 w-3" />{habit.coinReward}</span>
+            <span className="section-label flex items-center gap-1"><Zap className="h-3 w-3" />+{xpReward} XP</span>
           </div>
           {(habit.intentionWhen || habit.intentionWhere) && (
-            <p className="text-[11px] text-muted-foreground/50 italic mt-0.5">
-              {[habit.intentionWhen && `⏰ ${habit.intentionWhen}`, habit.intentionWhere && `📍 ${habit.intentionWhere}`].filter(Boolean).join(' · ')}
+            <p className="text-xs text-muted-foreground/50 italic mt-0.5 flex items-center gap-2 flex-wrap">
+              {habit.intentionWhen && (
+                <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{habit.intentionWhen}</span>
+              )}
+              {habit.intentionWhere && (
+                <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{habit.intentionWhere}</span>
+              )}
             </p>
           )}
           {habit.description && (
@@ -173,29 +194,32 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
     <div
       id={`habit-${habit.id}`}
       className={cn(
-        'group relative rounded-lg border bg-[#161616] border-[#262626] p-5 transition-all duration-200 hover:border-[#333]',
+        'group relative rounded-lg border bg-card border-border p-5 hover:border-muted',
         isCompletedToday && 'opacity-50',
         isHighlighted && 'border-primary/50',
         habit.archived && 'opacity-40',
-        habit.isKeystone && 'border-l-[3px] border-l-primary'
+        habit.isKeystone && 'border-primary/40',
+        offset > 0 && 'border-primary/60',
       )}
+      style={swipeStyle}
+      {...swipeHandlers}
     >
       {/* Top row: badges + actions */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2 flex-wrap">
           {habit.isKeystone && (
-            <span className="text-[10px] text-primary font-bold uppercase tracking-wide">⭐ Keystone</span>
+            <span className="section-label text-primary flex items-center gap-1"><Star className="h-3 w-3" />Keystone</span>
           )}
           {habit.pinned && <Pin className="h-3 w-3 text-muted-foreground" />}
           {habit.difficulty && (
             <span className={cn(
               'w-2 h-2 rounded-full flex-shrink-0',
-              habit.difficulty === 'hard' ? 'bg-red-500' :
-              habit.difficulty === 'medium' ? 'bg-amber-500' : 'bg-emerald-500'
+              habit.difficulty === 'hard' ? 'bg-destructive' :
+              habit.difficulty === 'medium' ? 'bg-amber-500' : 'bg-muted-foreground'
             )} />
           )}
           {isTaskOverdue(habit, settings.system.timezone) && (
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 uppercase tracking-wider">{t('overdue')}</span>
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded-full bg-destructive/20 text-red-400 uppercase tracking-wider">{t('overdue')}</span>
           )}
         </div>
 
@@ -238,17 +262,17 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
         <span className="section-label">
           {convertMachineReadableFrequencyToHumanReadable({ frequency: habit.frequency, isRecurRule: true, timezone: settings.system.timezone })}
         </span>
-        <span className="section-label text-amber-400/60">🪙 {habit.coinReward}</span>
-        <span className="section-label text-violet-400/60">⚡ +{xpReward} XP</span>
+        <span className="section-label text-amber-400/60 flex items-center gap-1"><Coins className="h-3 w-3" />{habit.coinReward}</span>
+        <span className="section-label flex items-center gap-1"><Zap className="h-3 w-3" />+{xpReward} XP</span>
       </div>
 
       {/* Bottom: streak + mini bars */}
       <div className="flex items-end justify-between mb-4">
         <div>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-0.5">Current Streak</p>
+          <p className="section-label mb-0.5">Current Streak</p>
           <p className={cn(
-            'text-5xl font-black tabular-nums leading-none',
-            isCompletedToday ? 'text-muted-foreground' : 'text-primary'
+            'streak-number',
+            isCompletedToday && 'text-muted-foreground'
           )}>
             {String(streak).padStart(2, '0')}
           </p>
@@ -267,7 +291,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
                 key={i}
                 className={cn(
                   'w-4 rounded-sm transition-colors',
-                  filled ? 'bg-primary h-6' : 'bg-[#2a2a2a] h-3'
+                  filled ? 'bg-primary h-6' : 'bg-muted h-3'
                 )}
               />
             )
@@ -280,14 +304,14 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
         onClick={() => isCompletedToday ? undoComplete(habit) : completeHabit(habit)}
         disabled={!canInteract || habit.archived}
         className={cn(
-          'w-full py-2 rounded-md text-xs font-bold uppercase tracking-wide transition-all',
+          'w-full py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-colors flex items-center justify-center gap-1.5',
           isCompletedToday
-            ? 'bg-[#2a2a2a] text-muted-foreground hover:bg-[#333]'
-            : 'bg-primary text-black hover:bg-primary/90'
+            ? 'bg-secondary text-muted-foreground hover:bg-muted'
+            : 'bg-primary text-primary-foreground hover:bg-primary/90'
         )}
       >
         {isCompletedToday
-          ? 'Completed ✓'
+          ? (<>Completed <Check className="h-3.5 w-3.5" /></>)
           : `Complete${target > 1 ? ` (${completionsToday}/${target})` : ''}`
         }
       </button>
@@ -314,8 +338,13 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
 
       {/* Intention */}
       {(habit.intentionWhen || habit.intentionWhere) && (
-        <p className="text-[11px] text-muted-foreground/50 italic mt-2">
-          {[habit.intentionWhen && `⏰ ${habit.intentionWhen}`, habit.intentionWhere && `📍 ${habit.intentionWhere}`].filter(Boolean).join(' · ')}
+        <p className="text-xs text-muted-foreground/50 italic mt-2 flex items-center gap-2 flex-wrap">
+          {habit.intentionWhen && (
+            <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{habit.intentionWhen}</span>
+          )}
+          {habit.intentionWhere && (
+            <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{habit.intentionWhere}</span>
+          )}
         </p>
       )}
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAtom } from 'jotai'
 import { guildDataAtom } from '@/lib/gamification-atoms'
 import { getGuildLeaderboard, getGuildQuests, GuildMemberStat, GuildQuestWithProgress } from '@/app/actions/guilds'
-import { Users } from 'lucide-react'
+import { Users, Crown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { currentUserAtom } from '@/lib/atoms'
@@ -35,9 +35,9 @@ export default function PartyStatusWidget() {
   if (!myGuild) {
     return (
       <Link href="/guild" className="block">
-        <div className="glass-card p-4 flex items-center gap-3 hover:bg-white/5 transition-colors cursor-pointer">
-          <div className="p-2 rounded-lg bg-violet-500/20">
-            <Users className="h-4 w-4 text-violet-400" />
+        <div className="glass-card p-4 flex items-center gap-3 hover:bg-secondary transition-colors cursor-pointer">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Users className="h-4 w-4 text-primary" />
           </div>
           <div>
             <p className="section-label">Party Status</p>
@@ -60,7 +60,7 @@ export default function PartyStatusWidget() {
             <p className="text-sm font-bold">{myGuild.name}</p>
           </div>
         </div>
-        <Link href="/guild" className="text-xs text-violet-400 hover:text-violet-300 font-semibold">
+        <Link href="/guild" className="text-xs text-primary hover:text-primary/80 font-semibold">
           View Guild →
         </Link>
       </div>
@@ -72,17 +72,17 @@ export default function PartyStatusWidget() {
             <div key={member.userId} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1.5">
-                  {i === 0 && <span>👑</span>}
-                  <span className={cn('font-semibold', isMe ? 'text-violet-300' : 'text-foreground')}>
+                  {i === 0 && <Crown className="h-3 w-3 text-primary" />}
+                  <span className={cn('font-semibold', isMe ? 'text-primary' : 'text-foreground')}>
                     {member.username}{isMe ? ' (you)' : ''}
                   </span>
                 </div>
                 <span className="text-muted-foreground tabular-nums">{member.weeklyCompletions}</span>
               </div>
-              <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
                 <div
                   className={cn('h-full rounded-full transition-all duration-500',
-                    i === 0 ? 'bg-amber-400' : isMe ? 'bg-violet-500' : 'bg-white/30'
+                    i === 0 || isMe ? 'bg-primary' : 'bg-muted-foreground/40'
                   )}
                   style={{ width: `${pct}%` }}
                 />
@@ -98,13 +98,13 @@ export default function PartyStatusWidget() {
         <div className="mt-3 pt-3 border-t border-border/50">
           <div className="flex items-center justify-between mb-1.5">
             <span className="section-label">Active Quest</span>
-            <Link href="/guild" className="text-[10px] text-violet-400 hover:text-violet-300">View all →</Link>
+            <Link href="/guild" className="text-xs text-primary hover:text-primary/80">View all →</Link>
           </div>
           <div className="flex items-center gap-2">
             <span>{topQuest.emoji}</span>
             <div className="flex-1">
               <p className="text-xs font-semibold truncate">{topQuest.title}</p>
-              <div className="h-1.5 rounded-full bg-white/5 mt-1 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-secondary mt-1 overflow-hidden">
                 <div
                   className={cn('h-full rounded-full', topQuest.isComplete ? 'bg-emerald-500' : 'bg-primary')}
                   style={{ width: `${Math.min(100, Math.round((topQuest.progress / topQuest.target) * 100))}%` }}

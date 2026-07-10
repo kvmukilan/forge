@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { PetForm } from '@/lib/types'
+import { Gem } from 'lucide-react'
 import Link from 'next/link'
 
 const PET_EMOJI: Record<PetForm, string> = {
@@ -77,7 +78,7 @@ export default function PetCard({ compact = false }: { compact?: boolean }) {
             <p className="section-label">Companion</p>
             <p className="text-sm text-muted-foreground">No pet yet</p>
           </div>
-          <Link href="/pet" className="text-xs text-violet-400 font-semibold hover:text-violet-300">Adopt →</Link>
+          <Link href="/pet" className="text-xs text-primary font-semibold hover:text-primary/80">Adopt →</Link>
         </div>
       )
     }
@@ -93,12 +94,12 @@ export default function PetCard({ compact = false }: { compact?: boolean }) {
             value={petName}
             onChange={e => setPetName(e.target.value)}
             placeholder="Name your pet"
-            className="bg-white/5 border-white/10"
+            className="bg-secondary border-border rounded-lg"
           />
           <Button
             onClick={handleAdopt}
             disabled={adopting}
-            className="bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 border-0 shrink-0"
+            className="bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-colors shrink-0"
           >
             Adopt
           </Button>
@@ -111,10 +112,10 @@ export default function PetCard({ compact = false }: { compact?: boolean }) {
   const xpPct = pet.xpToNextForm >= 9999999 ? 100 : Math.round((pet.xp / pet.xpToNextForm) * 100)
   const hpBarColor =
     pet.mood === 'ecstatic' || pet.mood === 'happy'
-      ? 'from-emerald-500 to-emerald-400'
+      ? 'bg-emerald-500'
       : pet.mood === 'neutral'
-      ? 'from-amber-500 to-amber-400'
-      : 'from-red-600 to-red-400'
+      ? 'bg-primary'
+      : 'bg-red-500'
 
   if (compact) {
     return (
@@ -128,15 +129,15 @@ export default function PetCard({ compact = false }: { compact?: boolean }) {
             </div>
             <p className="text-xs text-muted-foreground">{MOOD_LABEL[pet.mood]}</p>
           </div>
-          <Link href="/pet" className="text-xs text-violet-400 font-semibold hover:text-violet-300 shrink-0">View →</Link>
+          <Link href="/pet" className="text-xs text-primary font-semibold hover:text-primary/80 shrink-0">View →</Link>
         </div>
         <div className="space-y-1.5">
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>HP</span><span>{pet.hp}/{pet.maxHp}</span>
           </div>
-          <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
             <div
-              className={cn('h-full rounded-full bg-gradient-to-r transition-all duration-500', hpBarColor)}
+              className={cn('h-full rounded-full transition-all duration-500', hpBarColor)}
               style={{ width: `${hpPct}%` }}
             />
           </div>
@@ -155,8 +156,8 @@ export default function PetCard({ compact = false }: { compact?: boolean }) {
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-black">{pet.name}</h2>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 capitalize border border-violet-500/20">
+            <h2 className="text-2xl font-extrabold">{pet.name}</h2>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary capitalize border border-primary/20">
               {pet.form}
             </span>
           </div>
@@ -170,9 +171,9 @@ export default function PetCard({ compact = false }: { compact?: boolean }) {
             <span className="section-label">Health</span>
             <span className="text-muted-foreground tabular-nums">{pet.hp} / {pet.maxHp}</span>
           </div>
-          <div className="h-2.5 rounded-full bg-white/5 overflow-hidden">
+          <div className="h-2.5 rounded-full bg-secondary overflow-hidden">
             <div
-              className={cn('h-full rounded-full bg-gradient-to-r transition-all duration-700', hpBarColor)}
+              className={cn('h-full rounded-full transition-all duration-700', hpBarColor)}
               style={{ width: `${hpPct}%` }}
             />
           </div>
@@ -184,9 +185,9 @@ export default function PetCard({ compact = false }: { compact?: boolean }) {
               {pet.xpToNextForm >= 9999999 ? 'MAX' : `${pet.xp} / ${pet.xpToNextForm}`}
             </span>
           </div>
-          <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+          <div className="h-2 rounded-full bg-secondary overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-violet-600 to-violet-400 transition-all duration-700"
+              className="h-full rounded-full bg-primary transition-all duration-700"
               style={{ width: `${xpPct}%` }}
             />
           </div>
@@ -197,9 +198,10 @@ export default function PetCard({ compact = false }: { compact?: boolean }) {
         <Button
           onClick={handleFeed}
           disabled={feeding || gems < FEED_COST}
-          className="flex-1 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 border-0"
+          className="flex-1 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-colors"
         >
-          💎 Feed ({FEED_COST} gems)
+          <Gem className="h-4 w-4 mr-2" />
+          Feed ({FEED_COST} gems)
         </Button>
       </div>
       {gems < FEED_COST && (

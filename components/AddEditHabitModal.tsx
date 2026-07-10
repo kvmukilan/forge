@@ -164,18 +164,18 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                   <Label className="text-right text-sm">Priority</Label>
                   <div className="col-span-3 flex gap-2 flex-wrap">
                     {(['p1', 'p2', 'p3'] as const).map(p => {
-                      const labels = { p1: '🔴 Urgent', p2: '🟡 Normal', p3: '🔵 Low' }
+                      const labels = { p1: 'Urgent', p2: 'Normal', p3: 'Low' }
                       const active = priority === p
                       return (
                         <button
                           key={p}
                           type="button"
                           onClick={() => setPriority(prev => prev === p ? undefined : p)}
-                          className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                             active
-                              ? p === 'p1' ? 'bg-red-500 text-white border-red-500'
-                                : p === 'p2' ? 'bg-amber-400 text-black border-amber-400'
-                                : 'bg-blue-500 text-white border-blue-500'
+                              ? p === 'p1' ? 'bg-primary text-primary-foreground border-primary'
+                                : p === 'p2' ? 'bg-primary/30 text-foreground border-primary/40'
+                                : 'bg-muted text-foreground border-border'
                               : 'border-muted-foreground text-muted-foreground hover:bg-muted'
                           }`}
                         >
@@ -193,7 +193,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                     <select
                       value={projectId ?? ''}
                       onChange={e => setProjectId(e.target.value || undefined)}
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     >
                       <option value=''>No project</option>
                       {projectsData.projects.filter(p => !p.archived).length === 0
@@ -235,7 +235,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                   <Label className="text-right text-sm">Keystone</Label>
                   <div className="col-span-3 flex items-center gap-3">
                     <Switch checked={isKeystone} onCheckedChange={setIsKeystone} />
-                    <span className="text-xs text-muted-foreground">⭐ Completing this first gives +25% XP for the day</span>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1"><Zap className="h-3 w-3 text-primary flex-shrink-0" /> Completing this first gives +25% XP for the day</span>
                   </div>
                 </div>
               )}
@@ -345,7 +345,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                       <button
                         type="button"
                         onClick={() => setTargetCompletions(prev => Math.max(1, prev - 1))}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
                       >
                         -
                       </button>
@@ -364,7 +364,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                       <button
                         type="button"
                         onClick={() => setTargetCompletions(prev => Math.min(10, prev + 1))}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
                       >
                         +
                       </button>
@@ -387,7 +387,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                       <button
                         type="button"
                         onClick={() => setCoinReward(prev => Math.max(0, prev - 1))}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
                       >
                         -
                       </button>
@@ -407,7 +407,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                       <button
                         type="button"
                         onClick={() => setCoinReward(prev => Math.min(prev + 1, MAX_COIN_LIMIT))}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
                       >
                         +
                       </button>

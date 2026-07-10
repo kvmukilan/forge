@@ -14,36 +14,56 @@ import { useAtom } from 'jotai';
 import { useTranslations } from 'next-intl';
 import { settingsAtom, serverSettingsAtom } from '@/lib/atoms';
 import { Settings, WeekDay } from '@/lib/types'
-import { saveSettings } from '../actions/data'
-import { Info } from 'lucide-react'; // Import Info icon
+import { saveSettings, deleteUser } from '../actions/data'
+import { Info, Trash2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast'
-import { useSession } from 'next-auth/react'; // signOut removed
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-// AlertDialog components and useState removed
-// Trash2 icon removed
+import { useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export default function SettingsPage() {
   const t = useTranslations('SettingsPage');
-  // tWarning removed
   const [settings, setSettings] = useAtom(settingsAtom);
   const [serverSettings] = useAtom(serverSettingsAtom);
   const { data: session } = useSession();
   const router = useRouter();
-  // showConfirmDialog and isDeleting states removed
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const updateSettings = async (newSettings: Settings) => {
     await saveSettings(newSettings)
     setSettings(newSettings)
   }
 
-  // handleDeleteAccount function removed
+  const handleDeleteAccount = async () => {
+    if (!session?.user?.id) return
+    setIsDeleting(true)
+    try {
+      await deleteUser(session.user.id)
+      await signOut({ redirect: false })
+      window.location.href = '/login'
+    } catch {
+      toast({ title: 'Could not delete account', variant: 'destructive' })
+      setIsDeleting(false)
+    }
+  }
 
   if (!settings) return null
 
   return (
     <>
       <div>
-        <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
+        <h1 className="page-title mb-6">{t('title')}</h1>
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>{t('uiSettingsTitle')}</CardTitle>
@@ -111,7 +131,7 @@ export default function SettingsPage() {
                       system: { ...settings.system, timezone: e.target.value }
                     })
                   }
-                  className="w-[110px] xs:w-[200px] rounded-md border border-input bg-background px-3 py-2 mb-4"
+                  className="w-[110px] xs:w-[200px] rounded-lg border border-input bg-background px-3 py-2 mb-4"
                 >
                   {Intl.supportedValuesOf('timeZone').map((tz) => (
                     <option key={tz} value={tz}>
@@ -139,7 +159,7 @@ export default function SettingsPage() {
                       system: { ...settings.system, weekStartDay: Number(e.target.value) as WeekDay }
                     })
                   }
-                  className="w-[110px] xs:w-[200px] rounded-md border border-input bg-background px-3 py-2"
+                  className="w-[110px] xs:w-[200px] rounded-lg border border-input bg-background px-3 py-2"
                 >
                   {([
                     ['sunday', 0],
@@ -202,7 +222,7 @@ export default function SettingsPage() {
                   {t('languageDescription')}
                 </div>
                 {serverSettings.isDemo && (
-                  <div className="text-sm text-red-500">
+                  <div className="text-sm text-destructive">
                     {t('languageDisabledInDemoTooltip')}
                   </div>
                 )}
@@ -222,7 +242,7 @@ export default function SettingsPage() {
                     variant: 'default',
                   });
                 }}
-                className={`w-[110px] xs:w-[200px] rounded-md border border-input bg-background px-3 py-2 ${serverSettings.isDemo ? 'cursor-not-allowed opacity-50' : ''}`}
+                className={`w-[110px] xs:w-[200px] rounded-lg border border-input bg-background px-3 py-2 ${serverSettings.isDemo ? 'cursor-not-allowed opacity-50' : ''}`}
               >
                 {/* Add more languages as needed */}
                 <option value="en">English</option>
@@ -260,12 +280,50 @@ export default function SettingsPage() {
                 type="time"
                 value={settings.ui.notificationTime ?? '08:00'}
                 onChange={(e) => updateSettings({ ...settings, ui: { ...settings.ui, notificationTime: e.target.value } })}
-                className="bg-secondary border border-border rounded-md px-3 py-1.5 text-sm text-foreground"
+                className="bg-secondary border border-border rounded-lg px-3 py-1.5 text-sm text-foreground"
               />
             </div>
           )}
         </div>
-        {/* Danger Zone Card Removed */}
+        {/* Danger zone — self-serve account deletion (required for Play Store) */}
+        <div className="glass-card p-5 space-y-3 mt-6 border-destructive/30">
+          <p className="section-label text-red-400">Danger Zone</p>
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-sm font-semibold">Delete account</p>
+              <p className="text-xs text-muted-foreground max-w-sm">
+                Permanently removes your account and all data — habits, completions, coins,
+                XP, pet, guild membership and league history. This cannot be undone.
+              </p>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button className="flex items-center gap-1.5 rounded-lg border border-destructive/50 px-3 py-2 text-xs font-bold text-red-400 hover:bg-destructive/10 transition-colors">
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Delete account
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    All your data will be permanently erased. There is no way to recover it.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    disabled={isDeleting}
+                    onClick={handleDeleteAccount}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {isDeleting ? 'Deleting…' : 'Delete forever'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </div>
       </div >
     </>
   )

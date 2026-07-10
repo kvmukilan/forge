@@ -63,7 +63,7 @@ export default function NotificationDropdown({
   };
   
   if (!currentUser) {
-    return <div className="p-4 text-sm text-gray-500">{t('notLoggedIn')}</div>;
+    return <div className="p-4 text-sm text-muted-foreground">{t('notLoggedIn')}</div>;
   }
 
   const renderNotification = (tx: CoinTransaction, isUnread: boolean) => {
@@ -76,8 +76,8 @@ export default function NotificationDropdown({
 
     return (
       // Wrap the Link with DropdownMenuItem and use asChild to pass props
-      <DropdownMenuItem key={tx.id} asChild className={`p-0 focus:bg-inherit dark:focus:bg-inherit cursor-pointer`}>
-        <Link href={linkHref} className={`block hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${isUnread ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`} scroll={true}>
+      <DropdownMenuItem key={tx.id} asChild className={`p-0 focus:bg-inherit cursor-pointer`}>
+        <Link href={linkHref} className={`block hover:bg-secondary transition-colors ${isUnread ? 'bg-primary/10' : ''}`} scroll={true}>
           <div className="p-3 flex items-start gap-3">
             <Avatar className="h-8 w-8 mt-1">
               <AvatarImage src={triggeringUser?.avatarPath ? `/api/avatars/${triggeringUser.avatarPath.split('/').pop()}` : undefined} alt={triggeringUser?.username} />
@@ -85,7 +85,7 @@ export default function NotificationDropdown({
             </Avatar>
             <div className="flex-1">
               <p className={`text-sm ${isUnread ? 'font-semibold' : ''}`}>{message}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{timeAgo}</p>
+              <p className="text-xs text-muted-foreground">{timeAgo}</p>
             </div>
           </div>
         </Link>
@@ -97,7 +97,7 @@ export default function NotificationDropdown({
     <TooltipProvider>
       {/* Removed the outer div as width is now set on DropdownMenuContent in NotificationBell */}
       <>
-        <div className="p-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
+        <div className="p-3 border-b border-border flex items-center gap-2">
           <h4 className="text-sm font-medium">{t('notificationsTitle')}</h4>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -112,7 +112,7 @@ export default function NotificationDropdown({
         </div>
         <ScrollArea className="h-[400px]">
           {unreadNotifications.length === 0 && displayedReadNotifications.length === 0 && (
-            <div className="p-4 text-center text-sm text-gray-500">{t('noNotificationsYet')}</div>
+            <div className="p-4 text-center text-sm text-muted-foreground">{t('noNotificationsYet')}</div>
           )}
 
           {unreadNotifications.length > 0 && (

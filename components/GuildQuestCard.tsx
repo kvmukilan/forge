@@ -1,13 +1,14 @@
 'use client'
 
 import { GuildQuestWithProgress } from '@/app/actions/guilds'
+import { Coins, Zap, Gem } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 
 const DIFFICULTY_STYLES: Record<string, { label: string; color: string; border: string }> = {
-  easy:   { label: 'EASY',   color: 'text-emerald-400', border: 'border-emerald-500/30' },
-  medium: { label: 'MEDIUM', color: 'text-amber-400',   border: 'border-amber-500/30' },
-  hard:   { label: 'HARD',   color: 'text-red-400',     border: 'border-red-500/30' },
+  easy:   { label: 'EASY',   color: 'text-muted-foreground', border: 'border-border' },
+  medium: { label: 'MEDIUM', color: 'text-primary',          border: 'border-primary/30' },
+  hard:   { label: 'HARD',   color: 'text-red-400',          border: 'border-red-500/30' },
 }
 
 function useCountdown(weekStart: string) {
@@ -51,15 +52,15 @@ export default function GuildQuestCard({ quest }: GuildQuestCardProps) {
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
           <span className="text-2xl">{quest.emoji}</span>
-          <span className={cn('text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border', styles.color, styles.border)}>
+          <span className={cn('text-xs font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full border', styles.color, styles.border)}>
             {styles.label}
           </span>
         </div>
         {!quest.isComplete && (
-          <span className="text-[10px] text-muted-foreground tabular-nums">{timeLeft}</span>
+          <span className="text-xs text-muted-foreground tabular-nums">{timeLeft}</span>
         )}
         {quest.isComplete && (
-          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">COMPLETE ✓</span>
+          <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">COMPLETE ✓</span>
         )}
       </div>
 
@@ -77,7 +78,7 @@ export default function GuildQuestCard({ quest }: GuildQuestCardProps) {
             {quest.progress.toLocaleString()} / {quest.target.toLocaleString()}
           </span>
         </div>
-        <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+        <div className="h-2 rounded-full bg-secondary overflow-hidden">
           <div
             className={cn(
               'h-full rounded-full transition-all duration-700',
@@ -90,15 +91,27 @@ export default function GuildQuestCard({ quest }: GuildQuestCardProps) {
 
       {/* Rewards */}
       <div className="flex items-center gap-3">
-        <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Reward:</span>
-        {quest.reward.coins > 0 && <span className="text-xs font-semibold text-amber-400">🪙 {quest.reward.coins}</span>}
-        {quest.reward.xp > 0 && <span className="text-xs font-semibold text-violet-400">⚡ {quest.reward.xp} XP</span>}
-        {quest.reward.gems > 0 && <span className="text-xs font-semibold text-cyan-400">💎 {quest.reward.gems}</span>}
+        <span className="text-xs text-muted-foreground uppercase tracking-wide">Reward:</span>
+        {quest.reward.coins > 0 && (
+          <span className="text-xs font-semibold text-amber-400 inline-flex items-center gap-1">
+            <Coins className="h-3 w-3" /> {quest.reward.coins}
+          </span>
+        )}
+        {quest.reward.xp > 0 && (
+          <span className="text-xs font-semibold text-primary inline-flex items-center gap-1">
+            <Zap className="h-3 w-3" /> {quest.reward.xp} XP
+          </span>
+        )}
+        {quest.reward.gems > 0 && (
+          <span className="text-xs font-semibold text-primary inline-flex items-center gap-1">
+            <Gem className="h-3 w-3" /> {quest.reward.gems}
+          </span>
+        )}
       </div>
 
       {/* Auto-distributed state */}
       {allClaimed && (
-        <div className="text-xs text-emerald-400 font-semibold text-center py-1 bg-emerald-500/10 rounded-md">
+        <div className="text-xs text-emerald-400 font-semibold text-center py-1 bg-emerald-500/10 rounded-lg">
           Rewards distributed to all members!
         </div>
       )}

@@ -12,8 +12,8 @@ export default function HabitDNA() {
   return (
     <div className="glass-card p-4">
       <div className="flex items-center gap-2 mb-4">
-        <div className="p-1.5 rounded-lg bg-cyan-500/20">
-          <Dna className="h-4 w-4 text-cyan-400" />
+        <div className="p-1.5 rounded-lg bg-primary/10">
+          <Dna className="h-4 w-4 text-primary" />
         </div>
         <span className="text-sm font-semibold">Your Habit DNA This Week</span>
       </div>
@@ -22,9 +22,9 @@ export default function HabitDNA() {
         {dna.perHabit.slice(0, 5).map(h => (
           <div key={h.name} className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground w-24 truncate">{h.name}</span>
-            <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+            <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all duration-700"
+                className="h-full rounded-full bg-primary transition-all duration-700"
                 style={{ width: `${h.pct}%` }}
               />
             </div>
@@ -34,13 +34,13 @@ export default function HabitDNA() {
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-3">
-        <div className="glass-card p-2 bg-blue-500/5">
+        <div className="glass-card p-2">
           <p className="text-xs text-muted-foreground">Weekdays</p>
-          <p className="text-sm font-bold text-blue-400">{dna.weekdayPct}%</p>
+          <p className="text-sm font-bold">{dna.weekdayPct}%</p>
         </div>
-        <div className="glass-card p-2 bg-purple-500/5">
+        <div className="glass-card p-2">
           <p className="text-xs text-muted-foreground">Weekends</p>
-          <p className="text-sm font-bold text-purple-400">{dna.weekendPct}%</p>
+          <p className="text-sm font-bold">{dna.weekendPct}%</p>
         </div>
       </div>
 

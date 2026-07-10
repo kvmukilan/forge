@@ -153,6 +153,32 @@ export async function saveHabitsData(data: HabitsData): Promise<void> {
   }
 }
 
+// Attaches a note to an existing completion (identified by its exact UTC ISO timestamp)
+export async function setCompletionNote(habitId: string, completedAt: string, note: string): Promise<void> {
+  const user = await requireUser()
+  const db = await getDb()
+  const scope = user.isAdmin
+    ? and(eq(completions.habitId, habitId), eq(completions.completedAt, completedAt))
+    : and(eq(completions.habitId, habitId), eq(completions.completedAt, completedAt), eq(completions.userId, user.id))
+  await db.update(completions).set({ note: note.trim() || null }).where(scope)
+}
+
+// Notes for one habit keyed by completion timestamp (for calendar/detail views)
+export async function getCompletionNotes(habitId: string): Promise<Record<string, string>> {
+  const user = await getCurrentUser()
+  if (!user) return {}
+  const db = await getDb()
+  const scope = user.isAdmin
+    ? eq(completions.habitId, habitId)
+    : and(eq(completions.habitId, habitId), eq(completions.userId, user.id))
+  const rows = await db.select().from(completions).where(scope)
+  const notes: Record<string, string> = {}
+  for (const row of rows) {
+    if (row.note) notes[row.completedAt] = row.note
+  }
+  return notes
+}
+
 // Coins specific functions
 export async function loadCoinsData(): Promise<CoinsData> {
   const user = await getCurrentUser()
@@ -419,7 +445,21 @@ export async function createUser(formData: FormData): Promise<PublicUser> {
   return sanitizeUserData({ users: [userToWire(inserted[0])] }).users[0]
 }
 
+// Caller must be an admin or the affected user themselves
+async function requireSelfOrAdmin(userId: string): Promise<User> {
+  const currentUser = await requireUser()
+  if (!currentUser.isAdmin && currentUser.id !== userId) {
+    throw new PermissionError('Not allowed to modify this user')
+  }
+  return currentUser
+}
+
 export async function updateUser(userId: string, updates: Partial<Omit<User, 'id' | 'password'>>): Promise<PublicUser> {
+  const caller = await requireSelfOrAdmin(userId)
+  // Only admins may grant or revoke admin
+  if (updates.isAdmin !== undefined && !caller.isAdmin) {
+    delete updates.isAdmin
+  }
   const db = await getDb()
   const rows = await db.select().from(users).where(eq(users.id, userId)).limit(1)
   if (!rows[0]) throw new Error('User not found')
@@ -444,6 +484,7 @@ export async function updateUser(userId: string, updates: Partial<Omit<User, 'id
 }
 
 export async function updateUserPassword(userId: string, newPassword?: string): Promise<void> {
+  await requireSelfOrAdmin(userId)
   const db = await getDb()
   const hashedPassword = newPassword ? saltAndHashPassword(newPassword) : null
   const updated = await db.update(users).set({ password: hashedPassword }).where(eq(users.id, userId)).returning({ id: users.id })
@@ -451,6 +492,7 @@ export async function updateUserPassword(userId: string, newPassword?: string): 
 }
 
 export async function deleteUser(userId: string): Promise<void> {
+  await requireSelfOrAdmin(userId)
   const db = await getDb()
   // All user-owned rows (habits, completions, coins, xp, boss, pet, guild
   // membership, settings, avatars, push subscriptions, retention rows) are
@@ -460,6 +502,7 @@ export async function deleteUser(userId: string): Promise<void> {
 }
 
 export async function updateLastNotificationReadTimestamp(userId: string, timestamp: string): Promise<void> {
+  await requireSelfOrAdmin(userId)
   const db = await getDb()
   const updated = await db.update(users)
     .set({ lastNotificationReadTimestamp: timestamp })

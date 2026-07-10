@@ -67,7 +67,7 @@ export default function HabitStreak({ habits }: HabitStreakProps) {
                 type="monotone"
                 name={t('tooltipHabitsLabel')}
                 dataKey="habits"
-                stroke="#14b8a6"
+                stroke="hsl(var(--primary))"
                 strokeWidth={2}
                 dot={false}
               />
@@ -76,7 +76,7 @@ export default function HabitStreak({ habits }: HabitStreakProps) {
                   type="monotone"
                   name={t('tooltipTasksLabel')}
                   dataKey="tasks"
-                  stroke="#f59e0b"
+                  stroke="hsl(var(--muted-foreground))"
                   strokeWidth={2}
                   dot={false}
                 />

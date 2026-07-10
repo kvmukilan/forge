@@ -181,7 +181,7 @@ export default function PomodoroTimer() {
   if (!show) return null
 
   return (
-    <div className="fixed bottom-20 right-4 lg:bottom-4 bg-background border rounded-lg shadow-lg">
+    <div className="fixed bottom-20 right-4 lg:bottom-4 bg-card border border-border rounded-lg shadow-lg">
       {minimized ? (
         // minimized version
         <div
@@ -229,11 +229,11 @@ export default function PomodoroTimer() {
                     <div className={cn(
                       'w-2 h-2 rounded-full flex-none',
                       // order matters here
-                      currentTimerRef.current.type === 'focus' && 'bg-green-500',
+                      currentTimerRef.current.type === 'focus' && 'bg-primary',
                       state === 'started' && 'animate-pulse',
-                      state === 'paused' && 'bg-yellow-500',
-                      state === 'stopped' && 'bg-red-500',
-                      currentTimerRef.current.type === 'break' && 'bg-blue-500',
+                      state === 'paused' && 'bg-primary/40',
+                      state === 'stopped' && 'bg-muted-foreground',
+                      currentTimerRef.current.type === 'break' && 'bg-foreground',
                     )} />
                     <div className="font-bold text-foreground">
                       {selectedHabit.name}
@@ -262,9 +262,9 @@ export default function PomodoroTimer() {
                           className={cn(
                             'w-6 h-6 rounded-full flex items-center justify-center border',
                             isCompleted
-                              ? 'bg-green-500 border-green-600 text-white'
+                              ? 'bg-emerald-500 border-emerald-600 text-white'
                               : isCurrent
-                                ? 'border-2 border-green-500 text-muted-foreground'
+                                ? 'border-2 border-emerald-500 text-muted-foreground'
                                 : 'border-muted-foreground text-muted-foreground'
                           )}
                         >
