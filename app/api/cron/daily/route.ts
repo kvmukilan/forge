@@ -109,6 +109,17 @@ async function autoConsumeShields(): Promise<number> {
   return consumed
 }
 
+// Close any league week that has ended but hasn't been finalized (idempotent,
+// so running daily is fine — it only does work on/after Mondays)
+async function closeFinishedLeagueWeeks(): Promise<number> {
+  const { closeLeagueWeek } = await import('@/app/actions/retention')
+  const now = DateTime.utc()
+  const thisMonday = now.minus({ days: now.weekday - 1 }).toISODate()!
+  const lastMonday = now.minus({ days: now.weekday - 1 + 7 }).toISODate()!
+  // Finalize last week (and re-run is a no-op thanks to the already-closed guard)
+  return closeLeagueWeek(lastMonday === thisMonday ? thisMonday : lastMonday)
+}
+
 export async function GET(request: Request) {
   if (!isAuthorized(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -116,7 +127,8 @@ export async function GET(request: Request) {
   try {
     const penalties = await applyOverduePenalties()
     const shieldsConsumed = await autoConsumeShields()
-    return NextResponse.json({ ok: true, penalties, shieldsConsumed })
+    const leaguesClosed = await closeFinishedLeagueWeeks()
+    return NextResponse.json({ ok: true, penalties, shieldsConsumed, leaguesClosed })
   } catch (error) {
     console.error('Daily cron failed:', error)
     return NextResponse.json({ error: 'Cron failed' }, { status: 500 })

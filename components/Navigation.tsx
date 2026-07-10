@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, Calendar, Gift, Coins, FolderKanban, Trophy, ShoppingBag, Users, Heart, BarChart3, Sparkles, Flame } from 'lucide-react'
+import { Home, Calendar, Gift, Coins, FolderKanban, Trophy, ShoppingBag, Users, Heart, BarChart3, Sparkles, Flame, Swords } from 'lucide-react'
 import { useEffect, useState, ElementType } from 'react'
 import { useTranslations } from 'next-intl'
 import { HabitIcon, TaskIcon } from '@/lib/constants'
@@ -32,6 +32,7 @@ export default function Navigation({ className, viewPort }: NavigationProps) {
     { icon: TaskIcon, label: 'Missions', href: '/tasks', position: 'main' },
     { icon: Gift, label: t('wishlist'), href: '/wishlist', position: 'main' },
     { icon: BarChart3, label: 'Stats', href: '/stats', position: 'main' },
+    { icon: Swords, label: 'League', href: '/league', position: 'bottom' },
     { icon: Coins, label: t('coins'), href: '/coins', position: 'bottom' },
     { icon: Calendar, label: t('calendar'), href: '/calendar', position: 'bottom' },
     { icon: FolderKanban, label: 'Projects', href: '/projects', position: 'bottom' },

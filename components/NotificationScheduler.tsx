@@ -3,49 +3,70 @@
 import { useEffect } from 'react'
 import { useAtomValue } from 'jotai'
 import { settingsAtom } from '@/lib/atoms'
+import { subscribeUser, unsubscribeUser } from '@/app/actions/push'
 
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const rawData = atob(base64)
+  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)))
+}
+
+// Manages the Web Push subscription lifecycle. Actual notification delivery is
+// server-side (/api/cron/push) so reminders arrive even with the app closed.
 export default function NotificationScheduler() {
   const settings = useAtomValue(settingsAtom)
   const enabled = settings.ui.notificationsEnabled ?? false
-  const timeStr = settings.ui.notificationTime ?? '08:00'
 
   useEffect(() => {
-    if (!enabled || typeof window === 'undefined') return
-    if (!('Notification' in window)) return
+    if (typeof window === 'undefined') return
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return
+    const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+    if (!vapidKey) return
 
-    let timeoutId: ReturnType<typeof setTimeout>
+    let cancelled = false
 
-    const scheduleNext = () => {
-      const [hours, minutes] = timeStr.split(':').map(Number)
-      const now = new Date()
-      const next = new Date()
-      next.setHours(hours, minutes, 0, 0)
-      if (next <= now) next.setDate(next.getDate() + 1)
-      const ms = next.getTime() - now.getTime()
+    const sync = async () => {
+      try {
+        const registration = await navigator.serviceWorker.ready
+        if (cancelled) return
 
-      timeoutId = setTimeout(async () => {
-        if (Notification.permission === 'granted') {
-          new Notification('Forge', {
-            body: "Time to build your habits! Open Forge to log today's progress.",
-            icon: '/icons/icon.png',
+        if (!enabled) {
+          const existing = await registration.pushManager.getSubscription()
+          if (existing) {
+            await existing.unsubscribe()
+            await unsubscribeUser(existing.endpoint)
+          }
+          return
+        }
+
+        if (Notification.permission === 'default') {
+          await Notification.requestPermission()
+        }
+        if (Notification.permission !== 'granted' || cancelled) return
+
+        const subscription =
+          (await registration.pushManager.getSubscription()) ??
+          (await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidKey) as BufferSource,
+          }))
+
+        const json = subscription.toJSON()
+        if (json.endpoint && json.keys?.p256dh && json.keys?.auth) {
+          await subscribeUser({
+            endpoint: json.endpoint,
+            keys: { p256dh: json.keys.p256dh, auth: json.keys.auth },
           })
         }
-        scheduleNext()
-      }, ms)
-    }
-
-    const requestAndSchedule = async () => {
-      if (Notification.permission === 'default') {
-        await Notification.requestPermission()
-      }
-      if (Notification.permission === 'granted') {
-        scheduleNext()
+      } catch (error) {
+        console.error('Push subscription sync failed:', error)
       }
     }
 
-    requestAndSchedule()
-    return () => clearTimeout(timeoutId)
-  }, [enabled, timeStr])
+    sync()
+    return () => { cancelled = true }
+  }, [enabled])
 
   return null
 }

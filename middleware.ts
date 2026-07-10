@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server'
 
 const { auth } = NextAuth(authConfig)
 
-const PUBLIC_PATHS = ['/login', '/api/auth']
+// /api/cron/* is guarded by its own CRON_SECRET bearer check;
+// /privacy and /.well-known must be reachable for Play Store review
+const PUBLIC_PATHS = ['/login', '/api/auth', '/api/cron', '/privacy', '/.well-known']
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(p => pathname.startsWith(p))

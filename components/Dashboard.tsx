@@ -6,7 +6,8 @@ import { bossAtom } from '@/lib/gamification-atoms'
 import DailyOverview from './DailyOverview'
 import HabitStreak from './HabitStreak'
 import CharacterCard from './CharacterCard'
-import DailyChallenge from './DailyChallenge'
+import DailyQuests from './DailyQuests'
+import StreakAtRiskBanner from './StreakAtRiskBanner'
 import BossCard from './BossCard'
 import PartyStatusWidget from './PartyStatusWidget'
 import PetCard from './PetCard'
@@ -18,6 +19,7 @@ import { Coins } from 'lucide-react'
 import { useAchievements } from '@/hooks/useAchievements'
 import { getOrSpawnBoss } from '@/app/actions/gamification'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { DateTime } from 'luxon'
 import { cn } from '@/lib/utils'
 
@@ -155,9 +157,21 @@ export default function Dashboard() {
     getOrSpawnBoss(weekStart, habitCount).then(setBossData).catch(() => {})
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // First-run: send brand-new accounts through onboarding
+  const router = useRouter()
+  useEffect(() => {
+    let onboarded = false
+    try { onboarded = localStorage.getItem('forge-onboarded') === '1' } catch {}
+    if (habits.length === 0 && !onboarded) {
+      router.push('/onboarding')
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className="space-y-5 animate-fade-in">
       <GreetingHeader />
+
+      <StreakAtRiskBanner />
 
       <SeasonBanner />
 
@@ -173,7 +187,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
-          <DailyChallenge />
+          <DailyQuests />
         </div>
         <div className="md:col-span-1">
           <CoinBalanceCard />
