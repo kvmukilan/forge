@@ -98,9 +98,10 @@ export function useHabits() {
     }
 
     // Add new completion
+    const newCompletionTimestamp = d2t({ dateTime: getNow({ timezone }) })
     const updatedHabit = {
       ...habit,
-      completions: [...habit.completions, d2t({ dateTime: getNow({ timezone }) })],
+      completions: [...habit.completions, newCompletionTimestamp],
       // Archive the habit if it's a task and we're about to reach the target
       archived: habit.isTask && completionsToday + 1 === target ? true : habit.archived
     }
@@ -250,6 +251,7 @@ export function useHabits() {
 
     return {
       updatedHabits,
+      newCompletionTimestamp,
       newBalance: coins.balance,
       newTransactions: coins.transactions
     }

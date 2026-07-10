@@ -1,11 +1,11 @@
 import { Habit } from '@/lib/types';
 import { useHabits } from '@/hooks/useHabits';
 import { useAtom } from 'jotai';
-import { pomodoroAtom, settingsAtom, currentUserAtom } from '@/lib/atoms';
-import { d2t, getNow, isHabitDueToday, hasPermission } from '@/lib/utils';
+import { pomodoroAtom, settingsAtom, currentUserAtom, completeWithNoteAtom } from '@/lib/atoms';
+import { d2t, getNow, isHabitDueToday, hasPermission, getCompletionsForToday } from '@/lib/utils';
 import { DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { ContextMenuItem, ContextMenuSeparator } from '@/components/ui/context-menu';
-import { Timer, Calendar, Pin, Edit, Archive, ArchiveRestore, Trash2 } from 'lucide-react';
+import { Timer, Calendar, Pin, Edit, Archive, ArchiveRestore, Trash2, NotebookPen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface HabitContextMenuItemsProps {
@@ -27,7 +27,9 @@ export function HabitContextMenuItems({
   const { saveHabit, archiveHabit, unarchiveHabit } = useHabits();
   const [settings] = useAtom(settingsAtom);
   const [, setPomo] = useAtom(pomodoroAtom);
+  const [, setCompleteWithNote] = useAtom(completeWithNoteAtom);
   const [currentUser] = useAtom(currentUserAtom);
+  const completedToday = getCompletionsForToday({ habit, timezone: settings.system.timezone }) >= (habit.targetCompletions ?? 1);
 
   const canWrite = hasPermission(currentUser, 'habit', 'write'); // For UI disabling if not handled by useHabits' actions
   const canInteract = hasPermission(currentUser, 'habit', 'interact');
@@ -44,6 +46,16 @@ export function HabitContextMenuItems({
 
   return (
     <>
+      {!habit.archived && !completedToday && (
+        <MenuItemComponent
+          disabled={!canInteract}
+          onClick={() => handleAction(() => setCompleteWithNote(habit))}
+        >
+          <NotebookPen className="mr-2 h-4 w-4" />
+          <span>Complete with note…</span>
+        </MenuItemComponent>
+      )}
+
       {!habit.archived && (
         <MenuItemComponent
           disabled={!canInteract}

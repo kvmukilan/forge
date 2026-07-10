@@ -125,6 +125,9 @@ export const pomodoroAtom = atom<PomodoroAtom>({
 })
 
 export const userSelectAtom = atom<boolean>(false)
+
+// Habit queued for "complete with note" (modal rendered in ClientWrapper)
+export const completeWithNoteAtom = atom<Habit | null>(null)
 export const aboutOpenAtom = atom<boolean>(false)
 
 // Sync-writable atom for freshness token; computed via useEffect in ClientWrapper

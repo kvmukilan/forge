@@ -1,5 +1,32 @@
 # Changelog
 
+## Version 1.0.0
+
+**Play Store release.** Forge is now a multi-user production app.
+
+### Added
+
+* Postgres persistence (Neon in production, embedded PGlite for local dev) replacing JSON files — per-user XP, bosses, pets and guilds; completions stored as rows with notes
+* Self-serve signup on the login page; account deletion in Settings
+* Retention systems: 7-day login calendar, 3 rotating daily quests, mystery chests, weekly leagues (5 tiers, 15-person cohorts), streak-at-risk warnings
+* Working streak shields (auto-consumed by the daily cron when a streak would break)
+* Rolling monthly seasons (previous hardcoded seasons expired end of 2025)
+* 60-second onboarding with identity-framed starter habits and first-log celebration
+* Real web push: per-user subscriptions, schedule-aware reminders and streak nudges via Vercel Cron
+* Swipe-to-complete / swipe-to-undo, "Complete all" quick action, per-completion notes
+* PWA/TWA packaging: serwist service worker, maskable icons, Digital Asset Links endpoint, privacy policy, Play release runbook (docs/play-release.md)
+
+### Changed
+
+* Kinetic Minimalism redesign: dark-only theme, single ember accent, Geist, unified surfaces/radius/type scale, lucide-only iconography, new app icon
+* Mobile navigation: every destination reachable (4 tabs + More drawer)
+* Overdue-task penalty applies once per task (was nightly)
+
+### Fixed
+
+* Data-directory recursion crash off-Vercel; passwordless credential sign-in hole; user mutations now require self-or-admin
+
+
 ## Version 0.2.31
 
 **This Release contains important security patches, please update as soon as possible**

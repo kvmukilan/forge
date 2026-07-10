@@ -5,6 +5,7 @@ import { useAtom, useSetAtom } from 'jotai'
 import { aboutOpenAtom, pomodoroAtom, userSelectAtom, currentUserIdAtom, browserSettingsAtom, BrowserSettings } from '@/lib/atoms'
 import PomodoroTimer from './PomodoroTimer'
 import UserSelectModal from './UserSelectModal'
+import CompleteWithNoteModal from './CompleteWithNoteModal'
 import { useSession } from 'next-auth/react'
 import AboutModal from './AboutModal'
 import LoadingSpinner from './LoadingSpinner'
@@ -60,6 +61,7 @@ function ClientWrapperContent({ children }: { children: ReactNode }) {
     <>
       {children}
       {pomo.show && <PomodoroTimer />}
+      <CompleteWithNoteModal />
       {userSelect && <UserSelectModal onClose={() => setUserSelect(false)} />}
       {aboutOpen && <AboutModal onClose={() => setAboutOpen(false)} />}
     </>
