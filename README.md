@@ -15,7 +15,15 @@ Ships to the web as a PWA and to Google Play as a Trusted Web Activity.
 - Per-completion notes, partial completions (n× per day targets), implementation intentions, keystone habits
 - Calendar heatmaps, per-habit stats, yearly analytics
 
+**Daily planning**
+- **Daily Forge** turns the due list into a realistic 1, 3, or 5-item focus plan based on current energy
+- Smart suggestions prioritize keystones and urgent tasks; low-energy days favor a minimum viable win
+- Plans sync across devices, use the normal completion/reward pipeline, and end with an optional mood + reflection
+
 **Progression**
+- A transparent onboarding assessment estimates six editable attributes and creates a small personal starter program
+- Character and Journey views connect attribute XP, overall level, original ranks, and a six-chapter 66-day campaign
+- Explainable adaptive suggestions use completion history and optional effort feedback, with pause/freeze and recovery controls
 - Coins (spend on your own reward wishlist) and XP with levels, difficulty multipliers, and skill trees
 - Streaks with milestones — and **streak shields** that auto-spend to save a missed day
 - Weekly boss battles, an evolving companion pet, monthly seasons with rotating bonuses

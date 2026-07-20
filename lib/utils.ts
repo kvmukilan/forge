@@ -451,7 +451,9 @@ export function checkPermission(
   resource: 'habit' | 'wishlist' | 'coins',
   action: 'write' | 'interact'
 ): boolean {
-  if (!permissions) return false
+  // Accounts created before permissions were introduced own their data and
+  // retain normal self-service access. An explicit empty list remains denied.
+  if (!permissions) return true
 
   return permissions.some(permission => {
     switch (resource) {

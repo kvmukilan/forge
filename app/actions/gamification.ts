@@ -7,7 +7,7 @@ import { getCurrentUser } from '@/lib/server-helpers'
 import { getDb } from '@/lib/db'
 import { xpState, xpTransactions, bosses, projects } from '@/lib/db/schema'
 import { xpToWire, xpStateToRow, bossToWire, bossToRow, projectToWire } from '@/lib/db/mappers'
-import { and, asc, eq } from 'drizzle-orm'
+import { and, asc, eq, sql } from 'drizzle-orm'
 import { addCoins, loadCoinsData } from './data'
 
 async function requireUserId(): Promise<string | null> {
@@ -52,6 +52,7 @@ export async function saveXPData(data: XPData): Promise<void> {
       source: t.source,
       relatedItemId: t.relatedItemId ?? null,
       timestamp: t.timestamp,
+      eventKey: t.eventKey ?? null,
     }))).onConflictDoNothing()
   }
 }
@@ -61,11 +62,13 @@ export async function addXP({
   source,
   relatedItemId,
   userId,
+  eventKey,
 }: {
   amount: number
   source: XPTransactionSource
   relatedItemId?: string
   userId?: string
+  eventKey?: string
 }): Promise<XPData> {
   const targetUserId = userId ?? await requireUserId()
   if (!targetUserId) return getDefaultXPData()
@@ -76,23 +79,50 @@ export async function addXP({
     source,
     relatedItemId,
     timestamp: new Date().toISOString(),
+    eventKey,
     userId: targetUserId,
   }
-  const data = await loadXPDataFor(targetUserId)
-  await saveXPStateFor(targetUserId, { ...data, totalXP: data.totalXP + amount })
-  await db.insert(xpTransactions).values({
+  const inserted = await db.insert(xpTransactions).values({
     id: transaction.id,
     userId: targetUserId,
     amount,
     source,
     relatedItemId: relatedItemId ?? null,
     timestamp: transaction.timestamp,
-  })
-  return {
-    ...data,
-    totalXP: data.totalXP + amount,
-    transactions: [...data.transactions, transaction],
+    eventKey: eventKey ?? null,
+  }).onConflictDoNothing().returning({ id: xpTransactions.id })
+  if (inserted.length > 0) {
+    await db.insert(xpState).values({ userId: targetUserId, totalXP: amount }).onConflictDoUpdate({
+      target: xpState.userId,
+      set: { totalXP: sql`${xpState.totalXP} + ${amount}` },
+    })
   }
+  return loadXPDataFor(targetUserId)
+}
+
+export async function reverseXPReward({
+  originalEventKey,
+  undoEventKey,
+  source,
+}: {
+  originalEventKey: string
+  undoEventKey: string
+  source: Extract<XPTransactionSource, 'HABIT_UNDO' | 'TASK_UNDO'>
+}): Promise<XPData> {
+  const userId = await requireUserId()
+  if (!userId) return getDefaultXPData()
+  const db = await getDb()
+  const [original] = await db.select().from(xpTransactions).where(and(
+    eq(xpTransactions.userId, userId),
+    eq(xpTransactions.eventKey, originalEventKey),
+  )).limit(1)
+  if (!original) return loadXPDataFor(userId)
+  return addXP({
+    amount: -original.amount,
+    source,
+    relatedItemId: original.relatedItemId ?? undefined,
+    eventKey: undoEventKey,
+  })
 }
 
 export async function unlockAchievement(id: string, xpData: XPData): Promise<XPData> {

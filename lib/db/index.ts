@@ -9,15 +9,22 @@ export type Db = PgDatabase<PgQueryResultHKT, typeof schema>
 const globalForDb = globalThis as unknown as {
   __forgeDb?: Promise<Db>
   __forgePglite?: { close(): Promise<void> }
+  __forgeNeonPool?: { end(): Promise<void> }
 }
 
 async function createDb(): Promise<Db> {
   const url = process.env.DATABASE_URL
   if (url) {
-    const { neon } = await import('@neondatabase/serverless')
-    const { drizzle } = await import('drizzle-orm/neon-http')
+    const { Pool } = await import('@neondatabase/serverless')
+    const { drizzle } = await import('drizzle-orm/neon-serverless')
     // Migrations for Neon run at deploy time (scripts/migrate.mjs), not here
-    return drizzle(neon(url), { schema }) as unknown as Db
+    const pool = new Pool({ connectionString: url })
+    globalForDb.__forgeNeonPool = pool
+    return drizzle(pool, { schema }) as unknown as Db
+  }
+
+  if (process.env.VERCEL) {
+    throw new Error('DATABASE_URL is required when Forge runs on Vercel')
   }
 
   // No DATABASE_URL: embedded Postgres (PGlite) for local dev and tests.
@@ -55,6 +62,10 @@ export async function closeDb(): Promise<void> {
   if (globalForDb.__forgePglite) {
     await globalForDb.__forgePglite.close()
     globalForDb.__forgePglite = undefined
+  }
+  if (globalForDb.__forgeNeonPool) {
+    await globalForDb.__forgeNeonPool.end()
+    globalForDb.__forgeNeonPool = undefined
   }
   globalForDb.__forgeDb = undefined
 }

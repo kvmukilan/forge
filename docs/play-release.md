@@ -20,6 +20,27 @@ Web Push work normally inside a TWA (unlike WebViews, where Google blocks OAuth)
 
 ## 1. Verify the PWA is Play-ready
 
+Run the complete release gate before deploying:
+
+```bash
+npm run typecheck
+npm run lint
+npm test
+npm run build
+```
+
+Then smoke-test Daily Forge with a non-admin account on both a narrow phone viewport and desktop:
+
+- Create a plan at each energy level and confirm the 1/3/5-item capacity.
+- Complete and undo a plan item; coins, XP, boss progress, and plan progress must stay in sync.
+- Complete a multi-count habit and confirm the plan only marks it done at its target.
+- Save a mood/reflection, reload, and confirm the plan returns unchanged.
+- Delete the account and confirm its daily plans are removed by the database cascade.
+
+### Dependency audit exception
+
+`npm audit --omit=dev` currently reports two moderate findings because Next 15.5.20 pins PostCSS 8.4.31. npm proposes downgrading to Next 9 when forced, which is not a valid remediation for this app. Forge does not accept or stringify user-supplied CSS at runtime, so record this as an upstream build-tool exception and recheck it when upgrading Next. Do not run `npm audit fix --force` for release.
+
 ```bash
 # On the production URL:
 npx lighthouse https://<PROD> --only-categories=pwa

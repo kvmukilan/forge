@@ -8,6 +8,34 @@
       "when": 1783623611195,
       "tag": "0000_minor_nicolaos",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784143327531,
+      "tag": "0001_daily_forge",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784580208064,
+      "tag": "0002_skinny_maria_hill",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784582146598,
+      "tag": "0003_rapid_kabuki",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1784582700539,
+      "tag": "0004_slow_reavers",
+      "breakpoints": true
     }
   ]
 }

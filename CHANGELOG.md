@@ -1,5 +1,49 @@
 # Changelog
 
+## Version 1.2.0
+
+**Progression campaign revamp.** Forge now connects assessment, daily action, attributes, ranks, adaptive difficulty, and rewards into one coherent journey.
+
+### Added
+
+* A versioned, server-backed assessment with editable Strength, Vitality, Focus, Wisdom, Discipline, and Connection estimates
+* An editable starter program with realistic schedules, rest days, effort estimates, explanations, and replacement/custom quest controls
+* Character, Journey, and Rewards destinations plus an original six-chapter, 66-day campaign and rank ladder
+* Attribute XP ledgers, completion feedback, explainable one-step adaptations, recovery recommendations, and adaptation cooldowns
+* First-party flow-health events that exclude assessment answers, habit names, and free text
+
+### Reliability
+
+* Completion, normal XP, coins, and attribute XP now commit in one database transaction with per-habit locking
+* Reward event keys prevent duplicate requests and make undo reverse the exact boosted reward once
+* Adaptive evidence and campaign dates respect each user's timezone
+* Vercel now fails clearly if `DATABASE_URL` is absent instead of trying embedded storage on a read-only deployment
+
+## Version 1.1.0
+
+**Daily Forge release.** The dashboard now leads with a calm, adaptive daily plan instead of exposing every game system at once.
+
+### Added
+
+* Daily Forge: choose low, steady, or high capacity and commit to a focused 1, 3, or 5-item plan
+* Smart planning suggestions that prioritize keystone habits and urgent tasks before reward value
+* Minimum-day recovery mode for low-energy days, with language designed around continuity rather than failure
+* Synced per-day intentions, plan order, mood, and optional end-of-day reflections
+
+### Changed
+
+* Reordered the dashboard around the core plan-and-complete loop; character, quests, boss, party, pet, season, and analytics now live in a clearly labeled secondary section
+* Replaced the passive Daily Vitality card with an actionable progress surface that supports completion, undo, and multi-count habits
+* Added a polished ember-lit command-center design with stronger hierarchy, responsive layouts, and accessible control states
+
+### Technical
+
+* Added an additive `daily_plans` migration with per-user/day uniqueness and cascade cleanup
+* Added server-side authentication, ownership checks, input caps, and validation for daily plans
+* Added deterministic tests for capacity, priority, keystone, and energy-aware planning behavior
+* Updated the production dependency lockfile to remove all high-severity audit findings
+* Stopped exposing the public user directory in unauthenticated login-page hydration
+
 ## Version 1.0.0
 
 **Play Store release.** Forge is now a multi-user production app.

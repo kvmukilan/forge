@@ -6,7 +6,7 @@ import { and, desc, eq, gte, inArray, lt, sql } from 'drizzle-orm'
 import { getDb } from '@/lib/db'
 import {
   loginClaims, dailyQuests, chestOpenings, leagueCohorts, leagueMembers,
-  completions, habits, coinTransactions, pets, users, xpState,
+  completions, habits, coinTransactions, pets, users,
 } from '@/lib/db/schema'
 import { getCurrentUser } from '@/lib/server-helpers'
 import { addCoins, loadSettings } from './data'

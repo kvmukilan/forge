@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, Calendar, Gift, Coins, FolderKanban, Trophy, ShoppingBag, Users, Heart, BarChart3, Sparkles, Flame, Swords } from 'lucide-react'
+import { Home, Calendar, Gift, Coins, FolderKanban, Trophy, ShoppingBag, Users, Heart, BarChart3, Sparkles, Flame, Swords, UserRound, Map } from 'lucide-react'
 import { useEffect, useState, ElementType } from 'react'
 import { useTranslations } from 'next-intl'
 import { HabitIcon, TaskIcon } from '@/lib/constants'
@@ -27,11 +27,14 @@ export default function Navigation({ className, viewPort }: NavigationProps) {
   const [isMobileView, setIsMobileView] = useState(false)
 
   const currentNavItems: NavItemType[] = [
-    { icon: Home, label: t('dashboard'), href: '/', position: 'main' },
-    { icon: HabitIcon, label: 'The Vault', href: '/habits', position: 'main' },
-    { icon: TaskIcon, label: 'Missions', href: '/tasks', position: 'main' },
-    { icon: Gift, label: t('wishlist'), href: '/wishlist', position: 'main' },
-    { icon: BarChart3, label: 'Stats', href: '/stats', position: 'main' },
+    { icon: Home, label: 'Today', href: '/', position: 'main' },
+    { icon: HabitIcon, label: 'Quests', href: '/habits', position: 'main' },
+    { icon: UserRound, label: 'Character', href: '/character', position: 'main' },
+    { icon: Map, label: 'Journey', href: '/journey', position: 'main' },
+    { icon: Gift, label: 'Rewards', href: '/rewards', position: 'main' },
+    { icon: TaskIcon, label: 'Tasks', href: '/tasks', position: 'bottom' },
+    { icon: BarChart3, label: 'Stats', href: '/stats', position: 'bottom' },
+    { icon: Gift, label: t('wishlist'), href: '/wishlist', position: 'bottom' },
     { icon: Swords, label: 'League', href: '/league', position: 'bottom' },
     { icon: Coins, label: t('coins'), href: '/coins', position: 'bottom' },
     { icon: Calendar, label: t('calendar'), href: '/calendar', position: 'bottom' },

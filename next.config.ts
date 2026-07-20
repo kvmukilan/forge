@@ -10,7 +10,12 @@ const withSerwist = withSerwistInit({
 });
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // This repository can sit below another JavaScript workspace. Pinning both
+  // roots prevents Next from tracing or watching the parent lockfile instead.
+  outputFileTracingRoot: process.cwd(),
+  turbopack: {
+    root: process.cwd(),
+  },
   // Standalone output is required by the Dockerfile but breaks Vercel deploys,
   // so it is only enabled when building the Docker image (see docker-build script)
   output: process.env.DOCKER_BUILD ? 'standalone' : undefined,

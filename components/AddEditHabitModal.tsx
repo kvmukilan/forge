@@ -24,6 +24,13 @@ import DrawingDisplay from './DrawingDisplay'
 import { convertHumanReadableFrequencyToMachineReadable, convertMachineReadableFrequencyToHumanReadable, d2t, serializeRRule } from '@/lib/utils'
 import { INITIAL_DUE, INITIAL_RECURRENCE_RULE, QUICK_DATES, MAX_COIN_LIMIT } from '@/lib/constants'
 import { DateTime } from 'luxon'
+import {
+  ATTRIBUTE_KEYS,
+  ATTRIBUTE_LABELS,
+  getAttributeRewardForDifficulty,
+  getPrimaryAttributeForCategory,
+  type AttributeKey,
+} from '@/lib/progression'
 
 
 interface AddEditHabitModalProps {
@@ -62,6 +69,14 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
   const [isKeystone, setIsKeystone] = useState(habit?.isKeystone || false)
   const [projectId, setProjectId] = useState<string | undefined>(habit?.projectId)
   const [category, setCategory] = useState<HabitCategory | undefined>(habit?.category)
+  const [difficulty, setDifficulty] = useState<Habit['difficulty']>(habit?.difficulty ?? 'medium')
+  const [primaryAttribute, setPrimaryAttribute] = useState<AttributeKey>(
+    habit?.primaryAttribute ?? getPrimaryAttributeForCategory(habit?.category ?? null),
+  )
+  const [secondaryAttribute, setSecondaryAttribute] = useState<AttributeKey | ''>(habit?.secondaryAttribute ?? '')
+  const [adaptiveEnabled, setAdaptiveEnabled] = useState(habit?.adaptiveEnabled ?? true)
+  const [pausedUntil, setPausedUntil] = useState(habit?.pausedUntil ?? '')
+  const [estimatedMinutes, setEstimatedMinutes] = useState(habit?.estimatedMinutes ?? 10)
   const [projectsData] = useAtom(projectsAtom)
 
   function getFrequencyUpdate() {
@@ -105,6 +120,17 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
       intentionWhere: !isTask && intentionWhere ? intentionWhere : undefined,
       isKeystone: !isTask ? isKeystone : undefined,
       category: !isTask ? category : undefined,
+      difficulty: !isTask ? difficulty : habit?.difficulty,
+      primaryAttribute: !isTask ? primaryAttribute : habit?.primaryAttribute,
+      secondaryAttribute: !isTask ? secondaryAttribute || undefined : habit?.secondaryAttribute,
+      attributeReward: !isTask ? getAttributeRewardForDifficulty(difficulty) : habit?.attributeReward,
+      progressionOrigin: habit?.progressionOrigin ?? 'custom',
+      adaptiveEnabled: !isTask ? adaptiveEnabled : habit?.adaptiveEnabled,
+      adaptationLevel: habit?.adaptationLevel ?? 0,
+      lastAdaptedAt: habit?.lastAdaptedAt,
+      pausedUntil: !isTask && pausedUntil ? pausedUntil : undefined,
+      estimatedMinutes: !isTask ? estimatedMinutes : habit?.estimatedMinutes,
+      recommendationReason: habit?.recommendationReason,
     })
   }
 
@@ -236,6 +262,46 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                   <div className="col-span-3 flex items-center gap-3">
                     <Switch checked={isKeystone} onCheckedChange={setIsKeystone} />
                     <span className="text-xs text-muted-foreground flex items-center gap-1"><Zap className="h-3 w-3 text-primary flex-shrink-0" /> Completing this first gives +25% XP for the day</span>
+                  </div>
+                </div>
+              )}
+              {!isTask && (
+                <div className="grid grid-cols-4 items-start gap-4">
+                  <Label className="pt-2 text-right text-sm">Progression</Label>
+                  <div className="col-span-3 grid gap-3 sm:grid-cols-2">
+                    <label className="space-y-1 text-xs font-semibold text-muted-foreground">
+                      Difficulty
+                      <select value={difficulty} onChange={event => setDifficulty(event.target.value as Habit['difficulty'])} className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                      </select>
+                    </label>
+                    <label className="space-y-1 text-xs font-semibold text-muted-foreground">
+                      Estimated minutes
+                      <Input type="number" min={1} max={240} value={estimatedMinutes} onChange={event => setEstimatedMinutes(Math.max(1, Math.min(240, Number(event.target.value) || 1)))} />
+                    </label>
+                    <label className="space-y-1 text-xs font-semibold text-muted-foreground">
+                      Primary attribute
+                      <select value={primaryAttribute} onChange={event => setPrimaryAttribute(event.target.value as AttributeKey)} className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground">
+                        {ATTRIBUTE_KEYS.map(key => <option key={key} value={key}>{ATTRIBUTE_LABELS[key]}</option>)}
+                      </select>
+                    </label>
+                    <label className="space-y-1 text-xs font-semibold text-muted-foreground">
+                      Secondary attribute
+                      <select value={secondaryAttribute} onChange={event => setSecondaryAttribute(event.target.value as AttributeKey | '')} className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground">
+                        <option value="">None</option>
+                        {ATTRIBUTE_KEYS.filter(key => key !== primaryAttribute).map(key => <option key={key} value={key}>{ATTRIBUTE_LABELS[key]}</option>)}
+                      </select>
+                    </label>
+                    <label className="space-y-1 text-xs font-semibold text-muted-foreground">
+                      Pause through
+                      <Input type="date" value={pausedUntil} onChange={event => setPausedUntil(event.target.value)} />
+                    </label>
+                    <div className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2">
+                      <span className="text-xs font-semibold text-muted-foreground">Adaptive suggestions</span>
+                      <Switch aria-label="Adaptive suggestions" checked={adaptiveEnabled} onCheckedChange={setAdaptiveEnabled} />
+                    </div>
                   </div>
                 </div>
               )}

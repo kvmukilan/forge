@@ -15,13 +15,14 @@ import HabitDNA from './HabitDNA'
 import PerfectDayModal from './PerfectDayModal'
 import MilestoneModal from './MilestoneModal'
 import SeasonBanner from './SeasonBanner'
-import { Coins, Sun, CloudSun, Moon, Star } from 'lucide-react'
+import DailyForge from './DailyForge'
+import { Coins, Sun, CloudSun, Moon, Orbit, Sparkles } from 'lucide-react'
 import { useAchievements } from '@/hooks/useAchievements'
 import { getOrSpawnBoss } from '@/app/actions/gamification'
+import { getProgressionSummary } from '@/app/actions/progression'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { DateTime } from 'luxon'
-import { cn } from '@/lib/utils'
 
 function CoinBalanceCard() {
   const [coinsData] = useAtom(coinsAtom)
@@ -73,77 +74,6 @@ function GreetingHeader() {
   ) : null
 }
 
-function DailyVitality() {
-  const [habitsData] = useAtom(habitsAtom)
-  const [settings] = useAtom(settingsAtom)
-  const timezone = settings.system.timezone
-  const todayStr = DateTime.now().setZone(timezone).toISODate()!
-
-  const habits = habitsData.habits.filter(h => !h.isTask && !h.archived)
-  const total = habits.length
-  const completed = habits.filter(h => {
-    const target = h.targetCompletions ?? 1
-    return h.completions.filter(c => DateTime.fromISO(c).setZone(timezone).toISODate() === todayStr).length >= target
-  }).length
-
-  const vitality = total > 0 ? Math.round((completed / total) * 100) : 0
-  const remaining = total - completed
-
-  return (
-    <div className="glass-card p-5">
-      <div className="flex items-end justify-between mb-4">
-        <div>
-          <p className="section-label mb-1">Daily Vitality</p>
-          <div className="flex items-end gap-2">
-            <span className="streak-number">{vitality}</span>
-            <span className="text-2xl font-bold mb-1 text-primary">%</span>
-          </div>
-          <p className="section-label mt-1 flex items-center gap-1">
-            {vitality === 100 ? (
-              <>
-                <Star className="h-3 w-3" />
-                PERFECT DAY
-              </>
-            ) : (
-              `${remaining} habit${remaining !== 1 ? 's' : ''} remaining`
-            )}
-          </p>
-        </div>
-        <div className="flex gap-1 items-end">
-          {Array.from({ length: 7 }).map((_, i) => {
-            const day = DateTime.now().setZone(timezone).minus({ days: 6 - i })
-            const dayStr = day.toISODate()!
-            const dayCompleted = habits.filter(h => {
-              const target = h.targetCompletions ?? 1
-              return h.completions.filter(c => DateTime.fromISO(c).setZone(timezone).toISODate() === dayStr).length >= target
-            }).length
-            const dayPct = total > 0 ? dayCompleted / total : 0
-            const isToday = i === 6
-            return (
-              <div key={i} className="flex flex-col items-center gap-1">
-                <div className={cn(
-                  'w-6 rounded-sm transition-all',
-                  isToday ? 'h-12 border border-border' : 'h-8',
-                  dayPct >= 1 ? 'bg-primary' :
-                  dayPct >= 0.5 ? 'bg-primary/40' :
-                  dayPct > 0 ? 'bg-muted' : 'bg-secondary'
-                )} />
-                <span className="text-xs text-muted-foreground uppercase">
-                  {day.toFormat('EEE')[0]}
-                </span>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-      <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
-        <div className="h-full rounded-full bg-primary transition-all duration-700"
-          style={{ width: `${vitality}%` }} />
-      </div>
-    </div>
-  )
-}
-
 export default function Dashboard() {
   // Side-effect: check achievements on dashboard load
   useAchievements()
@@ -167,15 +97,15 @@ export default function Dashboard() {
     getOrSpawnBoss(weekStart, habitCount).then(setBossData).catch(() => {})
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // First-run: send brand-new accounts through onboarding
+  // First-run: the server-backed profile is the source of truth. Existing
+  // users with habits can opt into the assessment without being blocked.
   const router = useRouter()
   useEffect(() => {
-    let onboarded = false
-    try { onboarded = localStorage.getItem('forge-onboarded') === '1' } catch {}
-    if (habits.length === 0 && !onboarded) {
-      router.push('/onboarding')
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    if (habits.length > 0) return
+    getProgressionSummary().then(summary => {
+      if (!summary) router.push('/onboarding')
+    }).catch(() => {})
+  }, [habits.length, router])
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -183,26 +113,7 @@ export default function Dashboard() {
 
       <StreakAtRiskBanner />
 
-      <SeasonBanner />
-
-      <DailyVitality />
-
-      <CharacterCard />
-
-      <PartyStatusWidget />
-
-      <PetCard compact={true} />
-
-      <BossCard />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2">
-          <DailyQuests />
-        </div>
-        <div className="md:col-span-1">
-          <CoinBalanceCard />
-        </div>
-      </div>
+      <DailyForge habits={habits} />
 
       <DailyOverview
         wishlistItems={wishlistItems}
@@ -210,9 +121,48 @@ export default function Dashboard() {
         coinBalance={Math.max(0, balance)}
       />
 
-      <HabitStreak habits={habits} />
+      <section className="pt-4 space-y-4">
+        <div className="flex items-end justify-between gap-4 border-b border-border/70 pb-3">
+          <div>
+            <div className="flex items-center gap-2 text-primary mb-1.5">
+              <Orbit className="h-4 w-4" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Your world</span>
+            </div>
+            <h2 className="text-xl font-black tracking-tight">Progress beyond today</h2>
+          </div>
+          <p className="hidden sm:block text-xs text-muted-foreground max-w-xs text-right">Rewards, allies, and long-term growth—kept in view without competing with your priorities.</p>
+        </div>
 
-      <HabitDNA />
+        <CharacterCard />
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="md:col-span-2">
+            <DailyQuests />
+          </div>
+          <div className="md:col-span-1">
+            <CoinBalanceCard />
+          </div>
+        </div>
+
+        <BossCard />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+          <PartyStatusWidget />
+          <PetCard compact={true} />
+        </div>
+
+        <SeasonBanner />
+
+        <HabitStreak habits={habits} />
+
+        <div className="relative">
+          <div className="absolute -top-2 right-3 flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+            <Sparkles className="h-3 w-3 text-primary" />
+            Pattern insight
+          </div>
+          <HabitDNA />
+        </div>
+      </section>
 
       <PerfectDayModal />
       <MilestoneModal />

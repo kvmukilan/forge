@@ -1,12 +1,12 @@
-import { useAtom, atom, useAtomValue } from 'jotai'
+import { useAtom, atom } from 'jotai'
 import { useTranslations } from 'next-intl'
 import { habitsAtom, coinsAtom, settingsAtom, usersAtom, habitFreqMapAtom, currentUserAtom } from '@/lib/atoms'
-import { addCoins, removeCoins, saveHabitsData } from '@/app/actions/data'
+import { addCoins, saveHabitsData } from '@/app/actions/data'
 import { addXP, damageBoss, addGems, claimStreakMilestone, addPerfectDay, saveXPData } from '@/app/actions/gamification'
-import { calculateHabitXP, calculateStreak, getLevelFromXP, rollForGemDrop, getStreakMilestone } from '@/lib/gamification'
-import { getCurrentSeason } from '@/lib/seasons'
-import { getUnlockedBonusForCategory, SKILL_NODES } from '@/lib/skill-trees'
-import { xpAtom, levelUpAtom, bossAtom, hasGemBoostAtom, hasXPBoostAtom, hasCoinBoostAtom, milestoneModalAtom, perfectDayModalAtom, keystoneMultiplierAtom } from '@/lib/gamification-atoms'
+import { completeHabitWithRewards, undoHabitWithRewards } from '@/app/actions/completion'
+import { calculateStreak, getLevelFromXP, rollForGemDrop, getStreakMilestone } from '@/lib/gamification'
+import { SKILL_NODES } from '@/lib/skill-trees'
+import { xpAtom, levelUpAtom, bossAtom, hasGemBoostAtom, milestoneModalAtom, perfectDayModalAtom } from '@/lib/gamification-atoms'
 import { Habit, Permission, SafeUser, User } from '@/lib/types'
 import { toast } from '@/hooks/use-toast'
 import { DateTime } from 'luxon'
@@ -68,11 +68,8 @@ export function useHabits() {
   const [, setLevelUp] = useAtom(levelUpAtom)
   const [, setBossData] = useAtom(bossAtom)
   const [hasGemBoost] = useAtom(hasGemBoostAtom)
-  const [hasXPBoost] = useAtom(hasXPBoostAtom)
-  const [hasCoinBoost] = useAtom(hasCoinBoostAtom)
   const [, setMilestone] = useAtom(milestoneModalAtom)
   const [, setPerfectDayModal] = useAtom(perfectDayModalAtom)
-  const keystoneMultiplier = useAtomValue(keystoneMultiplierAtom)
 
   const completeHabit = async (habit: Habit) => {
     if (!handlePermissionCheck(currentUser, 'habit', 'interact', tCommon)) return
@@ -110,45 +107,19 @@ export function useHabits() {
       h.id === habit.id ? updatedHabit : h
     )
 
-    await saveHabitsData({ habits: updatedHabits })
+    const completionResult = await completeHabitWithRewards({ habitId: habit.id, completionAt: newCompletionTimestamp })
+    if (!completionResult.inserted) return
 
     // Check if we've now reached the target
     const isTargetReached = completionsToday + 1 === target
     if (isTargetReached) {
-      // Season bonuses
-      const season = getCurrentSeason()
-      const seasonXPMultiplier = season ? (1 + season.xpBonus / 100) : 1
-      const seasonCoinMultiplier = season ? (1 + season.coinBonus / 100) : 1
-
-      // Skill bonuses
-      const unlockedSkills = xpData.unlockedSkills ?? []
-      const skillBonus = getUnlockedBonusForCategory(habit.category ?? 'other', unlockedSkills)
-      const skillXPMultiplier = 1 + skillBonus.xpBonusPct / 100
-      const skillCoinMultiplier = 1 + skillBonus.coinBonusPct / 100
-
-      // Apply coin boost multiplier + season + skill
-      const baseCoinAmount = hasCoinBoost ? habit.coinReward * 2 : habit.coinReward
-      const coinAmount = Math.round(baseCoinAmount * seasonCoinMultiplier * skillCoinMultiplier)
-      const updatedCoins = await addCoins({
-        amount: coinAmount,
-        description: `Completed: ${habit.name}`,
-        type: habit.isTask ? 'TASK_COMPLETION' : 'HABIT_COMPLETION',
-        relatedItemId: habit.id,
-      })
+      window.dispatchEvent(new Event('forge:progression-updated'))
+      const coinAmount = completionResult.coinAmount
+      const updatedCoins = completionResult.coins
       playSound()
 
-      // Award XP (with boost multiplier + season + skill)
-      const streak = calculateStreak(habit, settings.system.timezone, xpData.shieldUsedDates)
-      const baseXP = calculateHabitXP(habit)
-      const bonusXP = streak >= 7 ? Math.round(baseXP * 0.5) : 0
-      const xpAmount = Math.round((hasXPBoost ? (baseXP + bonusXP) * 2 : (baseXP + bonusXP)) * keystoneMultiplier * seasonXPMultiplier * skillXPMultiplier)
       const oldLevel = getLevelFromXP(xpData.totalXP)
-      const updatedXP = await addXP({
-        amount: xpAmount,
-        source: habit.isTask ? 'TASK_COMPLETION' : 'HABIT_COMPLETION',
-        relatedItemId: habit.id,
-        userId: currentUser?.id,
-      })
+      const updatedXP = completionResult.xp
 
       // Update skill progress
       if (habit.category && !habit.isTask) {
@@ -268,12 +239,12 @@ export function useHabits() {
     )
 
     if (todayCompletions.length > 0) {
+      const target = habit.targetCompletions || 1
+      const removedCompletionTimestamp = todayCompletions[todayCompletions.length - 1]
       // Remove the most recent completion and unarchive if needed
       const updatedHabit = {
         ...habit,
-        completions: habit.completions.filter(
-          (_, index) => index !== habit.completions.length - 1
-        ),
+        completions: habit.completions.filter(completion => completion !== removedCompletionTimestamp),
         archived: habit.isTask ? false : habit.archived // Unarchive if it's a task
       }
 
@@ -281,19 +252,15 @@ export function useHabits() {
         h.id === habit.id ? updatedHabit : h
       )
 
-      await saveHabitsData({ habits: updatedHabits })
+      const undoResult = await undoHabitWithRewards({ habitId: habit.id, completionAt: removedCompletionTimestamp })
+      if (!undoResult.inserted) return
       setHabitsData({ habits: updatedHabits })
 
       // If we were at the target, remove the coins
-      const target = habit.targetCompletions || 1
       if (todayCompletions.length === target) {
-        const updatedCoins = await removeCoins({
-          amount: habit.coinReward,
-          description: `Undid completion: ${habit.name}`,
-          type: habit.isTask ? 'TASK_UNDO' : 'HABIT_UNDO',
-          relatedItemId: habit.id,
-        })
-        setCoins(updatedCoins)
+        setCoins(undoResult.coins)
+        setXPData(undoResult.xp)
+        window.dispatchEvent(new Event('forge:progression-updated'))
       }
 
       toast({
@@ -398,6 +365,7 @@ export function useHabits() {
         description: `Completed: ${habit.name} on ${d2s({ dateTime: date, timezone, format: 'yyyy-MM-dd' })}`,
         type: habit.isTask ? 'TASK_COMPLETION' : 'HABIT_COMPLETION',
         relatedItemId: habit.id,
+        eventKey: `completion:${habit.id}:${completionTimestamp}:coins`,
       })
       setCoins(updatedCoins)
     }

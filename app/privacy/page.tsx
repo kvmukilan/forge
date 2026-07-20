@@ -5,11 +5,11 @@ export const metadata = {
 const SECTIONS = [
   {
     title: 'What we collect',
-    body: `Forge stores the data you create in the app: your account (username, and email if you sign in with Google), your habits and tasks, completion history, rewards, and gamification progress (XP, coins, streaks, pets, guilds, leagues). If you enable reminders, we store a push-notification subscription for your device. If you upload an avatar, we store that image.`,
+    body: `Forge stores the data you create in the app: your account (username, and email if you sign in with Google), assessment answers, editable starting attributes, habits and tasks, completion feedback and history, rewards, and progression (XP, coins, streaks, pets, guilds, leagues). Optional constraints you enter during assessment remain private to your account. If you enable reminders, we store a push-notification subscription for your device. If you upload an avatar, we store that image.`,
   },
   {
     title: 'How we use it',
-    body: `Your data is used solely to run the app for you: showing your progress, computing streaks and leaderboards, and sending the reminders you asked for. We do not sell your data, we do not share it with third parties for advertising, and we run no third-party analytics or ad SDKs.`,
+    body: `Your data is used solely to run and improve the app: generating your editable program, showing progress, computing streaks and leaderboards, and sending reminders you requested. Forge records limited first-party flow events such as onboarding completion and adaptation acceptance, but never includes assessment answers, habit names, or free text in those events. We do not sell your data, share it for advertising, or run third-party analytics or ad SDKs.`,
   },
   {
     title: 'Where it lives',
@@ -21,7 +21,7 @@ const SECTIONS = [
   },
   {
     title: 'Your controls',
-    body: `You can delete individual habits, transactions, and data from within the app at any time. Deleting your account from Settings permanently removes your account and all associated data (habits, completions, coins, XP, pets, guild membership, league history, push subscriptions, and avatars). This is immediate and irreversible.`,
+    body: `You can edit or retake your assessment and edit, pause, freeze adaptation for, or permanently delete recommended quests. Deleting your account from Settings permanently removes your account and all associated data, including assessment, attributes, habits, completions, reward ledgers, first-party flow events, guild membership, push subscriptions, and avatars. This is immediate and irreversible.`,
   },
   {
     title: 'Notifications',

@@ -11,6 +11,7 @@ import {
   index,
   customType,
 } from 'drizzle-orm/pg-core'
+import type { AssessmentResponses, AttributeExplanations, AttributeScores } from '@/lib/progression'
 
 const bytea = customType<{ data: Buffer }>({
   dataType() {
@@ -68,10 +69,63 @@ export const habits = pgTable('habits', {
   intentionWhere: text('intention_where'),
   isKeystone: boolean('is_keystone').notNull().default(false),
   category: text('category'),
+  primaryAttribute: text('primary_attribute'),
+  secondaryAttribute: text('secondary_attribute'),
+  attributeReward: integer('attribute_reward').notNull().default(10),
+  progressionOrigin: text('progression_origin').notNull().default('legacy'),
+  adaptiveEnabled: boolean('adaptive_enabled').notNull().default(true),
+  adaptationLevel: integer('adaptation_level').notNull().default(0),
+  lastAdaptedAt: timestamp('last_adapted_at', { withTimezone: true }),
+  pausedUntil: date('paused_until'),
+  estimatedMinutes: integer('estimated_minutes'),
+  recommendationReason: text('recommendation_reason'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   index('habits_user_idx').on(t.userId),
 ])
+
+// One intentionally small plan per user/day. Habit IDs remain JSON so a plan
+// can preserve its order and can include a mix of habits and one-off tasks.
+export const dailyPlans = pgTable('daily_plans', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  planDate: date('plan_date').notNull(),
+  energy: text('energy').notNull().default('steady'),
+  intention: text('intention').notNull().default(''),
+  habitIds: jsonb('habit_ids').$type<string[]>().notNull().default([]),
+  reflection: text('reflection').notNull().default(''),
+  mood: text('mood'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex('daily_plans_user_date_idx').on(t.userId, t.planDate),
+])
+
+export const progressionProfiles = pgTable('progression_profiles', {
+  userId: text('user_id').primaryKey().references(() => users.id, { onDelete: 'cascade' }),
+  assessmentVersion: integer('assessment_version').notNull().default(1),
+  onboardingCompleted: boolean('onboarding_completed').notNull().default(false),
+  responses: jsonb('responses').$type<Partial<AssessmentResponses>>().notNull().default({}),
+  baseAttributes: jsonb('base_attributes').$type<AttributeScores>().notNull().default({
+    strength: 3,
+    vitality: 3,
+    focus: 3,
+    wisdom: 3,
+    discipline: 3,
+    connection: 3,
+  }),
+  explanations: jsonb('explanations').$type<Partial<AttributeExplanations>>().notNull().default({}),
+  preferredPace: text('preferred_pace').notNull().default('balanced'),
+  weekdayMinutes: integer('weekday_minutes').notNull().default(30),
+  weekendMinutes: integer('weekend_minutes').notNull().default(45),
+  preferredTime: text('preferred_time').notNull().default('flexible'),
+  restDays: jsonb('rest_days').$type<number[]>().notNull().default([]),
+  adaptationEnabled: boolean('adaptation_enabled').notNull().default(true),
+  campaignStartedOn: date('campaign_started_on'),
+  completedAt: timestamp('completed_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
 
 export const completions = pgTable('completions', {
   habitId: text('habit_id').notNull().references(() => habits.id, { onDelete: 'cascade' }),
@@ -83,6 +137,47 @@ export const completions = pgTable('completions', {
   index('completions_user_idx').on(t.userId, t.completedAt),
 ])
 
+export const attributeTransactions = pgTable('attribute_transactions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  attribute: text('attribute').notNull(),
+  amount: integer('amount').notNull(),
+  source: text('source').notNull(),
+  eventKey: text('event_key').notNull(),
+  relatedHabitId: text('related_habit_id').references(() => habits.id, { onDelete: 'set null' }),
+  completionAt: text('completion_at'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex('attribute_tx_event_idx').on(t.userId, t.eventKey, t.attribute),
+  index('attribute_tx_user_idx').on(t.userId, t.attribute, t.createdAt),
+])
+
+export const questFeedback = pgTable('quest_feedback', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  habitId: text('habit_id').notNull().references(() => habits.id, { onDelete: 'cascade' }),
+  completionAt: text('completion_at').notNull(),
+  rating: text('rating').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex('quest_feedback_completion_idx').on(t.userId, t.habitId, t.completionAt),
+  index('quest_feedback_user_idx').on(t.userId, t.createdAt),
+])
+
+// First-party, non-sensitive product telemetry. Assessment answers and free
+// text are deliberately excluded; these events only measure flow health.
+export const productEvents = pgTable('product_events', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  properties: jsonb('properties').$type<Record<string, string | number | boolean | null>>().notNull().default({}),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  index('product_events_user_idx').on(t.userId, t.createdAt),
+  index('product_events_name_idx').on(t.name, t.createdAt),
+])
+
 export const coinTransactions = pgTable('coin_transactions', {
   id: text('id').primaryKey(),
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
@@ -92,8 +187,10 @@ export const coinTransactions = pgTable('coin_transactions', {
   timestamp: text('timestamp').notNull(), // UTC ISO string (wire format)
   relatedItemId: text('related_item_id'),
   note: text('note'),
+  eventKey: text('event_key'),
 }, (t) => [
   index('coin_tx_user_idx').on(t.userId, t.timestamp),
+  uniqueIndex('coin_tx_event_idx').on(t.userId, t.eventKey),
 ])
 
 export const wishlistItems = pgTable('wishlist_items', {
@@ -149,8 +246,10 @@ export const xpTransactions = pgTable('xp_transactions', {
   source: text('source').notNull(),
   relatedItemId: text('related_item_id'),
   timestamp: text('timestamp').notNull(),
+  eventKey: text('event_key'),
 }, (t) => [
   index('xp_tx_user_idx').on(t.userId, t.timestamp),
+  uniqueIndex('xp_tx_event_idx').on(t.userId, t.eventKey),
 ])
 
 export const bosses = pgTable('bosses', {

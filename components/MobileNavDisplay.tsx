@@ -18,7 +18,7 @@ interface MobileNavDisplayProps {
 }
 
 // Tabs pinned to the bottom bar; everything else lives in the More drawer
-const PRIMARY_HREFS = ['/', '/habits', '/tasks', '/stats']
+const PRIMARY_HREFS = ['/', '/habits', '/character', '/journey']
 
 function iOS() {
   if (typeof navigator === 'undefined') return false
@@ -119,7 +119,7 @@ export default function MobileNavDisplay({ navItems }: MobileNavDisplayProps) {
                   isActive && !moreOpen ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                <item.icon className={cn('h-5 w-5', isActive && !moreOpen && 'drop-shadow-[0_0_6px_rgba(249,115,22,0.6)]')} />
+                <item.icon className={cn('h-5 w-5', isActive && !moreOpen && 'drop-shadow-[0_0_6px_rgba(139,92,246,0.65)]')} />
                 <span className="text-[0.5rem] font-semibold uppercase tracking-wide leading-tight">
                   {item.label}
                 </span>
@@ -134,7 +134,7 @@ export default function MobileNavDisplay({ navItems }: MobileNavDisplayProps) {
             )}
             aria-expanded={moreOpen}
           >
-            <LayoutGrid className={cn('h-5 w-5', (moreOpen || moreActive) && 'drop-shadow-[0_0_6px_rgba(249,115,22,0.6)]')} />
+            <LayoutGrid className={cn('h-5 w-5', (moreOpen || moreActive) && 'drop-shadow-[0_0_6px_rgba(139,92,246,0.65)]')} />
             <span className="text-[0.5rem] font-semibold uppercase tracking-wide leading-tight">
               More
             </span>

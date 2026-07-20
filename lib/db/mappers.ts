@@ -41,6 +41,16 @@ export function habitToWire(row: HabitRow, habitCompletions: CompletionRow[]): H
     ...(row.intentionWhere != null && { intentionWhere: row.intentionWhere }),
     ...(row.isKeystone && { isKeystone: true }),
     ...(row.category != null && { category: row.category as HabitCategory }),
+    ...(row.primaryAttribute != null && { primaryAttribute: row.primaryAttribute as Habit['primaryAttribute'] }),
+    ...(row.secondaryAttribute != null && { secondaryAttribute: row.secondaryAttribute as Habit['secondaryAttribute'] }),
+    attributeReward: row.attributeReward,
+    progressionOrigin: row.progressionOrigin as Habit['progressionOrigin'],
+    adaptiveEnabled: row.adaptiveEnabled,
+    adaptationLevel: row.adaptationLevel,
+    ...(row.lastAdaptedAt != null && { lastAdaptedAt: row.lastAdaptedAt.toISOString() }),
+    ...(row.pausedUntil != null && { pausedUntil: row.pausedUntil }),
+    ...(row.estimatedMinutes != null && { estimatedMinutes: row.estimatedMinutes }),
+    ...(row.recommendationReason != null && { recommendationReason: row.recommendationReason }),
   }
 }
 
@@ -64,6 +74,16 @@ export function habitToRow(habit: Habit, ownerId: string): typeof habits.$inferI
     intentionWhere: habit.intentionWhere ?? null,
     isKeystone: !!habit.isKeystone,
     category: habit.category ?? null,
+    primaryAttribute: habit.primaryAttribute ?? null,
+    secondaryAttribute: habit.secondaryAttribute ?? null,
+    attributeReward: habit.attributeReward ?? 10,
+    progressionOrigin: habit.progressionOrigin ?? 'legacy',
+    adaptiveEnabled: habit.adaptiveEnabled ?? true,
+    adaptationLevel: habit.adaptationLevel ?? 0,
+    lastAdaptedAt: habit.lastAdaptedAt ? new Date(habit.lastAdaptedAt) : null,
+    pausedUntil: habit.pausedUntil ?? null,
+    estimatedMinutes: habit.estimatedMinutes ?? null,
+    recommendationReason: habit.recommendationReason ?? null,
   }
 }
 
@@ -104,6 +124,7 @@ export function coinTxToWire(row: CoinTxRow): CoinTransaction {
     timestamp: row.timestamp,
     ...(row.relatedItemId != null && { relatedItemId: row.relatedItemId }),
     ...(row.note != null && { note: row.note }),
+    ...(row.eventKey != null && { eventKey: row.eventKey }),
     userId: row.userId,
   }
 }
@@ -118,6 +139,7 @@ export function coinTxToRow(tx: CoinTransaction, fallbackUserId: string): typeof
     timestamp: tx.timestamp,
     relatedItemId: tx.relatedItemId ?? null,
     note: tx.note ?? null,
+    eventKey: tx.eventKey ?? null,
   }
 }
 
@@ -177,6 +199,7 @@ export function xpTxToWire(row: XPTxRow): XPTransaction {
     source: row.source as XPTransactionSource,
     ...(row.relatedItemId != null && { relatedItemId: row.relatedItemId }),
     timestamp: row.timestamp,
+    ...(row.eventKey != null && { eventKey: row.eventKey }),
     userId: row.userId,
   }
 }

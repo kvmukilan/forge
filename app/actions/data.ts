@@ -34,6 +34,12 @@ import { and, eq, desc, inArray, sql } from 'drizzle-orm'
 type ResourceType = 'habit' | 'wishlist' | 'coins'
 type ActionType = 'write' | 'interact'
 
+const DEFAULT_SELF_PERMISSIONS: Permission[] = [{
+  habit: { write: true, interact: true },
+  wishlist: { write: true, interact: true },
+  coins: { write: true, interact: true },
+}]
+
 // Row-level ownership is enforced by the user-scoped queries below; this guards
 // that a session exists at all before any mutation.
 async function requireUser(): Promise<User> {
@@ -221,6 +227,7 @@ export async function addCoins({
   relatedItemId,
   note,
   userId,
+  eventKey,
 }: {
   amount: number
   description: string
@@ -228,6 +235,7 @@ export async function addCoins({
   relatedItemId?: string
   note?: string
   userId?: string
+  eventKey?: string
 }): Promise<CoinsData> {
   const currentUser = await verifyPermission('coins', type === 'MANUAL_ADJUSTMENT' ? 'write' : 'interact')
   const db = await getDb()
@@ -239,9 +247,10 @@ export async function addCoins({
     timestamp: d2t({ dateTime: getNow({}) }),
     ...(relatedItemId && { relatedItemId }),
     ...(note && note.trim() !== '' && { note }),
+    ...(eventKey && { eventKey }),
     userId: userId || currentUser.id
   }
-  await db.insert(coinTransactions).values(coinTxToRow(newTransaction, currentUser.id))
+  await db.insert(coinTransactions).values(coinTxToRow(newTransaction, currentUser.id)).onConflictDoNothing()
   return loadCoinsData()
 }
 
@@ -252,6 +261,7 @@ export async function removeCoins({
   relatedItemId,
   note,
   userId,
+  eventKey,
 }: {
   amount: number
   description: string
@@ -259,8 +269,36 @@ export async function removeCoins({
   relatedItemId?: string
   note?: string
   userId?: string
+  eventKey?: string
 }): Promise<CoinsData> {
-  return addCoins({ amount: -amount, description, type, relatedItemId, note, userId })
+  return addCoins({ amount: -amount, description, type, relatedItemId, note, userId, eventKey })
+}
+
+export async function reverseCoinReward({
+  originalEventKey,
+  undoEventKey,
+  description,
+  type,
+}: {
+  originalEventKey: string
+  undoEventKey: string
+  description: string
+  type: Extract<TransactionType, 'HABIT_UNDO' | 'TASK_UNDO'>
+}): Promise<CoinsData> {
+  const user = await requireUser()
+  const db = await getDb()
+  const [original] = await db.select().from(coinTransactions).where(and(
+    eq(coinTransactions.userId, user.id),
+    eq(coinTransactions.eventKey, originalEventKey),
+  )).limit(1)
+  if (!original) return loadCoinsData()
+  return addCoins({
+    amount: -original.amount,
+    description,
+    type,
+    relatedItemId: original.relatedItemId ?? undefined,
+    eventKey: undoEventKey,
+  })
 }
 
 export async function loadSettings(): Promise<Settings> {
@@ -332,6 +370,10 @@ async function loadUsersData(): Promise<UserData> {
 }
 
 export async function loadUsersPublicData(): Promise<PublicUserData> {
+  // The account directory supports sharing and admin tools after sign-in. It
+  // must not be embedded in the public login page's hydration payload.
+  const viewer = await getCurrentUser()
+  if (!viewer) return { users: [] }
   const data = await loadUsersData()
   return sanitizeUserData(data)
 }
@@ -371,6 +413,7 @@ export async function findOrCreateOAuthUser(oauthId: string, provider: 'google',
     oauthProvider: provider,
     oauthId,
     isAdmin: isFirstUser,
+    permissions: DEFAULT_SELF_PERMISSIONS,
   }
   const inserted = await db.insert(users).values(newUser).returning()
   return userToWire(inserted[0])
@@ -398,6 +441,7 @@ export async function registerUser(username: string, password: string): Promise<
     username,
     password: saltAndHashPassword(password),
     isAdmin: isFirstUser,
+    permissions: DEFAULT_SELF_PERMISSIONS,
   })
   return { success: true, message: 'Account created' }
 }
@@ -437,7 +481,7 @@ export async function createUser(formData: FormData): Promise<PublicUser> {
     id: uuid(),
     username,
     password: hashedPassword ?? null,
-    permissions: permissions ?? null,
+    permissions: permissions ?? DEFAULT_SELF_PERMISSIONS,
     isAdmin: isFirstUser,
     avatarPath: avatarPath || null,
   }).returning()

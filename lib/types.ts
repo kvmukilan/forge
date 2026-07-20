@@ -1,6 +1,7 @@
 import { RRule } from "rrule"
 import { uuid } from "./utils"
 import { DateTime } from "luxon"
+import type { AttributeKey } from "./progression"
 
 export type UserId = string
 
@@ -65,6 +66,16 @@ export type Habit = {
   intentionWhere?: string
   isKeystone?: boolean
   category?: HabitCategory
+  primaryAttribute?: AttributeKey
+  secondaryAttribute?: AttributeKey | null
+  attributeReward?: number
+  progressionOrigin?: 'assessment' | 'custom' | 'legacy'
+  adaptiveEnabled?: boolean
+  adaptationLevel?: number
+  lastAdaptedAt?: string
+  pausedUntil?: string
+  estimatedMinutes?: number
+  recommendationReason?: string
 }
 
 
@@ -92,6 +103,7 @@ export interface CoinTransaction {
   timestamp: string;
   relatedItemId?: string;
   note?: string;
+  eventKey?: string;
   userId?: UserId;
 }
 
@@ -188,7 +200,7 @@ export interface ProjectsData {
   projects: Project[]
 }
 
-export type XPTransactionSource = 'HABIT_COMPLETION' | 'TASK_COMPLETION' | 'STREAK_BONUS' | 'DAILY_CHALLENGE' | 'MANUAL'
+export type XPTransactionSource = 'HABIT_COMPLETION' | 'TASK_COMPLETION' | 'HABIT_UNDO' | 'TASK_UNDO' | 'STREAK_BONUS' | 'DAILY_CHALLENGE' | 'MANUAL'
 
 export type XPTransaction = {
   id: string
@@ -196,6 +208,7 @@ export type XPTransaction = {
   source: XPTransactionSource
   relatedItemId?: string
   timestamp: string
+  eventKey?: string
   userId?: UserId
 }
 
