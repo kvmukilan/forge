@@ -11,9 +11,19 @@ const artifactDir = path.join(os.tmpdir(), 'forge-e2e-smoke')
 await mkdir(artifactDir, { recursive: true })
 
 const browser = await chromium.launch({ executablePath, headless: true })
-const context = await browser.newContext({ viewport: { width: 390, height: 844 } })
+const protectionBypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+const context = await browser.newContext({
+  viewport: { width: 390, height: 844 },
+  extraHTTPHeaders: protectionBypass
+    ? {
+        'x-vercel-protection-bypass': protectionBypass,
+        'x-vercel-set-bypass-cookie': 'true',
+      }
+    : undefined,
+})
 const page = await context.newPage()
 const runtimeErrors = []
+let oauthChecked = false
 page.on('pageerror', error => runtimeErrors.push(`page: ${error.message}`))
 page.on('response', response => {
   if (response.status() >= 500) runtimeErrors.push(`http ${response.status()}: ${response.url()}`)
@@ -25,6 +35,22 @@ const password = `Forge-${Date.now()}-safe`
 try {
   const login = await page.goto(`${baseUrl}/login`, { waitUntil: 'networkidle' })
   assert.equal(login?.status(), 200)
+  if (process.env.CHECK_GOOGLE_OAUTH === '1') {
+    await context.setExtraHTTPHeaders({})
+    await page.getByRole('button', { name: 'Continue with Google' }).click()
+    await page.waitForURL(url => url.hostname === 'accounts.google.com', { timeout: 30_000 })
+    let decodedOauthUrl = page.url()
+    for (let index = 0; index < 4; index += 1) {
+      decodedOauthUrl = decodeURIComponent(decodedOauthUrl)
+    }
+    assert.ok(
+      decodedOauthUrl.includes(`${baseUrl}/api/auth/callback/google`),
+      `Google authorization URL did not contain the expected callback: ${decodedOauthUrl}`,
+    )
+    oauthChecked = true
+    const returnToLogin = await page.goto(`${baseUrl}/login`, { waitUntil: 'networkidle' })
+    assert.equal(returnToLogin?.status(), 200)
+  }
   await page.getByRole('button', { name: 'Create an account' }).click()
   await page.locator('input[autocomplete="username"]').fill(username)
   await page.locator('input[type="password"]').fill(password)
@@ -101,6 +127,7 @@ try {
   assert.equal(deleted.status(), 200)
   console.log(JSON.stringify({ ok: true, baseUrl, artifactDir, checks: [
     'credentials signup and login',
+    ...(oauthChecked ? ['Google OAuth authorization redirect and canonical callback'] : []),
     'mobile assessment and edited program',
     'daily plan and transactional completion',
     'effort feedback and persistence after refresh',
