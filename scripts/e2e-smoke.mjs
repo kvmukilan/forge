@@ -24,9 +24,19 @@ const context = await browser.newContext({
 const page = await context.newPage()
 const runtimeErrors = []
 let oauthChecked = false
+const isVercelPreviewFeedback = url => url.startsWith('https://vercel.live/_next-live/feedback/')
 page.on('pageerror', error => runtimeErrors.push(`page: ${error.message}`))
 page.on('console', message => {
-  if (message.type() === 'error') runtimeErrors.push(`console: ${message.text()}`)
+  if (message.type() === 'error') {
+    const location = message.location().url
+    if (isVercelPreviewFeedback(location)) return
+    runtimeErrors.push(`console: ${message.text()}${location ? ` @ ${location}` : ''}`)
+  }
+})
+page.on('requestfailed', request => {
+  const failure = request.failure()?.errorText ?? 'failed'
+  if (failure === 'net::ERR_ABORTED' || isVercelPreviewFeedback(request.url())) return
+  runtimeErrors.push(`request: ${failure} @ ${request.url()}`)
 })
 page.on('response', response => {
   if (response.status() >= 500) runtimeErrors.push(`http ${response.status()}: ${response.url()}`)
