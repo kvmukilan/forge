@@ -5,16 +5,18 @@ import NotificationScheduler from './NotificationScheduler'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col h-screen bg-background overflow-hidden">
+    <div className="flex min-h-dvh flex-col overflow-hidden bg-background">
+      <a href="#main-content" className="sr-only z-[100] rounded-lg bg-primary px-4 py-3 font-semibold text-primary-foreground focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+        Skip to main content
+      </a>
       <ClientWrapper>
         <NotificationScheduler />
         <Header className="sticky top-0 z-50" />
         <div className="flex flex-1 overflow-hidden">
           <Navigation viewPort='main' />
-          <div className="flex-1 flex flex-col">
-            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background relative">
-              {/* responsive container */}
-              <div className="mx-auto px-4 py-8 max-w-5xl">
+          <div className="flex min-w-0 flex-1 flex-col">
+            <main id="main-content" tabIndex={-1} className="relative flex-1 overflow-x-hidden overflow-y-auto overscroll-contain bg-background outline-none">
+              <div className="mx-auto w-full max-w-6xl px-4 pb-24 pt-5 sm:px-6 sm:pt-7 lg:px-8 lg:pb-10">
                 {children}
               </div>
             </main>

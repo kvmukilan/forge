@@ -50,7 +50,7 @@ function LoginForm() {
       if (result?.error) {
         setError('Invalid username or password.')
       } else {
-        window.location.href = callbackUrl
+        window.location.href = mode === 'signup' ? '/onboarding' : callbackUrl
       }
     } catch {
       setError('Something went wrong. Please try again.')
@@ -69,13 +69,13 @@ function LoginForm() {
       <div className="w-full max-w-sm">
         {/* Brand */}
         <div className="flex items-center justify-center gap-2.5 mb-10">
-          <div className="h-9 w-9 rounded-md bg-primary flex items-center justify-center">
+          <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center">
             <span className="text-primary-foreground text-sm font-black">F</span>
           </div>
           <span className="font-black text-xl tracking-widest uppercase">Forge</span>
         </div>
 
-        <div className="glass-card p-7 space-y-5">
+        <div className="glass-card space-y-5 rounded-2xl p-7">
           <div className="text-center mb-1">
             <h1 className="text-lg font-bold">{mode === 'signin' ? 'Sign in' : 'Create your account'}</h1>
             <p className="text-xs text-muted-foreground mt-1">
@@ -88,7 +88,7 @@ function LoginForm() {
             onClick={handleGoogle}
             disabled={googleLoading}
             className={cn(
-              'w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-lg border border-border',
+              'flex min-h-11 w-full items-center justify-center gap-3 rounded-xl border border-border px-4',
               'bg-secondary hover:bg-secondary/80 transition-colors text-sm font-semibold',
               googleLoading && 'opacity-60 cursor-not-allowed'
             )}
@@ -117,7 +117,7 @@ function LoginForm() {
                 autoComplete="username"
                 required
                 className={cn(
-                  'w-full px-3 py-2.5 rounded-lg bg-secondary border border-border text-sm',
+                  'min-h-11 w-full rounded-xl border border-border bg-secondary px-3 text-base md:text-sm',
                   'text-foreground placeholder:text-muted-foreground/50',
                   'focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors'
                 )}
@@ -138,7 +138,7 @@ function LoginForm() {
                   required={mode === 'signup'}
                   minLength={mode === 'signup' ? 8 : undefined}
                   className={cn(
-                    'w-full px-3 py-2.5 pr-10 rounded-lg bg-secondary border border-border text-sm',
+                    'min-h-11 w-full rounded-xl border border-border bg-secondary px-3 pr-12 text-base md:text-sm',
                     'text-foreground placeholder:text-muted-foreground/50',
                     'focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors'
                   )}
@@ -147,7 +147,8 @@ function LoginForm() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(p => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-0 top-1/2 grid min-h-11 min-w-11 -translate-y-1/2 place-items-center rounded-xl text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -155,14 +156,14 @@ function LoginForm() {
             </div>
 
             {error && (
-              <p className="text-xs text-destructive font-medium">{error}</p>
+              <p className="text-sm text-destructive font-medium" role="alert">{error}</p>
             )}
 
             <button
               type="submit"
               disabled={loading || !username}
               className={cn(
-                'w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg',
+                'flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-4',
                 'bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm transition-colors',
                 (loading || !username) && 'opacity-60 cursor-not-allowed'
               )}
@@ -182,7 +183,7 @@ function LoginForm() {
               <button
                 type="button"
                 onClick={() => { setMode('signup'); setError('') }}
-                className="text-primary font-semibold hover:underline"
+                className="inline-flex min-h-11 items-center text-primary font-semibold hover:underline"
               >
                 Create an account
               </button>
@@ -193,7 +194,7 @@ function LoginForm() {
               <button
                 type="button"
                 onClick={() => { setMode('signin'); setError('') }}
-                className="text-primary font-semibold hover:underline"
+                className="inline-flex min-h-11 items-center text-primary font-semibold hover:underline"
               >
                 Sign in
               </button>

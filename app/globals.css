@@ -18,7 +18,7 @@
     --popover: 230 28% 7%;
     --popover-foreground: 225 25% 96%;
     --primary: 263 84% 66%;
-    --primary-foreground: 0 0% 100%;
+    --primary-foreground: 230 34% 4%;
     --secondary: 229 22% 12%;
     --secondary-foreground: 225 18% 92%;
     --muted: 228 18% 15%;
@@ -50,6 +50,17 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
   h1, h2, h3 {
     text-wrap: balance;
@@ -69,7 +80,7 @@
   }
 
   .section-title {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -155,9 +166,9 @@
     gap: 1rem;
   }
 
-  /* Huge streak number on habit cards */
+  /* Compact streak number on quest cards */
   .streak-number {
-    font-size: 3.5rem;
+    font-size: 2.25rem;
     font-weight: 800;
     line-height: 1;
     font-variant-numeric: tabular-nums;
@@ -167,16 +178,15 @@
 
   /* Page header display type */
   .page-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    text-transform: uppercase;
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 750;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
   }
 
   /* Tiny uppercase labels */
   .section-label {
-    font-size: 10px;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.15em;

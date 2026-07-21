@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import {
-  Target, CheckCircle, Flame, Zap, Star, Trophy, Coins, Gem, Gift
+  Target, CheckCircle, Flame, Zap, Star, Trophy, Coins, Gem, Gift, Lock
 } from 'lucide-react'
 import { AchievementDef } from '@/lib/gamification'
 
@@ -38,10 +38,10 @@ export default function AchievementBadge({ achievement, className }: Achievement
         </p>
       </div>
       {isUnlocked && achievement.unlockedAt && (
-        <span className="text-xs text-emerald-500 font-medium">✓ Unlocked</span>
+        <span className="inline-flex items-center gap-1 text-xs text-emerald-500 font-medium"><CheckCircle className="h-3.5 w-3.5" /> Unlocked</span>
       )}
       {!isUnlocked && (
-        <span className="text-xs text-muted-foreground">🔒 Locked</span>
+        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Lock className="h-3.5 w-3.5" /> Locked</span>
       )}
     </div>
   )

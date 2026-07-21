@@ -18,7 +18,7 @@ export default function HeaderActions() {
 
   return (
     <div className="flex items-center gap-1 sm:gap-2">
-      <Link href="/coins" className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary hover:bg-secondary/80 rounded-full transition-colors border border-border">
+      <Link href="/coins" className="flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl border border-border bg-secondary px-3 outline-none transition-colors hover:bg-secondary/80 focus-visible:ring-2 focus-visible:ring-ring" aria-label={`${balance} coins`}>
         <Coins className="h-4 w-4 text-amber-400" />
         <div className="flex items-baseline gap-1.5">
           <FormattedNumber

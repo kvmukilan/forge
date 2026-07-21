@@ -112,7 +112,7 @@ export default function NotificationBell() {
       }
     }}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
+        <Button variant="ghost" size="icon" aria-label="Notifications" className="relative min-h-11 min-w-11 rounded-xl">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-primary ring-1 ring-background" />

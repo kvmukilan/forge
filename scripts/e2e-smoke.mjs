@@ -25,12 +25,16 @@ const page = await context.newPage()
 const runtimeErrors = []
 let oauthChecked = false
 page.on('pageerror', error => runtimeErrors.push(`page: ${error.message}`))
+page.on('console', message => {
+  if (message.type() === 'error') runtimeErrors.push(`console: ${message.text()}`)
+})
 page.on('response', response => {
   if (response.status() >= 500) runtimeErrors.push(`http ${response.status()}: ${response.url()}`)
 })
 
 const username = `smk${Date.now().toString(36)}`
 const password = `Forge-${Date.now()}-safe`
+let testUserId = null
 
 try {
   const login = await page.goto(`${baseUrl}/login`, { waitUntil: 'networkidle' })
@@ -60,6 +64,8 @@ try {
   } catch {
     throw new Error(`Signup did not reach onboarding. Visible page:\n${await page.locator('body').innerText()}`)
   }
+  const signupSession = await (await context.request.get(`${baseUrl}/api/auth/session`)).json()
+  testUserId = signupSession?.user?.id ?? null
 
   await page.screenshot({ path: path.join(artifactDir, '01-onboarding-mobile.png'), fullPage: true })
   await page.getByRole('button', { name: /^Strength/ }).click()
@@ -81,7 +87,7 @@ try {
   await page.screenshot({ path: path.join(artifactDir, '02-program-mobile.png'), fullPage: true })
   await page.getByRole('button', { name: 'Begin campaign' }).click()
   await page.waitForURL(url => url.pathname === '/', { timeout: 30_000 })
-  await page.getByText('Daily Forge', { exact: true }).waitFor({ timeout: 30_000 })
+  await page.getByText('Daily plan', { exact: true }).waitFor({ timeout: 30_000 })
 
   const characterMobileLink = page.locator('a[href="/character"]:visible').first()
   assert.equal(await characterMobileLink.isVisible(), true)
@@ -106,12 +112,89 @@ try {
   await characterMobileLink.click()
   await page.waitForURL(url => url.pathname === '/character')
   await page.getByRole('heading', { name: /Visible growth/ }).waitFor()
+  assert.equal(
+    await page.locator('.fixed.inset-0:visible').count(),
+    0,
+    'Character page was obscured by an unexpected full-screen overlay',
+  )
+  await page.locator('.animate-fade-in').first().evaluate(element => Promise.all(
+    element.getAnimations().map(animation => animation.finished),
+  ))
   await page.screenshot({ path: path.join(artifactDir, '04-character-mobile.png'), fullPage: true })
+
+  await page.getByRole('button', { name: 'Open more destinations' }).click()
+  await page.getByRole('heading', { name: 'Your Forge' }).waitFor()
+  const rewardsSheetLink = page.locator('[role="dialog"] a[href="/rewards"]')
+  assert.equal(await rewardsSheetLink.isVisible(), true)
+  assert.equal(await page.locator('[role="dialog"] a[href="/settings"]').isVisible(), true)
+  const sheetTargetHeights = await page.locator('[role="dialog"] a:visible, [role="dialog"] button:visible').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height))
+  assert.ok(sheetTargetHeights.every(height => height >= 44), 'More sheet contains a touch target shorter than 44px')
+  await page.screenshot({ path: path.join(artifactDir, '05-more-mobile.png'), fullPage: true })
+  await rewardsSheetLink.click()
+  await page.waitForURL(url => url.pathname === '/rewards')
+  await page.getByRole('heading', { name: /Progress should unlock/ }).waitFor()
+  await page.waitForTimeout(350)
+  assert.equal(
+    await page.locator('.fixed.inset-0:visible').count(),
+    0,
+    'Rewards page was obscured by the closing navigation sheet',
+  )
+  await page.screenshot({ path: path.join(artifactDir, '06-rewards-mobile.png'), fullPage: true })
+
+  await page.goto(`${baseUrl}/habits`, { waitUntil: 'networkidle' })
+  await page.getByRole('heading', { name: 'Quests' }).waitFor()
+  await page.setViewportSize({ width: 375, height: 667 })
+  const bottomTargetHeights = await page.locator('nav[aria-label="Primary navigation"] a:visible, nav[aria-label="Primary navigation"] button:visible').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height))
+  assert.ok(bottomTargetHeights.every(height => height >= 44), 'Bottom navigation contains a touch target shorter than 44px')
+  const questTargetHeights = await page.locator('main button:visible').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height))
+  assert.ok(questTargetHeights.every(height => height >= 44), 'Quests page contains a visible button shorter than 44px')
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true)
+  await page.screenshot({ path: path.join(artifactDir, '07-quests-375.png'), fullPage: true })
+
+  const addHabitButton = page.getByRole('button', { name: 'Add Habit', exact: true }).first()
+  assert.equal(await addHabitButton.isVisible(), true)
+  await addHabitButton.click()
+  const addHabitDialog = page.getByRole('dialog')
+  try {
+    await addHabitDialog.waitFor({ timeout: 10_000 })
+  } catch {
+    throw new Error(`Habit editor did not open. Dialog count: ${await addHabitDialog.count()}\nVisible page:\n${await page.locator('body').innerText()}`)
+  }
+  await addHabitDialog.evaluate(element => Promise.all(element.getAnimations().map(animation => animation.finished)))
+  const editorTargets = await addHabitDialog.locator('button:visible, input:visible, select:visible').evaluateAll(elements => elements.map(element => ({
+    height: element.getBoundingClientRect().height,
+    tag: element.tagName,
+    label: element.getAttribute('aria-label') || element.textContent?.trim().slice(0, 40) || element.getAttribute('name'),
+  })))
+  const shortEditorTargets = editorTargets.filter(target => target.height < 44)
+  assert.deepEqual(shortEditorTargets, [], `Habit editor contains short touch targets: ${JSON.stringify(shortEditorTargets)}`)
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true)
+  await page.screenshot({ path: path.join(artifactDir, '08-add-habit-mobile.png'), fullPage: false })
+  await addHabitDialog.getByRole('button', { name: 'Close' }).click()
+  await addHabitDialog.waitFor({ state: 'detached' })
+
+  await page.evaluate(() => { document.documentElement.style.fontSize = '32px' })
+  await page.evaluate(() => window.scrollTo(0, 0))
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true)
+  await page.screenshot({ path: path.join(artifactDir, '09-quests-large-text.png'), fullPage: false })
+  await page.evaluate(() => { document.documentElement.style.fontSize = '' })
+
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' })
+  assert.equal(await page.locator('.animate-fade-in').first().evaluate(element => getComputedStyle(element).animationName), 'none')
+  await page.setViewportSize({ width: 844, height: 390 })
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true)
+  await page.screenshot({ path: path.join(artifactDir, '10-today-landscape.png'), fullPage: false })
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
 
   await page.setViewportSize({ width: 1440, height: 1000 })
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle' })
   assert.equal(await page.locator('a[href="/journey"]:visible').first().isVisible(), true)
-  await page.screenshot({ path: path.join(artifactDir, '05-today-desktop.png'), fullPage: true })
+  const desktopSidebar = page.locator('aside[aria-label="Primary navigation"]')
+  assert.equal(await desktopSidebar.isVisible(), true)
+  assert.ok(await desktopSidebar.locator('a:visible').count() <= 6, 'Desktop sidebar exposes too many destinations before Library is opened')
+  assert.equal(await desktopSidebar.locator('a[aria-current="page"]').getAttribute('href'), '/')
+  await page.screenshot({ path: path.join(artifactDir, '11-today-desktop.png'), fullPage: true })
 
   for (const asset of ['/manifest.webmanifest', '/sw.js', '/api/auth/session', '/api/auth/providers']) {
     const response = await context.request.get(`${baseUrl}${asset}`)
@@ -125,17 +208,25 @@ try {
     data: { userId: session.user.id },
   })
   assert.equal(deleted.status(), 200)
+  testUserId = null
   console.log(JSON.stringify({ ok: true, baseUrl, artifactDir, checks: [
     'credentials signup and login',
     ...(oauthChecked ? ['Google OAuth authorization redirect and canonical callback'] : []),
     'mobile assessment and edited program',
     'daily plan and transactional completion',
     'effort feedback and persistence after refresh',
-    'mobile character and primary navigation',
-    'desktop today layout',
+    'mobile character, bottom navigation, and grouped More sheet',
+    'mobile Quests, habit editor, and Rewards without horizontal overflow',
+    'large-text, landscape, touch-target, and reduced-motion behavior',
+    'desktop today layout and collapsed Library navigation',
     'PWA and auth API assets',
     'test account cleanup',
   ] }, null, 2))
 } finally {
+  if (testUserId) {
+    await context.request.post(`${baseUrl}/api/user/delete`, {
+      data: { userId: testUserId },
+    }).catch(() => {})
+  }
   await browser.close()
 }

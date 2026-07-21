@@ -25,6 +25,7 @@ import {
 } from '@/lib/utils'
 import { ToastAction } from '@/components/ui/toast'
 import { Undo2 } from 'lucide-react'
+import { celebrate } from '@/lib/celebration'
 
 
 function handlePermissionCheck(
@@ -156,7 +157,7 @@ export function useHabits() {
       if (rollForGemDrop(hasGemBoost)) {
         const withGem = await addGems(1)
         setXPData(withGem)
-        toast({ title: '💎 Gem Drop!', description: 'A rare gem dropped from your habit!' })
+        toast({ title: 'Rare gem found', description: 'A gem dropped from your completed habit.' })
       }
 
       // Streak milestone check
@@ -175,10 +176,8 @@ export function useHabits() {
         toast({ title: '⭐ Keystone complete!', description: '+25% XP bonus now active for the rest of today' })
       }
 
-      // Confetti burst
-      import('canvas-confetti').then(({ default: confetti }) => {
-        confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 }, colors: ['#7c3aed', '#3b82f6', '#f59e0b'] })
-      })
+      // A brief confirmation, kept sparse so it never obscures the task list.
+      celebrate('daily')
 
       setCoins(updatedCoins)
       toast({

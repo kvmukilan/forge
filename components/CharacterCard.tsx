@@ -11,7 +11,13 @@ import LevelUpModal from './LevelUpModal'
 import { getProgressionSummary, type ProgressionSummary } from '@/app/actions/progression'
 import { ATTRIBUTE_KEYS, ATTRIBUTE_LABELS } from '@/lib/progression'
 
-export default function CharacterCard({ initialProgression = null }: { initialProgression?: ProgressionSummary | null }) {
+export default function CharacterCard({
+  initialProgression = null,
+  showAttributes = true,
+}: {
+  initialProgression?: ProgressionSummary | null
+  showAttributes?: boolean
+}) {
   const currentUser = useAtomValue(currentUserAtom)
   const level = useAtomValue(currentLevelAtom)
   const progress = useAtomValue(xpProgressAtom)
@@ -37,7 +43,7 @@ export default function CharacterCard({ initialProgression = null }: { initialPr
   return (
     <>
       <LevelUpModal />
-      <div className="relative overflow-hidden rounded-2xl border border-violet-400/20 bg-[radial-gradient(circle_at_90%_0%,rgb(124_58_237/0.14),transparent_34%),hsl(var(--card))] p-5 sm:p-6">
+      <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card p-5 shadow-[0_24px_80px_-52px_hsl(var(--primary)/0.55)] sm:p-6">
         <div className="flex items-center gap-4 mb-4">
           <Avatar className="h-14 w-14 ring-2 ring-primary/40 flex-shrink-0">
             <AvatarImage src={avatarSrc} />
@@ -48,9 +54,9 @@ export default function CharacterCard({ initialProgression = null }: { initialPr
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
-              <h2 className="text-lg font-black truncate">{username}</h2>
+              <h2 className="truncate text-lg font-bold">{username}</h2>
               <span className="level-badge flex-shrink-0">Lv {level}</span>
-              {progression && <span className="rounded-full border border-violet-400/25 bg-violet-500/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-violet-200">{progression.rank.name}</span>}
+              {progression && <span className="rounded-full border border-primary/25 bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">{progression.rank.name}</span>}
             </div>
             {activeTitle && (
               <p className="text-xs text-primary/80 font-semibold mb-1.5 uppercase tracking-wide">{activeTitle}</p>
@@ -65,7 +71,7 @@ export default function CharacterCard({ initialProgression = null }: { initialPr
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 pt-3 border-t border-border">
+        <div className="grid grid-cols-2 gap-2 border-t border-border pt-3 sm:grid-cols-4">
           {[
             { label: 'Level', value: level, color: 'text-primary' },
             {
@@ -86,14 +92,14 @@ export default function CharacterCard({ initialProgression = null }: { initialPr
             { label: 'Coins', value: balance.toLocaleString(), color: 'text-amber-400' },
             { label: 'XP Today', value: `+${xpToday}`, color: 'text-emerald-400' },
           ].map(({ label, value, color }) => (
-            <div key={label} className="flex flex-col items-center py-1.5">
+            <div key={label} className="flex min-h-16 flex-col items-center justify-center rounded-xl bg-background/30 py-2">
               <span className="section-label mb-1">{label}</span>
-              <span className={`text-xl font-black tabular-nums ${color}`}>{value}</span>
+              <span className={`text-lg font-bold tabular-nums ${color}`}>{value}</span>
             </div>
           ))}
         </div>
 
-        {progression ? (
+        {progression && showAttributes ? (
           <div className="mt-5 border-t border-border/80 pt-5">
             <div className="mb-3 flex items-end justify-between gap-3">
               <div>
@@ -104,7 +110,7 @@ export default function CharacterCard({ initialProgression = null }: { initialPr
                     : `Campaign day ${progression.campaign.day} · Chapter ${progression.campaign.chapter}`}
                 </p>
               </div>
-              <Link href="/character" className="inline-flex items-center gap-1 text-xs font-bold text-violet-300 hover:text-violet-200">Full character <ArrowRight className="h-3.5 w-3.5" /></Link>
+              <Link href="/character" className="inline-flex min-h-11 items-center gap-1 rounded-xl px-2 text-sm font-semibold text-primary outline-none hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-ring">Full character <ArrowRight className="h-4 w-4" /></Link>
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {ATTRIBUTE_KEYS.map(key => {
@@ -112,27 +118,27 @@ export default function CharacterCard({ initialProgression = null }: { initialPr
                 return (
                   <div key={key} className="rounded-xl border border-border/80 bg-background/35 px-3 py-2.5">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{ATTRIBUTE_LABELS[key]}</span>
-                      <span className="text-sm font-black text-violet-200">{attribute.level}</span>
+                      <span className="text-xs font-semibold text-muted-foreground">{ATTRIBUTE_LABELS[key]}</span>
+                      <span className="text-sm font-bold text-primary">{attribute.level}</span>
                     </div>
                     <div className="mt-2 h-1 overflow-hidden rounded-full bg-secondary">
-                      <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-400 transition-all" style={{ width: `${attribute.pct}%` }} />
+                      <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${attribute.pct}%` }} />
                     </div>
-                    <p className="mt-1.5 text-[9px] tabular-nums text-muted-foreground">{attribute.currentXP}/{attribute.neededXP} XP</p>
+                    <p className="mt-1.5 text-[11px] tabular-nums text-muted-foreground">{attribute.currentXP}/{attribute.neededXP} XP</p>
                   </div>
                 )
               })}
             </div>
           </div>
-        ) : (
+        ) : !progression ? (
           <div className="mt-5 flex flex-col gap-3 rounded-xl border border-violet-400/20 bg-violet-500/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-2.5">
-              <Sparkles className="mt-0.5 h-4 w-4 flex-shrink-0 text-violet-300" />
-              <div><p className="text-sm font-bold">Reveal your starting attributes</p><p className="mt-0.5 text-xs text-muted-foreground">A short, editable assessment creates your personal progression path.</p></div>
+              <Sparkles className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+              <div><p className="text-sm font-semibold">Reveal your starting attributes</p><p className="mt-0.5 text-xs text-muted-foreground">A short, editable assessment creates your personal progression path.</p></div>
             </div>
-            <Link href="/onboarding" className="inline-flex flex-shrink-0 items-center justify-center gap-1 rounded-full bg-violet-500 px-4 py-2 text-xs font-black text-white hover:bg-violet-400">Begin <ArrowRight className="h-3.5 w-3.5" /></Link>
+            <Link href="/onboarding" className="inline-flex min-h-11 flex-shrink-0 items-center justify-center gap-1 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground outline-none transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring">Begin <ArrowRight className="h-4 w-4" /></Link>
           </div>
-        )}
+        ) : null}
       </div>
     </>
   )

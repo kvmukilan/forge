@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import confetti from 'canvas-confetti'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { openChest, type ChestSource, type ChestReward } from '@/app/actions/retention'
-import { Coins, Gem, Shield, Zap } from 'lucide-react'
+import { Coins, Gem, Gift, Shield, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { celebrate } from '@/lib/celebration'
 
 const REWARD_ICONS = {
   coins: Coins,
@@ -35,7 +35,7 @@ export default function ChestOpenModal({ source, onClose, onOpened }: ChestOpenM
         return
       }
       setReward(result.reward)
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } })
+      celebrate('milestone')
       onOpened?.()
     } catch {
       setError('Something went wrong')
@@ -55,19 +55,19 @@ export default function ChestOpenModal({ source, onClose, onOpened }: ChestOpenM
 
         {!reward ? (
           <div className="py-4 space-y-5">
-            <div className={cn('text-6xl select-none', opening && 'animate-bounce')} aria-hidden>
-              🎁
+            <div className={cn('mx-auto grid h-16 w-16 place-items-center rounded-full border border-primary/25 bg-primary/10', opening && 'animate-pulse')} aria-hidden="true">
+              <Gift className="h-8 w-8 text-primary" />
             </div>
             <p className="text-xs text-muted-foreground">
               {source === 'login_day7' ? 'Seven-day login streak reward' : 'All daily quests complete'}
             </p>
-            {error && <p className="text-xs text-destructive">{error}</p>}
+            {error && <p className="text-sm text-destructive" role="alert">{error}</p>}
             <button
               onClick={handleOpen}
               disabled={opening}
-              className="w-full py-2.5 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-60"
+              className="min-h-11 w-full rounded-xl bg-primary px-4 text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-60"
             >
-              {opening ? 'Opening…' : 'Open chest'}
+              {opening ? 'Opening...' : 'Open chest'}
             </button>
           </div>
         ) : (
@@ -81,7 +81,7 @@ export default function ChestOpenModal({ source, onClose, onOpened }: ChestOpenM
             </div>
             <button
               onClick={onClose}
-              className="w-full py-2.5 rounded-lg bg-secondary font-bold text-sm hover:bg-secondary/80 transition-colors"
+              className="min-h-11 w-full rounded-xl bg-secondary px-4 font-bold text-sm hover:bg-secondary/80 transition-colors"
             >
               Nice!
             </button>

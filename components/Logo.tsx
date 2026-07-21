@@ -1,10 +1,10 @@
 export function Logo() {
   return (
     <div className="flex items-center gap-2">
-      <div className="h-7 w-7 rounded-sm bg-primary flex items-center justify-center flex-shrink-0">
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-primary shadow-[0_8px_24px_-12px_hsl(var(--primary))]">
         <span className="text-primary-foreground text-xs font-black">F</span>
       </div>
-      <span className="font-black text-sm tracking-widest uppercase text-foreground">Forge</span>
+      <span className="hidden text-sm font-extrabold tracking-[0.14em] text-foreground min-[430px]:inline">FORGE</span>
     </div>
   )
 }

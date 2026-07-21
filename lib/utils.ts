@@ -424,7 +424,10 @@ export function getUnsupportedRRuleReason(rrule: RRule): string | null {
 export const playSound = (soundPath: string = '/sounds/timer-end.wav') => {
   const audio = new Audio(soundPath)
   audio.play().catch(error => {
-    console.error('Error playing sound:', error)
+    // Sound is optional feedback. Browsers and headless clients may block or
+    // lack support for a valid media source, so those cases should stay quiet.
+    if (error instanceof DOMException && ['NotAllowedError', 'NotSupportedError'].includes(error.name)) return
+    console.warn('Unable to play optional sound feedback:', error)
   })
 }
 

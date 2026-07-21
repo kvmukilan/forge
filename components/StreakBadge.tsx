@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { Flame } from 'lucide-react'
 
 interface StreakBadgeProps {
   streak: number
@@ -29,9 +30,7 @@ export default function StreakBadge({ streak, className, size = 'md' }: StreakBa
         className
       )}
     >
-      <span className={cn(isHot && 'animate-streak-pulse', isOnFire && 'streak-glow')}>
-        🔥
-      </span>
+      <Flame className={cn('h-[1em] w-[1em]', isHot && 'animate-streak-pulse', isOnFire && 'streak-glow')} aria-hidden="true" />
       <span>{streak}</span>
     </span>
   )

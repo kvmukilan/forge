@@ -4,20 +4,15 @@ import { useAtom } from 'jotai'
 import { milestoneModalAtom } from '@/lib/gamification-atoms'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { useEffect } from 'react'
+import { celebrate } from '@/lib/celebration'
+import { Trophy } from 'lucide-react'
 
 export default function MilestoneModal() {
   const [milestone, setMilestone] = useAtom(milestoneModalAtom)
 
   useEffect(() => {
     if (milestone) {
-      import('canvas-confetti').then(({ default: confetti }) => {
-        confetti({
-          particleCount: 100,
-          spread: 80,
-          origin: { y: 0.6 },
-          colors: ['#FF4D00', '#FF7A33', '#FFA366'],
-        })
-      })
+      celebrate('milestone')
     }
   }, [milestone])
 
@@ -26,7 +21,9 @@ export default function MilestoneModal() {
       <DialogContent className="max-w-sm text-center border-border rounded-lg">
         {milestone && (
           <div className="py-6">
-            <div className="text-6xl mb-4">{milestone.emoji}</div>
+            <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full border border-primary/25 bg-primary/10" aria-hidden="true">
+              <Trophy className="h-8 w-8 text-primary" />
+            </div>
             <h2 className="text-2xl font-extrabold mb-1">Streak Milestone!</h2>
             <p className="text-lg font-bold text-primary mb-2">{milestone.label}</p>
             <p className="text-muted-foreground mb-4">
@@ -38,9 +35,9 @@ export default function MilestoneModal() {
             </div>
             <button
               onClick={() => setMilestone(null)}
-              className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
+              className="min-h-11 w-full rounded-xl bg-primary px-4 text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
             >
-              Keep going! 💪
+              Keep going
             </button>
           </div>
         )}

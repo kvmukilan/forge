@@ -14,22 +14,22 @@ export default function CharacterPage() {
   if (summary === undefined) return <div className="min-h-72 animate-pulse rounded-2xl border border-border bg-card" />
   if (!summary) return (
     <div className="mx-auto max-w-xl py-16 text-center">
-      <Sparkles className="mx-auto h-8 w-8 text-violet-300" />
-      <h1 className="mt-5 text-3xl font-black">Your attributes are waiting.</h1>
-      <p className="mt-3 text-sm text-muted-foreground">Complete the editable assessment to establish a useful starting point and personal program.</p>
-      <Link href="/onboarding" className="mt-6 inline-flex items-center gap-2 rounded-full bg-violet-500 px-6 py-3 text-sm font-black text-white">Begin assessment <ArrowRight className="h-4 w-4" /></Link>
+      <Sparkles className="mx-auto h-8 w-8 text-primary" />
+      <h1 className="mt-5 text-3xl font-bold">Your attributes are waiting.</h1>
+      <p className="mt-3 text-base leading-relaxed text-muted-foreground">Complete the editable assessment to establish a useful starting point and personal program.</p>
+      <Link href="/onboarding" className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-primary px-6 text-sm font-semibold text-primary-foreground outline-none transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring">Begin assessment <ArrowRight className="h-4 w-4" /></Link>
     </div>
   )
 
   return (
     <div className="space-y-6 animate-fade-in">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div><p className="section-label mb-2">Character record</p><h1 className="page-title normal-case">Visible growth, grounded in action.</h1><p className="mt-2 max-w-2xl text-sm text-muted-foreground">Starting values are editable self-reports. Earned progress comes only from completed real-world quests.</p></div>
-        <Link href="/onboarding" className="inline-flex items-center gap-1.5 self-start rounded-full border border-border px-3 py-2 text-xs font-bold text-muted-foreground hover:text-foreground"><RefreshCw className="h-3.5 w-3.5" />Retake assessment</Link>
+        <div><p className="section-label mb-2">Character</p><h1 className="page-title">Visible growth, grounded in action.</h1><p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">Starting values are editable self-reports. Earned progress comes only from completed real-world quests.</p></div>
+        <Link href="/onboarding" className="inline-flex min-h-11 items-center gap-2 self-start rounded-xl border border-border px-3 text-sm font-semibold text-muted-foreground outline-none transition-colors hover:bg-secondary hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"><RefreshCw className="h-4 w-4" />Retake assessment</Link>
       </header>
-      <CharacterCard initialProgression={summary} />
+      <CharacterCard initialProgression={summary} showAttributes={false} />
       <section>
-        <div className="mb-3"><p className="section-label">Attribute record</p><h2 className="mt-1 text-xl font-black">What each level represents</h2></div>
+        <div className="mb-3"><p className="section-label">Attribute record</p><h2 className="mt-1 text-xl font-bold">What each level represents</h2></div>
         <div className="grid gap-3 md:grid-cols-2">
           {ATTRIBUTE_KEYS.map(key => {
             const attribute = summary.attributes[key]
@@ -37,12 +37,12 @@ export default function CharacterPage() {
             return (
               <article key={key} className="rounded-2xl border border-border bg-card p-5">
                 <div className="flex items-start justify-between gap-4">
-                  <div><p className="text-sm font-black">{ATTRIBUTE_LABELS[key]}</p><p className="mt-1 text-xs text-muted-foreground">{ATTRIBUTE_DESCRIPTIONS[key]}</p></div>
-                  <div className="text-right"><span className="text-2xl font-black text-violet-200">{attribute.level}</span><p className="text-[9px] uppercase tracking-wider text-muted-foreground">base {attribute.base}</p></div>
+                  <div><p className="text-sm font-semibold">{ATTRIBUTE_LABELS[key]}</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{ATTRIBUTE_DESCRIPTIONS[key]}</p></div>
+                  <div className="text-right"><span className="text-2xl font-bold text-primary">{attribute.level}</span><p className="text-xs text-muted-foreground">base {attribute.base}</p></div>
                 </div>
-                <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-400" style={{ width: `${attribute.pct}%` }} /></div>
-                <p className="mt-2 text-[10px] text-muted-foreground">{attribute.currentXP}/{attribute.neededXP} XP to next level · {attribute.earnedXP} earned total</p>
-                {explanations.length > 0 && <p className="mt-3 border-t border-border/70 pt-3 text-[11px] leading-relaxed text-muted-foreground">{explanations.join(' ')}</p>}
+                <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-primary" style={{ width: `${attribute.pct}%` }} /></div>
+                <p className="mt-2 text-xs text-muted-foreground">{attribute.currentXP}/{attribute.neededXP} XP to next level · {attribute.earnedXP} earned total</p>
+                {explanations.length > 0 && <p className="mt-3 border-t border-border/70 pt-3 text-sm leading-relaxed text-muted-foreground">{explanations.join(' ')}</p>}
               </article>
             )
           })}

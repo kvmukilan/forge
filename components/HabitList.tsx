@@ -125,21 +125,22 @@ export default function HabitList({ viewOverride }: { viewOverride?: 'habits' | 
 
   return (
     <div>
-      <div className="flex justify-between items-start mb-8">
+      <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="page-title">{isTasksView ? 'TASKS' : 'THE VAULT'}</h1>
-          <p className="section-label mt-1">
-            {isTasksView ? 'MISSION DIRECTORY' : 'HABIT DIRECTORY'} · {activeHabits.length} ACTIVE
+          <p className="section-label mb-2">{isTasksView ? 'Planning' : 'Quest library'}</p>
+          <h1 className="page-title">{isTasksView ? 'Tasks' : 'Quests'}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {activeHabits.length} active &middot; shape the routines that build your character
           </p>
         </div>
-        <div className="flex gap-2 mt-2">
+        <div className="flex gap-2">
           {!viewOverride && (
-            <Button variant="outline" size="sm" onClick={() => setModalConfig({ isOpen: true, isTask: true })}>
+            <Button variant="outline" className="min-h-11" onClick={() => setModalConfig({ isOpen: true, isTask: true })}>
               <Plus className="h-3.5 w-3.5 mr-1.5" /> {t('addTaskButton')}
             </Button>
           )}
-          <Button size="sm" onClick={() => setModalConfig({ isOpen: true, isTask: false })}>
-            <Plus className="h-3.5 w-3.5 mr-1.5" /> {t('addHabitButton')}
+          <Button className="min-h-11 flex-1 rounded-xl px-4 sm:flex-none" onClick={() => setModalConfig({ isOpen: true, isTask: false })}>
+              <Plus className="h-3.5 w-3.5 mr-1.5" /> {t('addHabitButton')}
           </Button>
         </div>
       </div>
@@ -150,7 +151,7 @@ export default function HabitList({ viewOverride }: { viewOverride?: 'habits' | 
       )}
 
       {/* Search and Sort Controls */}
-      <div className="flex flex-col sm:flex-row items-center gap-4 my-4">
+      <div className="my-5 flex flex-col items-center gap-3 rounded-2xl border border-border/70 bg-card/45 p-3 sm:flex-row">
         <div className="relative flex-grow w-full sm:w-auto">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-muted-foreground" />
@@ -160,13 +161,13 @@ export default function HabitList({ viewOverride }: { viewOverride?: 'habits' | 
             placeholder={t(isTasksView ? 'searchTasksPlaceholder' : 'searchHabitsPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full"
+            className="min-h-11 w-full rounded-xl pl-10 text-base"
           />
         </div>
         <div className="flex items-center gap-2 self-start sm:self-center w-full sm:w-auto">
           <Label htmlFor="sort-by" className="text-sm font-medium whitespace-nowrap sr-only sm:not-sr-only">{t('sortByLabel')}</Label>
           <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortableField)}>
-            <SelectTrigger id="sort-by" className="w-full sm:w-[180px]">
+            <SelectTrigger id="sort-by" className="min-h-11 w-full rounded-xl sm:w-[180px]">
               <SelectValue placeholder={t('sortByLabel')} />
             </SelectTrigger>
             <SelectContent>
@@ -176,7 +177,7 @@ export default function HabitList({ viewOverride }: { viewOverride?: 'habits' | 
               {!isTasksView && <SelectItem value="frequency">{t('sortByFrequency')}</SelectItem>}
             </SelectContent>
           </Select>
-          <Button variant="outline" size="icon" onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}>
+          <Button variant="outline" size="icon" className="min-h-11 min-w-11 rounded-xl" onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}>
             {sortOrder === 'asc' ? <ArrowUpNarrowWide className="h-4 w-4" /> : <ArrowDownWideNarrow className="h-4 w-4" />}
             <span className="sr-only">{t('toggleSortOrderAriaLabel')}</span>
           </Button>
@@ -244,7 +245,7 @@ export default function HabitList({ viewOverride }: { viewOverride?: 'habits' | 
               description={t('emptyStateHabitsDescription')}
             />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {activeHabits.map((habit: Habit) => (
                 <HabitItem
                   key={habit.id}

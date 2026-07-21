@@ -142,7 +142,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
           onClose()
         }
       }} modal={false}>
-        <DialogContent> {/* DialogContent from shadcn/ui is typically z-50, ModalOverlay is z-40 */}
+        <DialogContent className="max-h-[calc(100dvh-1rem)] overflow-y-auto rounded-2xl p-4 sm:max-w-2xl sm:p-6 [&_button]:min-h-11 [&_button]:min-w-11 [&_input]:min-h-11 [&_select]:min-h-11"> {/* DialogContent from shadcn/ui is typically z-50, ModalOverlay is z-40 */}
           <DialogHeader>
             <DialogTitle>
               {habit
@@ -152,11 +152,11 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
           </DialogHeader>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
+              <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                <Label htmlFor="name" className="text-left sm:text-right">
                   {t('nameLabel')}
                 </Label>
-                <div className='flex col-span-3 gap-2'>
+                <div className='flex gap-2 sm:col-span-3'>
                   <Input
                     id="name"
                     value={name}
@@ -174,21 +174,21 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">
+              <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                <Label htmlFor="description" className="text-left sm:text-right">
                   {t('descriptionLabel')}
                 </Label>
                 <Textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="col-span-3"
+                  className="sm:col-span-3"
                 />
               </div>
               {isTask && (
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label className="text-right text-sm">Priority</Label>
-                  <div className="col-span-3 flex gap-2 flex-wrap">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                  <Label className="text-left text-sm sm:text-right">Priority</Label>
+                  <div className="flex flex-wrap gap-2 sm:col-span-3">
                     {(['p1', 'p2', 'p3'] as const).map(p => {
                       const labels = { p1: 'Urgent', p2: 'Normal', p3: 'Low' }
                       const active = priority === p
@@ -213,9 +213,9 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                 </div>
               )}
               {isTask && (
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label className="text-right text-sm">Project</Label>
-                  <div className="col-span-3">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                  <Label className="text-left text-sm sm:text-right">Project</Label>
+                  <div className="sm:col-span-3">
                     <select
                       value={projectId ?? ''}
                       onChange={e => setProjectId(e.target.value || undefined)}
@@ -236,19 +236,19 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
               )}
               {!isTask && (
                 <>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right text-sm">When?</Label>
+                  <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                    <Label className="text-left text-sm sm:text-right">When?</Label>
                     <Input
-                      className="col-span-3"
+                      className="sm:col-span-3"
                       placeholder='e.g. "7:00 AM"'
                       value={intentionWhen}
                       onChange={e => setIntentionWhen(e.target.value)}
                     />
                   </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right text-sm">Where?</Label>
+                  <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                    <Label className="text-left text-sm sm:text-right">Where?</Label>
                     <Input
-                      className="col-span-3"
+                      className="sm:col-span-3"
                       placeholder='e.g. "Kitchen table"'
                       value={intentionWhere}
                       onChange={e => setIntentionWhere(e.target.value)}
@@ -257,21 +257,21 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                 </>
               )}
               {!isTask && (
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label className="text-right text-sm">Keystone</Label>
-                  <div className="col-span-3 flex items-center gap-3">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                  <Label className="text-left text-sm sm:text-right">Keystone</Label>
+                  <div className="flex items-center gap-3 sm:col-span-3">
                     <Switch checked={isKeystone} onCheckedChange={setIsKeystone} />
                     <span className="text-xs text-muted-foreground flex items-center gap-1"><Zap className="h-3 w-3 text-primary flex-shrink-0" /> Completing this first gives +25% XP for the day</span>
                   </div>
                 </div>
               )}
               {!isTask && (
-                <div className="grid grid-cols-4 items-start gap-4">
-                  <Label className="pt-2 text-right text-sm">Progression</Label>
-                  <div className="col-span-3 grid gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:gap-4">
+                  <Label className="text-left text-sm sm:pt-2 sm:text-right">Progression</Label>
+                  <div className="grid gap-3 sm:col-span-3 sm:grid-cols-2">
                     <label className="space-y-1 text-xs font-semibold text-muted-foreground">
                       Difficulty
-                      <select value={difficulty} onChange={event => setDifficulty(event.target.value as Habit['difficulty'])} className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground">
+                      <select value={difficulty} onChange={event => setDifficulty(event.target.value as Habit['difficulty'])} className="min-h-11 w-full rounded-md border border-input bg-background px-3 text-base text-foreground sm:text-sm">
                         <option value="easy">Easy</option>
                         <option value="medium">Medium</option>
                         <option value="hard">Hard</option>
@@ -283,13 +283,13 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                     </label>
                     <label className="space-y-1 text-xs font-semibold text-muted-foreground">
                       Primary attribute
-                      <select value={primaryAttribute} onChange={event => setPrimaryAttribute(event.target.value as AttributeKey)} className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground">
+                      <select value={primaryAttribute} onChange={event => setPrimaryAttribute(event.target.value as AttributeKey)} className="min-h-11 w-full rounded-md border border-input bg-background px-3 text-base text-foreground sm:text-sm">
                         {ATTRIBUTE_KEYS.map(key => <option key={key} value={key}>{ATTRIBUTE_LABELS[key]}</option>)}
                       </select>
                     </label>
                     <label className="space-y-1 text-xs font-semibold text-muted-foreground">
                       Secondary attribute
-                      <select value={secondaryAttribute} onChange={event => setSecondaryAttribute(event.target.value as AttributeKey | '')} className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground">
+                      <select value={secondaryAttribute} onChange={event => setSecondaryAttribute(event.target.value as AttributeKey | '')} className="min-h-11 w-full rounded-md border border-input bg-background px-3 text-base text-foreground sm:text-sm">
                         <option value="">None</option>
                         {ATTRIBUTE_KEYS.filter(key => key !== primaryAttribute).map(key => <option key={key} value={key}>{ATTRIBUTE_LABELS[key]}</option>)}
                       </select>
@@ -306,34 +306,34 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                 </div>
               )}
               {!isTask && (
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label className="text-right text-sm">Category</Label>
-                  <div className="col-span-3">
-                    <Select value={category ?? ''} onValueChange={(v) => setCategory(v ? v as HabitCategory : undefined)}>
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                  <Label className="text-left text-sm sm:text-right">Category</Label>
+                  <div className="sm:col-span-3">
+                    <Select value={category ?? 'none'} onValueChange={(value) => setCategory(value === 'none' ? undefined : value as HabitCategory)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No category</SelectItem>
-                        <SelectItem value="fitness">💪 Fitness</SelectItem>
-                        <SelectItem value="learning">📖 Learning</SelectItem>
-                        <SelectItem value="mindfulness">🧘 Mindfulness</SelectItem>
-                        <SelectItem value="social">🤝 Social</SelectItem>
-                        <SelectItem value="creative">🎨 Creative</SelectItem>
-                        <SelectItem value="productivity">🎯 Productivity</SelectItem>
-                        <SelectItem value="health">🍎 Health</SelectItem>
-                        <SelectItem value="other">⭐ Other</SelectItem>
+                        <SelectItem value="none">No category</SelectItem>
+                        <SelectItem value="fitness">Fitness</SelectItem>
+                        <SelectItem value="learning">Learning</SelectItem>
+                        <SelectItem value="mindfulness">Mindfulness</SelectItem>
+                        <SelectItem value="social">Social</SelectItem>
+                        <SelectItem value="creative">Creative</SelectItem>
+                        <SelectItem value="productivity">Productivity</SelectItem>
+                        <SelectItem value="health">Health</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
               )}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="recurrence" className="text-right">
+              <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                <Label htmlFor="recurrence" className="text-left sm:text-right">
                   {t('whenLabel')}
                 </Label>
                 {/* date input (task) */}
-                <div className="col-span-3 space-y-2">
+                <div className="space-y-2 sm:col-span-3">
                   <div className="flex gap-2">
                     <Input
                       id="recurrence"
@@ -348,7 +348,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="min-h-11 min-w-11"
                           >
                             <Zap className="h-4 w-4" />
                           </Button>
@@ -360,7 +360,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                                 <Button
                                   key={date.value}
                                   variant="outline"
-                                  className="justify-start h-9 px-3 hover:bg-primary hover:text-primary-foreground transition-colors"
+                                  className="min-h-11 justify-start px-3 hover:bg-primary hover:text-primary-foreground transition-colors"
                                   onClick={() => {
                                     setRuleText(date.value);
                                     setIsQuickDatesOpen(false);
@@ -377,7 +377,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                   </div>
                 </div>
                 {/* rrule input (habit) */}
-                <div className="col-start-2 col-span-3 text-sm">
+                <div className="text-sm sm:col-start-2 sm:col-span-3">
                   {(() => {
                     let displayText = '';
                     const { result, message } = convertHumanReadableFrequencyToMachineReadable({ text: ruleText, timezone: settings.system.timezone, isRecurring: isRecurRule });
@@ -399,19 +399,20 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                   })()}
                 </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <div className="flex items-center gap-2 justify-end">
+              <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                <div className="flex items-center gap-2 sm:justify-end">
                   <Label htmlFor="targetCompletions">
                     {t('completeLabel')}
                   </Label>
                 </div>
-                <div className="col-span-3">
+                <div className="sm:col-span-3">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center border rounded-lg overflow-hidden">
                       <button
                         type="button"
                         onClick={() => setTargetCompletions(prev => Math.max(1, prev - 1))}
-                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
+                        className="min-h-11 min-w-11 px-3 py-2 bg-secondary hover:bg-muted transition-colors"
+                        aria-label="Decrease completions"
                       >
                         -
                       </button>
@@ -430,7 +431,8 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                       <button
                         type="button"
                         onClick={() => setTargetCompletions(prev => Math.min(10, prev + 1))}
-                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
+                        className="min-h-11 min-w-11 px-3 py-2 bg-secondary hover:bg-muted transition-colors"
+                        aria-label="Increase completions"
                       >
                         +
                       </button>
@@ -441,19 +443,20 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <div className="flex items-center gap-2 justify-end">
+              <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                <div className="flex items-center gap-2 sm:justify-end">
                   <Label htmlFor="coinReward">
                     {t('rewardLabel')}
                   </Label>
                 </div>
-                <div className="col-span-3">
+                <div className="sm:col-span-3">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center border rounded-lg overflow-hidden">
                       <button
                         type="button"
                         onClick={() => setCoinReward(prev => Math.max(0, prev - 1))}
-                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
+                        className="min-h-11 min-w-11 px-3 py-2 bg-secondary hover:bg-muted transition-colors"
+                        aria-label="Decrease coin reward"
                       >
                         -
                       </button>
@@ -473,7 +476,8 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                       <button
                         type="button"
                         onClick={() => setCoinReward(prev => Math.min(prev + 1, MAX_COIN_LIMIT))}
-                        className="px-3 py-2 bg-secondary hover:bg-muted transition-colors"
+                        className="min-h-11 min-w-11 px-3 py-2 bg-secondary hover:bg-muted transition-colors"
+                        aria-label="Increase coin reward"
                       >
                         +
                       </button>
@@ -484,11 +488,11 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">
+              <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                <Label className="text-left sm:text-right">
                   {t('drawingLabel')}
                 </Label>
-                <div className="col-span-3">
+                <div className="sm:col-span-3">
                   <div className="flex gap-4 items-center">
                     <Button
                       type="button"
@@ -517,11 +521,11 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                 </div>
               </div>
               {users && users.length > 1 && (
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <div className="flex items-center justify-end gap-2">
+                <div className="grid grid-cols-1 items-start gap-2 sm:grid-cols-4 sm:items-center sm:gap-4">
+                  <div className="flex items-center gap-2 sm:justify-end">
                     <Label htmlFor="sharing-toggle">{t('shareLabel')}</Label>
                   </div>
-                  <div className="col-span-3">
+                  <div className="sm:col-span-3">
                     <div className="flex flex-wrap gap-2">
                       {users.filter((u) => u.id !== currentUser?.id).map(user => (
                         <Avatar
@@ -550,7 +554,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
               )}
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={!!errorMessage}>
+              <Button type="submit" className="min-h-11 w-full rounded-xl sm:w-auto" disabled={!!errorMessage}>
                 {habit
                   ? t('saveChangesButton')
                   : t(isTask ? 'addTaskButton' : 'addHabitButton')}

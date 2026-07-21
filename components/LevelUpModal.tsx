@@ -5,15 +5,14 @@ import { levelUpAtom } from '@/lib/gamification-atoms'
 import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Zap } from 'lucide-react'
+import { celebrate } from '@/lib/celebration'
 
 export default function LevelUpModal() {
   const [levelUp, setLevelUp] = useAtom(levelUpAtom)
 
   useEffect(() => {
     if (levelUp === null) return
-    import('canvas-confetti').then(({ default: confetti }) => {
-      confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 }, colors: ['#FF4D00', '#FF7A33', '#FFA366', '#FFFFFF'] })
-    })
+    celebrate('milestone')
   }, [levelUp])
 
   if (levelUp === null) return null
@@ -30,10 +29,10 @@ export default function LevelUpModal() {
         <h2 className="text-4xl font-extrabold text-primary mb-2">{levelUp}</h2>
         <p className="text-muted-foreground mb-6">You reached Level {levelUp}! Keep building those habits.</p>
         <Button
-          className="w-full bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-colors"
+          className="min-h-11 w-full bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-colors"
           onClick={() => setLevelUp(null)}
         >
-          Awesome! 🎉
+          Continue forging
         </Button>
       </div>
     </div>

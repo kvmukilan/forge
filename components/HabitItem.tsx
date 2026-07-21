@@ -117,8 +117,9 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
         <button
           onClick={() => !isCompletedToday ? completeHabit(habit) : undefined}
           disabled={!canInteract || habit.archived}
+          aria-label={isCompletedToday ? `${habit.name} completed` : `Complete ${habit.name}`}
           className={cn(
-            'h-6 w-6 rounded border-2 flex-shrink-0 flex items-center justify-center transition-all',
+            'min-h-11 min-w-11 rounded-xl border-2 flex-shrink-0 flex items-center justify-center transition-all',
             isCompletedToday
               ? 'bg-emerald-500 border-emerald-500'
               : 'border-border hover:border-muted-foreground'
@@ -169,15 +170,17 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
         {/* Actions */}
         <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
           {completionsToday > 0 && !habit.archived && (
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground"
+            <Button variant="ghost" size="sm" className="min-h-11 min-w-11 p-0 text-muted-foreground"
               onClick={() => undoComplete(habit)} disabled={!canWrite}>
               <Undo2 className="h-3 w-3" />
+              <span className="sr-only">Undo {habit.name}</span>
             </Button>
           )}
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground">
+              <Button variant="ghost" size="sm" className="min-h-11 min-w-11 p-0 text-muted-foreground">
                 <MoreVertical className="h-3.5 w-3.5" />
+                <span className="sr-only">More actions for {habit.name}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -194,7 +197,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
     <div
       id={`habit-${habit.id}`}
       className={cn(
-        'group relative rounded-lg border bg-card border-border p-5 hover:border-muted',
+        'group relative rounded-2xl border bg-card/70 border-border p-4 transition-colors hover:border-primary/35 sm:p-5',
         isCompletedToday && 'opacity-50',
         isHighlighted && 'border-primary/50',
         habit.archived && 'opacity-40',
@@ -205,7 +208,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
       {...swipeHandlers}
     >
       {/* Top row: badges + actions */}
-      <div className="flex items-start justify-between mb-3">
+      <div className="flex min-h-8 items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 flex-wrap">
           {habit.isKeystone && (
             <span className="section-label text-primary flex items-center gap-1"><Star className="h-3 w-3" />Keystone</span>
@@ -229,16 +232,20 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+              className="min-h-11 min-w-11 p-0 text-muted-foreground sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100 transition-opacity"
               onClick={() => undoComplete(habit)}
               disabled={!canWrite}
             >
               <Undo2 className="h-3 w-3" />
+              <span className="sr-only">Undo {habit.name}</span>
             </Button>
           )}
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <button className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded text-muted-foreground hover:text-foreground transition-all">
+              <button
+                className="grid min-h-11 min-w-11 place-items-center rounded-xl text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100"
+                aria-label={`More actions for ${habit.name}`}
+              >
                 <MoreVertical className="h-4 w-4" />
               </button>
             </DropdownMenuTrigger>
@@ -251,7 +258,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
 
       {/* Habit name */}
       <h3 className={cn(
-        'text-base font-bold mb-4 leading-snug',
+        'text-base font-bold mb-3 leading-snug',
         isCompletedToday && 'line-through text-muted-foreground'
       )}>
         {habit.name}
@@ -267,7 +274,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
       </div>
 
       {/* Bottom: streak + mini bars */}
-      <div className="flex items-end justify-between mb-4">
+      <div className="flex items-end justify-between gap-4 mb-4 rounded-xl bg-background/45 px-3 py-2.5">
         <div>
           <p className="section-label mb-0.5">Current Streak</p>
           <p className={cn(
@@ -303,8 +310,9 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
       <button
         onClick={() => isCompletedToday ? undoComplete(habit) : completeHabit(habit)}
         disabled={!canInteract || habit.archived}
+        aria-label={isCompletedToday ? `Undo ${habit.name}` : `Complete ${habit.name}`}
         className={cn(
-          'w-full py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-colors flex items-center justify-center gap-1.5',
+          'flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl px-4 text-sm font-bold transition-colors',
           isCompletedToday
             ? 'bg-secondary text-muted-foreground hover:bg-muted'
             : 'bg-primary text-primary-foreground hover:bg-primary/90'
@@ -320,7 +328,8 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
       <div className="mt-3">
         <button
           onClick={() => setExpanded(prev => !prev)}
-          className="flex items-center gap-1 section-label hover:text-foreground transition-colors"
+          className="flex min-h-11 items-center gap-1 section-label hover:text-foreground transition-colors"
+          aria-expanded={expanded}
         >
           {expanded ? <ChevronUp className="h-2.5 w-2.5" /> : <ChevronDown className="h-2.5 w-2.5" />}
           {expanded ? 'hide stats' : 'stats'}

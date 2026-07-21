@@ -44,7 +44,7 @@ export function Profile() {
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="flex items-center gap-2">
+          <Button variant="ghost" className="flex min-h-11 min-w-11 items-center gap-2 rounded-xl p-1.5" aria-label="Open account menu">
             <Avatar className="h-8 w-8">
               <AvatarImage src={user?.avatarPath && `/api/avatars/${user.avatarPath.split('/').pop()}` || ""} />
               <AvatarFallback>
@@ -74,7 +74,7 @@ export function Profile() {
                       setOpen(false);
                       setIsEditing(true);
                     }}
-                    className="text-xs text-muted-foreground hover:text-primary transition-colors text-left"
+                    className="min-h-11 text-left text-xs text-muted-foreground transition-colors hover:text-primary"
                   >
                     {t('editProfileButton')}
                   </button>
@@ -87,7 +87,8 @@ export function Profile() {
                     setOpen(false);
                     handleSignOut();
                   }}
-                  className="border border-primary/50 text-primary rounded-lg p-1.5 transition-colors hover:bg-primary/10 hover:border-primary active:scale-95"
+                  className="grid min-h-11 min-w-11 place-items-center rounded-xl border border-primary/50 text-primary transition-colors hover:border-primary hover:bg-primary/10"
+                  aria-label="Sign out"
                 >
                   <LogOut className="h-4 w-4" />
                 </button>
@@ -95,7 +96,7 @@ export function Profile() {
             </div>
           </div>
 
-          <DropdownMenuItem className="cursor-pointer px-2 py-1.5" onClick={() => {
+          <DropdownMenuItem className="min-h-11 cursor-pointer px-2 py-1.5" onClick={() => {
             setOpen(false);  // Close the dropdown
             setUserSelect(true);  // Open the user select modal
           }}>
@@ -106,7 +107,7 @@ export function Profile() {
               </div>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer px-2 py-1.5" asChild>
+          <DropdownMenuItem className="min-h-11 cursor-pointer px-2 py-1.5" asChild>
             {/* need the Link element to be the direct child of the DropdownMenuItem, since we are using asChild here */}
             <Link
               href="/settings"
@@ -120,7 +121,7 @@ export function Profile() {
               </div>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer px-2 py-1.5" onClick={() => {
+          <DropdownMenuItem className="min-h-11 cursor-pointer px-2 py-1.5" onClick={() => {
             setOpen(false);  // Close the dropdown
             setAboutOpen(true);  // Open the about modal
           }}>

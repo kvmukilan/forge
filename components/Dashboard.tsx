@@ -1,6 +1,7 @@
 'use client'
 
 import { useAtom, useAtomValue } from 'jotai'
+import Link from 'next/link'
 import { wishlistAtom, habitsAtom, settingsAtom, coinsAtom, currentUserAtom } from '@/lib/atoms'
 import { bossAtom } from '@/lib/gamification-atoms'
 import DailyOverview from './DailyOverview'
@@ -16,13 +17,14 @@ import PerfectDayModal from './PerfectDayModal'
 import MilestoneModal from './MilestoneModal'
 import SeasonBanner from './SeasonBanner'
 import DailyForge from './DailyForge'
-import { Coins, Sun, CloudSun, Moon, Orbit, Sparkles } from 'lucide-react'
+import { ChevronDown, Coins, Sun, CloudSun, Moon, Gift, Map, Sparkles, UserRound } from 'lucide-react'
 import { useAchievements } from '@/hooks/useAchievements'
 import { getOrSpawnBoss } from '@/app/actions/gamification'
 import { getProgressionSummary } from '@/app/actions/progression'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { DateTime } from 'luxon'
+import { cn } from '@/lib/utils'
 
 function CoinBalanceCard() {
   const [coinsData] = useAtom(coinsAtom)
@@ -82,6 +84,7 @@ export default function Dashboard() {
   const [settingsData] = useAtom(settingsAtom)
   const [wishlist] = useAtom(wishlistAtom)
   const [, setBossData] = useAtom(bossAtom)
+  const [worldOpen, setWorldOpen] = useState(false)
   const habits = habitsData.habits
   const wishlistItems = wishlist.items
 
@@ -115,53 +118,87 @@ export default function Dashboard() {
 
       <DailyForge habits={habits} />
 
-      <DailyOverview
-        wishlistItems={wishlistItems}
-        habits={habits}
-        coinBalance={Math.max(0, balance)}
-      />
-
-      <section className="pt-4 space-y-4">
-        <div className="flex items-end justify-between gap-4 border-b border-border/70 pb-3">
+      <details className="group overflow-hidden rounded-3xl border border-border/70 bg-card/55">
+        <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 outline-none transition-colors hover:bg-secondary/40 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
           <div>
-            <div className="flex items-center gap-2 text-primary mb-1.5">
-              <Orbit className="h-4 w-4" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Your world</span>
+            <h2 className="text-base font-semibold">All due today</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">Habits, tasks, and wishlist goals outside your focused plan.</p>
+          </div>
+          <ChevronDown className="h-5 w-5 flex-none text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
+        </summary>
+        <div className="border-t border-border/70 p-3 sm:p-5">
+          <DailyOverview
+            wishlistItems={wishlistItems}
+            habits={habits}
+            coinBalance={Math.max(0, balance)}
+          />
+        </div>
+      </details>
+
+      <section className="space-y-4 pt-2" aria-labelledby="keep-growing-title">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <div className="mb-1.5 flex items-center gap-2 text-primary">
+              <Sparkles className="h-4 w-4" />
+              <span className="text-xs font-semibold">Keep growing</span>
             </div>
-            <h2 className="text-xl font-black tracking-tight">Progress beyond today</h2>
+            <h2 id="keep-growing-title" className="text-xl font-bold tracking-tight">Your progress has a place.</h2>
           </div>
-          <p className="hidden sm:block text-xs text-muted-foreground max-w-xs text-right">Rewards, allies, and long-term growth—kept in view without competing with your priorities.</p>
+          <p className="hidden max-w-sm text-right text-sm text-muted-foreground md:block">Review growth when you want it. Today stays focused on action.</p>
         </div>
 
-        <CharacterCard />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="md:col-span-2">
-            <DailyQuests />
-          </div>
-          <div className="md:col-span-1">
-            <CoinBalanceCard />
-          </div>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {[
+            { href: '/character', label: 'Character', detail: 'Attributes and level', icon: UserRound },
+            { href: '/journey', label: 'Journey', detail: '66-day campaign map', icon: Map },
+            { href: '/rewards', label: 'Rewards', detail: 'Milestones and unlocks', icon: Gift },
+          ].map(item => (
+            <Link key={item.href} href={item.href} className="group flex min-h-20 items-center gap-3 rounded-2xl border border-border/75 bg-card px-4 py-3 outline-none transition-colors hover:border-primary/30 hover:bg-primary/[0.04] focus-visible:ring-2 focus-visible:ring-ring">
+              <span className="grid h-10 w-10 flex-none place-items-center rounded-xl bg-secondary text-muted-foreground transition-colors group-hover:text-primary">
+                <item.icon className="h-5 w-5 stroke-[1.8]" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold">{item.label}</span>
+                <span className="mt-0.5 block truncate text-xs text-muted-foreground">{item.detail}</span>
+              </span>
+            </Link>
+          ))}
         </div>
 
-        <BossCard />
+        <button
+          type="button"
+          onClick={() => setWorldOpen(open => !open)}
+          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-border bg-secondary/35 px-4 text-sm font-semibold text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          aria-expanded={worldOpen}
+          aria-controls="forge-world-details"
+        >
+          {worldOpen ? 'Hide world details' : 'Explore world details'}
+          <ChevronDown className={cn('h-4 w-4 transition-transform duration-200', worldOpen && 'rotate-180')} />
+        </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-          <PartyStatusWidget />
-          <PetCard compact={true} />
-        </div>
-
-        <SeasonBanner />
-
-        <HabitStreak habits={habits} />
-
-        <div className="relative">
-          <div className="absolute -top-2 right-3 flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-            <Sparkles className="h-3 w-3 text-primary" />
-            Pattern insight
+        {worldOpen && (
+          <div id="forge-world-details" className="space-y-4 rounded-3xl border border-border/70 bg-card/35 p-3 animate-fade-in sm:p-5">
+            <CharacterCard />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="md:col-span-2"><DailyQuests /></div>
+              <div><CoinBalanceCard /></div>
+            </div>
+            <BossCard />
+            <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
+              <PartyStatusWidget />
+              <PetCard compact={true} />
+            </div>
+            <SeasonBanner />
+            <HabitStreak habits={habits} />
+            <div className="relative">
+              <div className="absolute -top-2 right-3 flex items-center gap-1 text-[10px] font-bold text-muted-foreground">
+                <Sparkles className="h-3 w-3 text-primary" />
+                Pattern insight
+              </div>
+              <HabitDNA />
+            </div>
           </div>
-          <HabitDNA />
-        </div>
+        )}
       </section>
 
       <PerfectDayModal />
