@@ -269,7 +269,7 @@ export default function DailyForge({ habits }: { habits: Habit[] }) {
 
   if (editing) {
     return (
-      <section className="overflow-hidden rounded-3xl border border-border/80 bg-card shadow-[0_24px_80px_-48px_hsl(var(--primary)/0.5)]" aria-labelledby="daily-plan-builder-title">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card" aria-labelledby="daily-plan-builder-title">
         <div className="space-y-7 p-5 sm:p-7 lg:p-8">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
@@ -296,7 +296,7 @@ export default function DailyForge({ habits }: { habits: Habit[] }) {
                     className={cn(
                       'group flex min-h-[92px] flex-col justify-between rounded-2xl border p-3 text-left outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring sm:min-h-28 sm:p-4',
                       active
-                        ? 'border-primary/60 bg-primary/10 shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.12)]'
+                        ? 'border-primary bg-primary/[0.07]'
                         : 'border-border/80 bg-secondary/20 hover:border-primary/30 hover:bg-secondary/40'
                     )}
                     aria-pressed={active}
@@ -393,7 +393,7 @@ export default function DailyForge({ habits }: { habits: Habit[] }) {
             <button
               onClick={() => persistPlan(true)}
               disabled={saving || selectedIds.length === 0}
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-primary px-6 text-sm font-bold text-primary-foreground shadow-[0_8px_28px_-12px_hsl(var(--primary))] outline-none transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card disabled:cursor-not-allowed disabled:opacity-45"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-primary-foreground outline-none transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card disabled:cursor-not-allowed disabled:opacity-45"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Target className="h-4 w-4" />}
               Forge today&apos;s plan
@@ -405,7 +405,7 @@ export default function DailyForge({ habits }: { habits: Habit[] }) {
   }
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-border/80 bg-card shadow-[0_28px_90px_-54px_hsl(var(--primary)/0.65)]" aria-labelledby="daily-mission-title">
+    <section className="overflow-hidden rounded-2xl border border-border bg-card" aria-labelledby="daily-mission-title">
       <div className="p-5 sm:p-7 lg:p-8">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
@@ -519,7 +519,7 @@ export default function DailyForge({ habits }: { habits: Habit[] }) {
             {adaptation && (
               <div className="mt-5 border-t border-border/70 pt-4">
                 <div className="flex items-center gap-2">
-                  {adaptation.action === 'increase' ? <Sparkles className="h-4 w-4 text-violet-300" /> : <ShieldCheck className="h-4 w-4 text-cyan-300" />}
+                  {adaptation.action === 'increase' ? <Sparkles className="h-4 w-4 text-primary" /> : <ShieldCheck className="h-4 w-4 text-cyan-300" />}
                   <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Progression check</p>
                 </div>
                 <p className="mt-2 text-sm font-semibold">{adaptation.habitName}</p>
@@ -528,7 +528,7 @@ export default function DailyForge({ habits }: { habits: Habit[] }) {
                   <span className="font-bold text-foreground">{adaptation.currentDifficulty}</span>
                   {adaptation.currentMinutes != null && ` · ${adaptation.currentMinutes} min`}
                   <span className="mx-1.5">→</span>
-                  <span className="font-bold text-violet-200">{adaptation.proposedDifficulty}</span>
+                  <span className="font-bold text-primary">{adaptation.proposedDifficulty}</span>
                   {adaptation.proposedMinutes != null && ` · ${adaptation.proposedMinutes} min`}
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2">

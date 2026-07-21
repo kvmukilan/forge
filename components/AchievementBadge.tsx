@@ -25,7 +25,7 @@ export default function AchievementBadge({ achievement, className }: Achievement
     )}>
       <div className={cn(
         'w-12 h-12 rounded-full flex items-center justify-center',
-        isUnlocked ? 'bg-gradient-to-br from-violet-500/20 to-blue-500/20 border border-violet-500/30' : 'bg-muted border border-border'
+        isUnlocked ? 'border border-primary/35 bg-primary/10' : 'bg-muted border border-border'
       )}>
         <Icon className={cn('h-6 w-6', isUnlocked ? achievement.iconColor : 'text-muted-foreground')} />
       </div>

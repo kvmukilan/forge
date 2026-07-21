@@ -24,7 +24,7 @@ export default function JourneyPage() {
   return (
     <div className="space-y-7 animate-fade-in">
       <header><p className="section-label mb-2">The 66-day campaign</p><h1 className="page-title">A structure for momentum, not a deadline.</h1><p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">Every chapter lasts eleven days. Habits can take much longer or shorter to become automatic; the campaign simply gives progress a readable shape.</p></header>
-      <section className="overflow-hidden rounded-3xl border border-border/80 bg-card p-5 shadow-[0_24px_80px_-52px_hsl(var(--primary)/0.55)] sm:p-7">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card p-5 sm:p-7">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div><p className="section-label">Current arc</p><h2 className="mt-1 text-2xl font-bold">Chapter {currentChapter}: {CHAPTERS[currentChapter - 1] ?? 'Continuation'}</h2><p className="mt-1 text-sm text-muted-foreground">Campaign day {summary.campaign.day} · day {summary.campaign.chapterDay} of this chapter</p></div>
           <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">{summary.rank.name}</span>

@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Project } from '@/lib/types'
 
-const COLORS = ['violet', 'blue', 'emerald', 'amber', 'rose', 'cyan']
+const COLORS = ['emerald', 'blue', 'amber', 'rose', 'cyan', 'slate']
 const EMOJIS = ['📁', '🎯', '💡', '🚀', '💪', '📚', '🎨', '🏆', '⚡', '🌱']
 
 interface AddEditProjectModalProps {
@@ -21,7 +21,7 @@ interface AddEditProjectModalProps {
 export default function AddEditProjectModal({ open, onOpenChange, project, onSave }: AddEditProjectModalProps) {
   const [name, setName] = useState(project?.name ?? '')
   const [description, setDescription] = useState(project?.description ?? '')
-  const [color, setColor] = useState(project?.color ?? 'violet')
+  const [color, setColor] = useState(project?.color ?? 'emerald')
   const [emoji, setEmoji] = useState(project?.emoji ?? '📁')
 
   const handleSave = () => {
@@ -30,7 +30,7 @@ export default function AddEditProjectModal({ open, onOpenChange, project, onSav
     onOpenChange(false)
     setName('')
     setDescription('')
-    setColor('violet')
+    setColor('emerald')
     setEmoji('📁')
   }
 
@@ -73,8 +73,8 @@ export default function AddEditProjectModal({ open, onOpenChange, project, onSav
                   className={`w-7 h-7 rounded-full transition-all ${color === c ? 'ring-2 ring-offset-2 ring-primary scale-110' : ''}`}
                   style={{
                     background: {
-                      violet: '#7c3aed', blue: '#2563eb', emerald: '#10b981',
-                      amber: '#f59e0b', rose: '#f43f5e', cyan: '#06b6d4'
+                      emerald: '#10b981', blue: '#2563eb', amber: '#f59e0b',
+                      rose: '#f43f5e', cyan: '#06b6d4', slate: '#64748b'
                     }[c]
                   }}
                 />

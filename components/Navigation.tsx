@@ -30,7 +30,7 @@ export default function Navigation({ className, viewPort }: NavigationProps) {
     { icon: HabitIcon, label: 'Quests', href: '/habits', group: 'primary' },
     { icon: UserRound, label: 'Character', href: '/character', group: 'primary' },
     { icon: Map, label: 'Journey', href: '/journey', group: 'primary' },
-    { icon: Gift, label: 'Rewards', href: '/rewards', group: 'primary' },
+    { icon: Gift, label: 'Rewards', href: '/rewards', group: 'collection' },
     { icon: TaskIcon, label: 'Tasks', href: '/tasks', group: 'planning' },
     { icon: Calendar, label: t('calendar'), href: '/calendar', group: 'planning' },
     { icon: FolderKanban, label: 'Projects', href: '/projects', group: 'planning' },

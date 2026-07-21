@@ -390,7 +390,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDef[] = [
     name: 'Rising Star',
     description: 'Reach Level 5',
     iconName: 'Star',
-    iconColor: 'text-violet-400',
+    iconColor: 'text-primary',
     check: (d) => d.level >= 5,
   },
   {
@@ -398,7 +398,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDef[] = [
     name: 'Dedicated',
     description: 'Reach Level 10',
     iconName: 'Trophy',
-    iconColor: 'text-violet-500',
+    iconColor: 'text-primary',
     check: (d) => d.level >= 10,
   },
   {

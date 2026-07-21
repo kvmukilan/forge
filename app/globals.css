@@ -2,44 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
- * Kinetic Minimalism — single dark theme.
- * Pure black canvas, three neutral surfaces (#111 / #1A1A1A / #222),
- * one ember accent (#FF4D00), one radius. Light mode is intentionally
- * not shipped; :root and .dark carry identical values.
- */
+/* Forge uses a restrained graphite palette with one earned mint accent. */
 @layer base {
   :root,
   .dark {
-    --background: 230 34% 4%;
-    --foreground: 225 25% 96%;
-    --card: 230 28% 7%;
-    --card-foreground: 225 25% 96%;
-    --popover: 230 28% 7%;
-    --popover-foreground: 225 25% 96%;
-    --primary: 263 84% 66%;
-    --primary-foreground: 230 34% 4%;
-    --secondary: 229 22% 12%;
-    --secondary-foreground: 225 18% 92%;
-    --muted: 228 18% 15%;
-    --muted-foreground: 225 10% 65%;
-    --accent: 190 70% 12%;
-    --accent-foreground: 187 86% 62%;
+    --background: 220 18% 5%;
+    --foreground: 40 12% 94%;
+    --card: 220 14% 8%;
+    --card-foreground: 40 12% 94%;
+    --popover: 220 14% 8%;
+    --popover-foreground: 40 12% 94%;
+    --primary: 153 50% 56%;
+    --primary-foreground: 220 18% 5%;
+    --secondary: 220 12% 12%;
+    --secondary-foreground: 40 10% 90%;
+    --muted: 220 10% 15%;
+    --muted-foreground: 220 8% 66%;
+    --accent: 220 12% 14%;
+    --accent-foreground: 40 12% 94%;
     --destructive: 0 72% 46%;
     --destructive-foreground: 0 0% 98%;
-    --border: 228 17% 18%;
-    --input: 228 18% 15%;
-    --ring: 263 84% 66%;
-    --radius: 0.5rem;
+    --border: 220 10% 20%;
+    --input: 220 10% 15%;
+    --ring: 153 50% 56%;
+    --radius: 0.75rem;
     --coin-color: 43 96% 56%;
     --streak-color: 38 96% 56%;
-    --xp-color: 263 84% 66%;
+    --xp-color: 153 50% 56%;
     --success-color: 160 84% 39%;
-    --chart-1: 263 84% 66%;
-    --chart-2: 187 86% 52%;
+    --chart-1: 153 50% 56%;
+    --chart-2: 197 72% 56%;
     --chart-3: 43 96% 56%;
     --chart-4: 217 80% 65%;
-    --chart-5: 340 75% 60%;
+    --chart-5: 12 72% 60%;
   }
 }
 
@@ -76,7 +71,7 @@
     transition: border-color 0.15s ease;
   }
   .glass-card:hover {
-    border-color: hsl(263 35% 34%);
+    border-color: hsl(var(--muted-foreground) / 0.32);
   }
 
   .section-title {

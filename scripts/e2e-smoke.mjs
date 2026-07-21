@@ -77,7 +77,16 @@ try {
   const signupSession = await (await context.request.get(`${baseUrl}/api/auth/session`)).json()
   testUserId = signupSession?.user?.id ?? null
 
+  await page.getByRole('heading', { name: 'What are you ready to develop?' }).waitFor()
+  await page.waitForTimeout(300)
   await page.screenshot({ path: path.join(artifactDir, '01-onboarding-mobile.png'), fullPage: true })
+  assert.equal(await page.locator('header:visible').count(), 0, 'Onboarding should not render the application header')
+  assert.equal(await page.locator('aside[aria-label="Primary navigation"]:visible').count(), 0, 'Onboarding should not render the desktop sidebar')
+  assert.equal(await page.locator('nav[aria-label="Primary navigation"]:visible').count(), 0, 'Onboarding should not render the mobile tab bar')
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await page.screenshot({ path: path.join(artifactDir, '01b-onboarding-desktop.png'), fullPage: true })
+  assert.equal(await page.locator('aside[aria-label="Primary navigation"]:visible').count(), 0, 'Desktop onboarding should remain immersive')
+  await page.setViewportSize({ width: 390, height: 844 })
   await page.getByRole('button', { name: /^Strength/ }).click()
   await page.getByRole('button', { name: /^Focus/ }).click()
   await page.getByRole('button', { name: 'Continue' }).click()
@@ -95,7 +104,7 @@ try {
     element.dispatchEvent(new Event('change', { bubbles: true }))
   })
   await page.screenshot({ path: path.join(artifactDir, '02-program-mobile.png'), fullPage: true })
-  await page.getByRole('button', { name: 'Begin campaign' }).click()
+  await page.getByRole('button', { name: 'Activate program' }).click()
   await page.waitForURL(url => url.pathname === '/', { timeout: 30_000 })
   await page.getByText('Daily plan', { exact: true }).waitFor({ timeout: 30_000 })
 
@@ -202,7 +211,7 @@ try {
   assert.equal(await page.locator('a[href="/journey"]:visible').first().isVisible(), true)
   const desktopSidebar = page.locator('aside[aria-label="Primary navigation"]')
   assert.equal(await desktopSidebar.isVisible(), true)
-  assert.ok(await desktopSidebar.locator('a:visible').count() <= 6, 'Desktop sidebar exposes too many destinations before Library is opened')
+  assert.ok(await desktopSidebar.locator('a:visible').count() <= 5, 'Desktop sidebar exposes too many destinations before Library is opened')
   assert.equal(await desktopSidebar.locator('a[aria-current="page"]').getAttribute('href'), '/')
   await page.screenshot({ path: path.join(artifactDir, '11-today-desktop.png'), fullPage: true })
 

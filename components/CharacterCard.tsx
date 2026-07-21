@@ -43,7 +43,7 @@ export default function CharacterCard({
   return (
     <>
       <LevelUpModal />
-      <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card p-5 shadow-[0_24px_80px_-52px_hsl(var(--primary)/0.55)] sm:p-6">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 sm:p-6">
         <div className="flex items-center gap-4 mb-4">
           <Avatar className="h-14 w-14 ring-2 ring-primary/40 flex-shrink-0">
             <AvatarImage src={avatarSrc} />
@@ -131,7 +131,7 @@ export default function CharacterCard({
             </div>
           </div>
         ) : !progression ? (
-          <div className="mt-5 flex flex-col gap-3 rounded-xl border border-violet-400/20 bg-violet-500/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-5 flex flex-col gap-3 rounded-xl border border-border bg-secondary/35 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-2.5">
               <Sparkles className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
               <div><p className="text-sm font-semibold">Reveal your starting attributes</p><p className="mt-0.5 text-xs text-muted-foreground">A short, editable assessment creates your personal progression path.</p></div>

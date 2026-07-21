@@ -116,7 +116,7 @@ export default function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
           <span className="text-xs text-amber-400 flex items-center gap-0.5">
             <Coins className="h-3 w-3" /> {task.coinReward}
           </span>
-          <span className="text-xs text-violet-400 flex items-center gap-0.5">
+          <span className="text-xs text-primary flex items-center gap-0.5">
             <Zap className="h-3 w-3" /> +{xpReward} XP
           </span>
         </div>

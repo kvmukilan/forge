@@ -43,7 +43,7 @@ export default function DesktopNavDisplay({ navItems, className }: DesktopNavDis
           'group relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
           compact && 'min-h-10 text-[13px]',
           active
-            ? 'bg-primary/12 text-foreground'
+            ? 'bg-secondary text-foreground'
             : 'text-muted-foreground hover:bg-secondary/70 hover:text-foreground'
         )}
       >
@@ -55,9 +55,9 @@ export default function DesktopNavDisplay({ navItems, className }: DesktopNavDis
   }
 
   return (
-    <aside className={cn('hidden w-60 flex-none border-r border-border/70 bg-card/35 lg:flex lg:flex-col', className)} aria-label="Primary navigation">
+    <aside className={cn('hidden w-56 flex-none border-r border-border/70 bg-card/25 lg:flex lg:flex-col', className)} aria-label="Primary navigation">
       <div className="flex min-h-16 items-center gap-3 px-5">
-        <div className="grid h-8 w-8 place-items-center rounded-xl bg-primary text-sm font-black text-primary-foreground shadow-[0_8px_24px_-12px_hsl(var(--primary))]">F</div>
+        <div className="grid h-8 w-8 place-items-center rounded-lg bg-foreground text-sm font-black text-background">F</div>
         <div>
           <p className="text-sm font-extrabold tracking-[0.16em]">FORGE</p>
           <p className="text-[11px] text-muted-foreground">Build the next level</p>
@@ -108,7 +108,7 @@ export default function DesktopNavDisplay({ navItems, className }: DesktopNavDis
             aria-current={pathname === '/settings' ? 'page' : undefined}
             className={cn(
               'flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-muted-foreground outline-none transition-colors hover:bg-secondary/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
-              pathname === '/settings' && 'bg-primary/12 text-foreground'
+              pathname === '/settings' && 'bg-secondary text-foreground'
             )}
           >
             <Settings className="h-[18px] w-[18px] stroke-[1.8]" />

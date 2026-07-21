@@ -1,6 +1,6 @@
 # Forge UI System
 
-> The UI/UX Pro Max generator was used as a starting point, then corrected for the actual product. Its habit-tracker product results, touch rules, dark sleep-tracker palette, subtle-motion dial, and Next.js guidance are adopted. Its newsletter layout, serif typography, and light amber palette are intentionally rejected because they conflict with Forge's application shell and established identity.
+> UI/UX Pro Max was used as a research tool, then corrected for the actual product. Forge follows its mobile touch, focus, reduced-motion, and minimalist hierarchy guidance while using an original visual system.
 
 ## Product intent
 
@@ -11,7 +11,7 @@ Design principles:
 1. Today first: the current plan and next action outrank every secondary system.
 2. One primary action per screen; progression is evidence, not clutter.
 3. Mobile is the default. Desktop adds breathing room and context, not extra navigation.
-4. Earned color: violet identifies action/progression, cyan identifies insight, amber identifies currency or streaks, green identifies success.
+4. Earned color: warm white and graphite carry the interface; mint appears only for progress, confirmation, and the current action. Amber is reserved for currency and streaks.
 5. Original identity: learn from Bevel's metric hierarchy and Mobbin's mobile patterns without copying layouts, assets, language, or branding.
 
 ## Foundations
@@ -22,15 +22,15 @@ Keep the existing semantic HSL tokens and tune the surfaces rather than hardcodi
 
 | Role | Intent |
 |---|---|
-| Background | Deep blue-black, never pure black |
-| Surface | Slightly raised navy with a clear border |
-| Primary | Accessible violet for selected and primary actions |
-| Insight | Cyan for recommendations and explanatory data |
+| Background | Deep graphite, never pure black |
+| Surface | Neutral graphite with a quiet border |
+| Primary | Accessible mint for selected and primary actions |
+| Insight | Sky blue for recommendations and explanatory data |
 | Success | Green plus icon/text; never color alone |
 | Reward | Amber only for coins, streaks, and rare rewards |
 | Destructive | Red with an explicit label |
 
-All normal text must meet 4.5:1 contrast and secondary text 3:1. Blur is reserved for navigation and modal separation, not decorative cards.
+All normal text must meet 4.5:1 contrast and secondary text 3:1. Avoid decorative gradients, colored glows, and tinted shadows. Blur is reserved for modal separation.
 
 ### Typography
 
@@ -46,9 +46,9 @@ Use the existing Geist variable font. It is compact, readable, already loaded th
 
 ### Shape and elevation
 
-- App surfaces: 20-24px radius on mobile feature cards, 16-20px on compact cards.
-- Controls: 12-16px radius; primary buttons may be pill-shaped.
-- One border and one restrained ambient shadow scale.
+- App surfaces: 12-16px radius. Reserve circles for icons, avatars, and progress indicators.
+- Controls: 8-12px radius; primary buttons are compact rectangles rather than pills.
+- One quiet border scale. Shadows are reserved for overlays.
 - No card should lift or change layout bounds on hover/press.
 
 ### Spacing
@@ -69,7 +69,7 @@ Use a 4/8px rhythm: 4, 8, 12, 16, 24, 32, 48. Phone gutters are 16px; tablet 24p
 
 - Phone: top utility bar, four primary bottom tabs plus More, safe-area padding, one vertical scroll region.
 - Tablet: same hierarchy with wider content and optional two-column detail.
-- Desktop: compact grouped sidebar with only five top-level destinations visible; secondary features live behind a single expandable Library section. Header remains utility-only.
+- Desktop: compact grouped sidebar with four top-level destinations visible; secondary features, including Rewards, live behind a single expandable Library section. Header remains utility-only.
 - Content maximum is 1120px for application screens and 720px for focused reading/forms.
 - Provide a skip link and a focusable `main` region.
 
@@ -84,6 +84,13 @@ Primary destinations:
 5. More/Library (secondary destinations)
 
 Rewards appears contextually from Character/Journey and inside Library rather than competing with daily action. Tasks are managed within Quests/Library until the product later unifies their data model.
+
+## Onboarding
+
+- Onboarding is an immersive setup flow with no app header, desktop sidebar, or mobile bottom bar.
+- Use one centered solid surface, plain progress, and one primary action per step.
+- Selected options use a border, check, and restrained mint state; never a purple wash or glow.
+- Questions explain that starting attributes are editable self-reports, not diagnoses.
 
 ## Core component patterns
 
@@ -102,4 +109,3 @@ Rewards appears contextually from Character/Journey and inside Library rather th
 - All icons use Lucide with consistent stroke and sizing.
 - Sequential headings, visible focus, descriptive control names, color-independent states.
 - Reduced motion, 200% text zoom, keyboard-only navigation, and dark contrast are verified.
-

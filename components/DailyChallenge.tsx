@@ -13,26 +13,12 @@ export default function DailyChallenge() {
 
   return (
     <div className={cn(
-      'relative rounded-2xl overflow-hidden border h-full',
+      'relative h-full overflow-hidden rounded-xl border bg-card',
       progress.isComplete
         ? 'border-emerald-500/20'
         : 'border-amber-500/20'
     )}>
-      {/* Background */}
-      <div className={cn(
-        'absolute inset-0',
-        progress.isComplete
-          ? 'bg-gradient-to-br from-emerald-950/40 via-background to-teal-950/20'
-          : 'bg-gradient-to-br from-amber-950/30 via-background to-yellow-950/10'
-      )} />
-      <div className={cn(
-        'absolute inset-0',
-        progress.isComplete
-          ? 'bg-[radial-gradient(ellipse_at_bottom_right,rgba(16,185,129,0.12),transparent_60%)]'
-          : 'bg-[radial-gradient(ellipse_at_bottom_right,rgba(245,158,11,0.1),transparent_60%)]'
-      )} />
-
-      <div className="relative p-5 h-full flex flex-col">
+      <div className="flex h-full flex-col p-5">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div>
@@ -78,9 +64,7 @@ export default function DailyChallenge() {
             <div
               className={cn(
                 'h-full rounded-full transition-all duration-700',
-                progress.isComplete
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500'
-                  : 'bg-gradient-to-r from-amber-500 to-yellow-500'
+                progress.isComplete ? 'bg-emerald-500' : 'bg-amber-500'
               )}
               style={{ width: `${pct}%` }}
             />

@@ -15,7 +15,6 @@ import {
   Plus,
   RefreshCw,
   ShieldCheck,
-  Sparkles,
   Users,
   X,
 } from 'lucide-react'
@@ -58,7 +57,7 @@ const DEFAULT_RESPONSES: AssessmentResponses = {
   constraints: '',
 }
 
-const STEP_LABELS = ['Direction', 'Baseline', 'Capacity', 'Approach', 'Awakening']
+const STEP_LABELS = ['Direction', 'Baseline', 'Capacity', 'Approach', 'Review']
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 function OptionButton({ active, children, onClick }: { active: boolean; children: React.ReactNode; onClick: () => void }) {
@@ -68,10 +67,10 @@ function OptionButton({ active, children, onClick }: { active: boolean; children
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition-all',
+        'min-h-11 rounded-lg border px-3 py-2.5 text-left text-sm font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         active
-          ? 'border-violet-400/60 bg-violet-500/15 text-violet-100 shadow-[inset_0_0_0_1px_rgb(139_92_246/0.12)]'
-          : 'border-border bg-secondary/25 text-muted-foreground hover:border-border/90 hover:text-foreground',
+          ? 'border-primary bg-primary text-primary-foreground'
+          : 'border-border bg-background text-muted-foreground hover:border-muted-foreground/60 hover:text-foreground',
       )}
     >
       {children}
@@ -191,39 +190,42 @@ export default function OnboardingPage() {
   if (loadingExisting) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-violet-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
         <span className="sr-only">Loading assessment</span>
       </div>
     )
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl py-4 sm:py-8 animate-fade-in">
-      <div className="mb-8">
-        <div className="flex items-center justify-between gap-4 mb-3">
-          <div className="flex items-center gap-2 text-violet-300">
-            <Sparkles className="h-4 w-4" />
-            <span className="text-[10px] font-black uppercase tracking-[0.24em]">Forge assessment</span>
+    <div className="mx-auto w-full max-w-3xl animate-fade-in">
+      <div className="mb-7 border-b border-border pb-5">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-foreground text-sm font-black text-background">F</span>
+            <div>
+              <p className="text-sm font-black tracking-[0.08em]">FORGE</p>
+              <p className="text-xs text-muted-foreground">Personal setup</p>
+            </div>
           </div>
-          <span className="text-xs font-bold text-muted-foreground">{step + 1} / {STEP_LABELS.length}</span>
+          <span className="text-xs font-semibold text-muted-foreground">Step {step + 1} of {STEP_LABELS.length}</span>
         </div>
         <div className="grid grid-cols-5 gap-1.5" aria-label={`Step ${step + 1}: ${STEP_LABELS[step]}`}>
           {STEP_LABELS.map((label, index) => (
             <div key={label}>
-              <div className={cn('h-1 rounded-full transition-colors', index <= step ? 'bg-violet-400' : 'bg-secondary')} />
-              <span className={cn('hidden sm:block mt-1.5 text-[9px] font-bold uppercase tracking-wider', index === step ? 'text-violet-300' : 'text-muted-foreground/60')}>{label}</span>
+              <div className={cn('h-1 rounded-full transition-colors', index <= step ? 'bg-primary' : 'bg-secondary')} />
+              <span className={cn('mt-1.5 hidden text-[9px] font-bold uppercase tracking-wider sm:block', index === step ? 'text-foreground' : 'text-muted-foreground/60')}>{label}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <section className="relative overflow-hidden rounded-[1.75rem] border border-violet-400/20 bg-[radial-gradient(circle_at_90%_0%,rgb(124_58_237/0.18),transparent_35%),linear-gradient(145deg,hsl(var(--card)),hsl(var(--background)))] p-5 sm:p-8 shadow-[0_28px_90px_-50px_rgb(139_92_246/0.8)]">
+      <section className="bg-transparent p-0 sm:rounded-2xl sm:border sm:border-border sm:bg-card sm:p-8">
         {step === 0 && (
           <div>
             <p className="section-label mb-2">Choose up to three</p>
             <h1 className="text-3xl font-black tracking-tight">What are you ready to develop?</h1>
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">This sets the direction of your first program. It does not label what you are capable of becoming.</p>
-            <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-7 grid gap-2 sm:grid-cols-2">
               {ATTRIBUTE_KEYS.map(key => {
                 const Icon = ATTRIBUTE_ICONS[key]
                 const active = responses.focusAreas.includes(key)
@@ -234,13 +236,13 @@ export default function OnboardingPage() {
                     onClick={() => toggleFocus(key)}
                     aria-pressed={active}
                     className={cn(
-                      'rounded-2xl border p-4 text-left transition-all',
-                      active ? 'border-violet-400/55 bg-violet-500/12' : 'border-border bg-background/30 hover:border-violet-400/25',
+                      'min-h-28 rounded-xl border p-4 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card',
+                      active ? 'border-primary bg-primary/[0.07]' : 'border-border bg-background hover:border-muted-foreground/60',
                     )}
                   >
                     <div className="flex items-center justify-between">
-                      <span className={cn('flex h-9 w-9 items-center justify-center rounded-xl', active ? 'bg-violet-500 text-white' : 'bg-secondary text-muted-foreground')}><Icon className="h-4 w-4" /></span>
-                      <span className={cn('flex h-5 w-5 items-center justify-center rounded-full border', active ? 'border-violet-300 bg-violet-400 text-black' : 'border-border')}>{active && <Check className="h-3 w-3" />}</span>
+                      <span className={cn('flex h-9 w-9 items-center justify-center rounded-lg border', active ? 'border-primary text-primary' : 'border-border text-muted-foreground')}><Icon className="h-4 w-4" /></span>
+                      <span className={cn('flex h-5 w-5 items-center justify-center rounded-full border', active ? 'border-primary bg-primary text-primary-foreground' : 'border-border')}>{active && <Check className="h-3 w-3" />}</span>
                     </div>
                     <h2 className="mt-4 font-black">{ATTRIBUTE_LABELS[key]}</h2>
                     <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{ATTRIBUTE_DESCRIPTIONS[key]}</p>
@@ -261,7 +263,7 @@ export default function OnboardingPage() {
                 const Icon = ATTRIBUTE_ICONS[key]
                 return (
                   <div key={key} className="grid gap-3 rounded-xl border border-border bg-background/25 p-3 sm:grid-cols-[11rem_1fr] sm:items-center">
-                    <div className="flex items-center gap-2.5"><Icon className="h-4 w-4 text-violet-300" /><span className="text-sm font-bold">{ATTRIBUTE_LABELS[key]}</span></div>
+                    <div className="flex items-center gap-2.5"><Icon className="h-4 w-4 text-primary" /><span className="text-sm font-bold">{ATTRIBUTE_LABELS[key]}</span></div>
                     <div className="grid grid-cols-5 gap-1.5">
                       {[1, 2, 3, 4, 5].map(value => <OptionButton key={value} active={responses.baselines[key] === value} onClick={() => setBaseline(key, value)}>{value}</OptionButton>)}
                     </div>
@@ -272,11 +274,11 @@ export default function OnboardingPage() {
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <label className="rounded-xl border border-border bg-background/25 p-4">
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Recent follow-through: {responses.consistency}/5</span>
-                <input className="mt-4 w-full accent-violet-500" type="range" min="1" max="5" value={responses.consistency} onChange={event => setResponses(current => ({ ...current, consistency: Number(event.target.value) }))} />
+                <input className="mt-4 w-full accent-primary" type="range" min="1" max="5" value={responses.consistency} onChange={event => setResponses(current => ({ ...current, consistency: Number(event.target.value) }))} />
               </label>
               <label className="rounded-xl border border-border bg-background/25 p-4">
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Typical energy: {responses.energy}/5</span>
-                <input className="mt-4 w-full accent-violet-500" type="range" min="1" max="5" value={responses.energy} onChange={event => setResponses(current => ({ ...current, energy: Number(event.target.value) }))} />
+                <input className="mt-4 w-full accent-primary" type="range" min="1" max="5" value={responses.energy} onChange={event => setResponses(current => ({ ...current, energy: Number(event.target.value) }))} />
               </label>
             </div>
           </div>
@@ -323,7 +325,7 @@ export default function OnboardingPage() {
                 ['balanced', 'Balanced', 'A useful challenge with room for imperfect days.'],
                 ['challenging', 'Challenging', 'Higher initial effort with the same recovery safeguards.'],
               ] as const).map(([value, label, description]) => (
-                <button key={value} type="button" onClick={() => setResponses(current => ({ ...current, pace: value }))} className={cn('rounded-2xl border p-4 text-left', responses.pace === value ? 'border-violet-400/60 bg-violet-500/15' : 'border-border bg-background/25')}>
+                <button key={value} type="button" onClick={() => setResponses(current => ({ ...current, pace: value }))} aria-pressed={responses.pace === value} className={cn('min-h-32 rounded-xl border p-4 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring', responses.pace === value ? 'border-primary bg-primary/[0.07]' : 'border-border bg-background hover:border-muted-foreground/60')}>
                   <span className="font-black">{label}</span><span className="mt-2 block text-xs leading-relaxed text-muted-foreground">{description}</span>
                 </button>
               ))}
@@ -339,7 +341,7 @@ export default function OnboardingPage() {
             </div>
             <label className="mt-7 block">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Constraints or accessibility needs <span className="normal-case tracking-normal">(optional and private)</span></span>
-              <textarea value={responses.constraints} onChange={event => setResponses(current => ({ ...current, constraints: event.target.value.slice(0, 500) }))} rows={4} placeholder="For example: protect an injury, no mornings, variable shifts, or keep every action seated." className="mt-2 w-full resize-none rounded-xl border border-border bg-background/50 px-4 py-3 text-sm outline-none placeholder:text-muted-foreground/45 focus:border-violet-400/60" />
+              <textarea value={responses.constraints} onChange={event => setResponses(current => ({ ...current, constraints: event.target.value.slice(0, 500) }))} rows={4} placeholder="For example: protect an injury, no mornings, variable shifts, or keep every action seated." className="mt-2 w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none placeholder:text-muted-foreground/45 focus:border-primary focus:ring-1 focus:ring-ring" />
             </label>
           </div>
         )}
@@ -347,16 +349,16 @@ export default function OnboardingPage() {
         {step === 4 && (
           <div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div><p className="section-label mb-2">Your editable starting point</p><h1 className="text-3xl font-black tracking-tight">The system is awake.</h1></div>
-              <span className="rounded-full border border-violet-400/30 bg-violet-500/10 px-3 py-1.5 text-xs font-bold text-violet-200">Self-report · not a diagnosis</span>
+              <div><p className="section-label mb-2">Your editable starting point</p><h1 className="text-3xl font-black tracking-tight">Your starting profile</h1></div>
+              <span className="text-xs font-semibold text-muted-foreground">Self-report · not a diagnosis</span>
             </div>
             <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {ATTRIBUTE_KEYS.map(key => {
                 const Icon = ATTRIBUTE_ICONS[key]
                 return (
                   <div key={key} className="rounded-2xl border border-border bg-background/35 p-4">
-                    <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-sm font-black"><Icon className="h-4 w-4 text-violet-300" />{ATTRIBUTE_LABELS[key]}</span><span className="text-2xl font-black text-violet-200">{editedAttributes[key]}</span></div>
-                    <input aria-label={`${ATTRIBUTE_LABELS[key]} starting value`} className="mt-4 w-full accent-violet-500" type="range" min="1" max="10" value={editedAttributes[key]} onChange={event => setEditedAttributes(current => ({ ...current, [key]: Number(event.target.value) }))} />
+                    <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-sm font-black"><Icon className="h-4 w-4 text-primary" />{ATTRIBUTE_LABELS[key]}</span><span className="text-2xl font-black text-foreground">{editedAttributes[key]}</span></div>
+                    <input aria-label={`${ATTRIBUTE_LABELS[key]} starting value`} className="mt-4 w-full accent-primary" type="range" min="1" max="10" value={editedAttributes[key]} onChange={event => setEditedAttributes(current => ({ ...current, [key]: Number(event.target.value) }))} />
                     <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">{assessment.explanations[key].join(' ')}</p>
                   </div>
                 )
@@ -365,15 +367,15 @@ export default function OnboardingPage() {
 
             <div className="mt-9 flex items-end justify-between gap-4">
               <div><p className="section-label mb-1">Proposed program</p><h2 className="text-xl font-black">Edit everything before activation.</h2></div>
-              <button type="button" onClick={addCustomRecommendation} disabled={recommendations.length >= 5} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-bold text-muted-foreground hover:text-foreground disabled:opacity-40"><Plus className="h-3.5 w-3.5" />Add my own</button>
+              <button type="button" onClick={addCustomRecommendation} disabled={recommendations.length >= 5} className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-bold text-muted-foreground hover:border-muted-foreground/60 hover:text-foreground disabled:opacity-40"><Plus className="h-3.5 w-3.5" />Add my own</button>
             </div>
             <div className="mt-4 space-y-3">
               {recommendations.map((item, index) => (
                 <article key={item.id} className="rounded-2xl border border-border bg-background/35 p-4 sm:p-5">
                   <div className="flex items-start gap-3">
-                    <span className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-violet-500/15 text-xs font-black text-violet-200">0{index + 1}</span>
+                    <span className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border text-xs font-black text-muted-foreground">0{index + 1}</span>
                     <div className="min-w-0 flex-1">
-                      <input aria-label={`Quest ${index + 1} name`} value={item.name} onChange={event => updateRecommendation(index, { name: event.target.value.slice(0, 120) })} className="w-full bg-transparent text-base font-black outline-none focus:text-violet-200" />
+                      <input aria-label={`Quest ${index + 1} name`} value={item.name} onChange={event => updateRecommendation(index, { name: event.target.value.slice(0, 120) })} className="w-full bg-transparent text-base font-black outline-none focus:text-primary" />
                       <textarea aria-label={`Quest ${index + 1} description`} value={item.description} onChange={event => updateRecommendation(index, { description: event.target.value.slice(0, 500) })} rows={2} className="mt-1 w-full resize-none bg-transparent text-xs leading-relaxed text-muted-foreground outline-none" />
                         <div className="mt-3 flex flex-wrap items-center gap-2">
                           <select aria-label={`Quest ${index + 1} schedule`} value={item.frequency} onChange={event => updateRecommendation(index, { frequency: event.target.value })} className="rounded-lg border border-border bg-secondary px-2 py-1.5 text-xs font-bold outline-none">
@@ -391,9 +393,9 @@ export default function OnboardingPage() {
                           })
                         }} className="rounded-lg border border-border bg-secondary px-2 py-1.5 text-xs font-bold outline-none"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select>
                         <label className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary px-2 py-1.5 text-xs font-bold"><input className="w-10 bg-transparent text-right outline-none" type="number" min="1" max="240" value={item.estimatedMinutes} onChange={event => updateRecommendation(index, { estimatedMinutes: Math.max(1, Math.min(240, Number(event.target.value))) })} /> min</label>
-                        <span className="rounded-lg border border-violet-400/20 bg-violet-500/10 px-2 py-1.5 text-xs font-bold text-violet-200">+{item.attributeReward} {ATTRIBUTE_LABELS[item.primaryAttribute]} XP</span>
+                        <span className="rounded-lg border border-border bg-secondary px-2 py-1.5 text-xs font-bold text-primary">+{item.attributeReward} {ATTRIBUTE_LABELS[item.primaryAttribute]} XP</span>
                       </div>
-                      <p className="mt-3 text-[11px] text-muted-foreground"><Brain className="mr-1 inline h-3 w-3 text-violet-300" />{item.reason}</p>
+                      <p className="mt-3 text-[11px] text-muted-foreground"><Brain className="mr-1 inline h-3 w-3 text-primary" />{item.reason}</p>
                     </div>
                     <div className="flex gap-1">
                       <button type="button" onClick={() => swapRecommendation(index)} title="Replace recommendation" className="rounded-lg p-2 text-muted-foreground hover:bg-secondary hover:text-foreground"><RefreshCw className="h-4 w-4" /></button>
@@ -411,12 +413,12 @@ export default function OnboardingPage() {
         <div className="mt-8 flex items-center justify-between border-t border-border/70 pt-5">
           <button type="button" onClick={() => setStep(current => Math.max(0, current - 1))} disabled={step === 0 || saving} className="inline-flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-foreground disabled:opacity-0"><ArrowLeft className="h-4 w-4" />Back</button>
           {step < 4 ? (
-            <button type="button" onClick={goNext} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-violet-500 px-6 text-sm font-black text-white shadow-[0_12px_35px_-14px_rgb(139_92_246)] hover:bg-violet-400">Continue <ArrowRight className="h-4 w-4" /></button>
+            <button type="button" onClick={goNext} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-6 text-sm font-black text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card">Continue <ArrowRight className="h-4 w-4" /></button>
           ) : (
-            <button type="button" onClick={finish} disabled={saving || recommendations.length === 0} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-violet-500 px-6 text-sm font-black text-white shadow-[0_12px_35px_-14px_rgb(139_92_246)] hover:bg-violet-400 disabled:opacity-50">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}Begin campaign</button>
+            <button type="button" onClick={finish} disabled={saving || recommendations.length === 0} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-6 text-sm font-black text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card disabled:opacity-50">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}Activate program</button>
           )}
         </div>
       </section>
-    </main>
+    </div>
   )
 }

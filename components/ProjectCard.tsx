@@ -16,27 +16,29 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project, total, completed, pct, onEdit, onDelete }: ProjectCardProps) {
-  const colorMap: Record<string, string> = {
-    violet: 'from-violet-500/20 to-violet-600/10 border-violet-500/30',
-    blue: 'from-blue-500/20 to-blue-600/10 border-blue-500/30',
-    emerald: 'from-emerald-500/20 to-emerald-600/10 border-emerald-500/30',
-    amber: 'from-amber-500/20 to-amber-600/10 border-amber-500/30',
-    rose: 'from-rose-500/20 to-rose-600/10 border-rose-500/30',
-    cyan: 'from-cyan-500/20 to-cyan-600/10 border-cyan-500/30',
+  const surfaceMap: Record<string, string> = {
+    violet: 'border-slate-500/30 bg-slate-500/10',
+    slate: 'border-slate-500/30 bg-slate-500/10',
+    blue: 'border-blue-500/30 bg-blue-500/10',
+    emerald: 'border-emerald-500/30 bg-emerald-500/10',
+    amber: 'border-amber-500/30 bg-amber-500/10',
+    rose: 'border-rose-500/30 bg-rose-500/10',
+    cyan: 'border-cyan-500/30 bg-cyan-500/10',
   }
   const barColorMap: Record<string, string> = {
-    violet: 'from-violet-500 to-violet-400',
-    blue: 'from-blue-500 to-blue-400',
-    emerald: 'from-emerald-500 to-emerald-400',
-    amber: 'from-amber-500 to-amber-400',
-    rose: 'from-rose-500 to-rose-400',
-    cyan: 'from-cyan-500 to-cyan-400',
+    violet: 'bg-slate-400',
+    slate: 'bg-slate-400',
+    blue: 'bg-blue-500',
+    emerald: 'bg-emerald-500',
+    amber: 'bg-amber-500',
+    rose: 'bg-rose-500',
+    cyan: 'bg-cyan-500',
   }
-  const gradient = colorMap[project.color] ?? colorMap.violet
-  const barColor = barColorMap[project.color] ?? barColorMap.violet
+  const surface = surfaceMap[project.color] ?? surfaceMap.emerald
+  const barColor = barColorMap[project.color] ?? barColorMap.emerald
 
   return (
-    <div className={cn('glass-card border bg-gradient-to-br p-4 flex flex-col gap-3', gradient)}>
+    <div className={cn('glass-card border p-4 flex flex-col gap-3', surface)}>
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
           <span className="text-2xl">{project.emoji ?? '📁'}</span>
@@ -64,7 +66,7 @@ export default function ProjectCard({ project, total, completed, pct, onEdit, on
         </div>
         <div className="h-1.5 rounded-full bg-black/20 overflow-hidden">
           <div
-            className={cn('h-full rounded-full bg-gradient-to-r transition-all duration-700', barColor)}
+            className={cn('h-full rounded-full transition-all duration-700', barColor)}
             style={{ width: `${pct}%` }}
           />
         </div>

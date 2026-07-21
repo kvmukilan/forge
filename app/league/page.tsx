@@ -11,7 +11,7 @@ const TIER_COLORS = [
   'text-amber-600',   // Bronze
   'text-slate-300',   // Silver
   'text-yellow-400',  // Gold
-  'text-violet-400',  // Obsidian
+  'text-sky-400',     // Obsidian
   'text-primary',     // Ember
 ]
 
