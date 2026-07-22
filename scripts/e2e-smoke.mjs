@@ -139,6 +139,13 @@ try {
   await page.locator('.animate-fade-in').first().evaluate(element => Promise.all(
     element.getAnimations().map(animation => animation.finished),
   ))
+  const attributeRows = page.locator('main section details')
+  assert.equal(await attributeRows.count(), 6, 'Character should expose six progressively disclosed attributes')
+  const collapsedAttributeHeights = await attributeRows.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height))
+  assert.ok(collapsedAttributeHeights.every(height => height <= 140), 'Collapsed character attributes are too tall on mobile')
+  await attributeRows.first().locator('summary').click()
+  assert.equal(await attributeRows.first().evaluate(element => element.open), true, 'Character attribute details did not expand')
+  await attributeRows.first().locator('summary').click()
   await page.screenshot({ path: path.join(artifactDir, '04-character-mobile.png'), fullPage: true })
 
   await page.getByRole('button', { name: 'Open more destinations' }).click()
@@ -158,6 +165,9 @@ try {
     0,
     'Rewards page was obscured by the closing navigation sheet',
   )
+  const rewardDestinationHeights = await page.locator('main section a[href]:visible').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height))
+  assert.equal(rewardDestinationHeights.length, 4, 'Rewards should expose four destinations')
+  assert.ok(rewardDestinationHeights.every(height => height <= 120), 'Reward destinations are too tall on mobile')
   await page.screenshot({ path: path.join(artifactDir, '06-rewards-mobile.png'), fullPage: true })
 
   await page.goto(`${baseUrl}/habits`, { waitUntil: 'networkidle' })
@@ -167,6 +177,12 @@ try {
   assert.ok(bottomTargetHeights.every(height => height >= 44), 'Bottom navigation contains a touch target shorter than 44px')
   const questTargetHeights = await page.locator('main button:visible').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height))
   assert.ok(questTargetHeights.every(height => height >= 44), 'Quests page contains a visible button shorter than 44px')
+  const questCardHeights = await page.locator('main [id^="habit-"]').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height))
+  assert.ok(questCardHeights.every(height => height <= 280), `Collapsed quest cards are too tall on mobile: ${JSON.stringify(questCardHeights)}`)
+  assert.equal(await page.getByRole('button', { name: 'Details' }).count(), questCardHeights.length)
+  await page.getByRole('button', { name: 'Details' }).first().click()
+  await page.getByText(/Best streak/).first().waitFor()
+  await page.getByRole('button', { name: 'Hide details' }).first().click()
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true)
   await page.screenshot({ path: path.join(artifactDir, '07-quests-375.png'), fullPage: true })
 

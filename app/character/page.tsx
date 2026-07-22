@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, RefreshCw, Sparkles } from 'lucide-react'
+import { ArrowRight, ChevronDown, RefreshCw, Sparkles } from 'lucide-react'
 import CharacterCard from '@/components/CharacterCard'
 import { getProgressionSummary, type ProgressionSummary } from '@/app/actions/progression'
 import { ATTRIBUTE_DESCRIPTIONS, ATTRIBUTE_KEYS, ATTRIBUTE_LABELS } from '@/lib/progression'
@@ -30,20 +30,33 @@ export default function CharacterPage() {
       <CharacterCard initialProgression={summary} showAttributes={false} />
       <section>
         <div className="mb-3"><p className="section-label">Attribute record</p><h2 className="mt-1 text-xl font-bold">What each level represents</h2></div>
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-2 md:grid-cols-2">
           {ATTRIBUTE_KEYS.map(key => {
             const attribute = summary.attributes[key]
             const explanations = summary.profile.explanations[key] ?? []
             return (
-              <article key={key} className="rounded-2xl border border-border bg-card p-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div><p className="text-sm font-semibold">{ATTRIBUTE_LABELS[key]}</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{ATTRIBUTE_DESCRIPTIONS[key]}</p></div>
-                  <div className="text-right"><span className="text-2xl font-bold text-primary">{attribute.level}</span><p className="text-xs text-muted-foreground">base {attribute.base}</p></div>
+              <details key={key} className="group rounded-xl border border-border bg-card">
+                <summary className="min-h-11 cursor-pointer list-none p-4 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold">{ATTRIBUTE_LABELS[key]}</p>
+                      <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">{ATTRIBUTE_DESCRIPTIONS[key]}</p>
+                    </div>
+                    <div className="flex flex-shrink-0 items-center gap-3">
+                      <div className="text-right"><span className="text-2xl font-bold text-primary">{attribute.level}</span><p className="text-[11px] text-muted-foreground">base {attribute.base}</p></div>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none" />
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center gap-3">
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-primary" style={{ width: `${attribute.pct}%` }} /></div>
+                    <p className="flex-shrink-0 text-xs tabular-nums text-muted-foreground">{attribute.currentXP}/{attribute.neededXP} XP</p>
+                  </div>
+                </summary>
+                <div className="border-t border-border/70 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">{attribute.earnedXP} XP earned since assessment</p>
+                  {explanations.length > 0 && <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{explanations.join(' ')}</p>}
                 </div>
-                <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-primary" style={{ width: `${attribute.pct}%` }} /></div>
-                <p className="mt-2 text-xs text-muted-foreground">{attribute.currentXP}/{attribute.neededXP} XP to next level · {attribute.earnedXP} earned total</p>
-                {explanations.length > 0 && <p className="mt-3 border-t border-border/70 pt-3 text-sm leading-relaxed text-muted-foreground">{explanations.join(' ')}</p>}
-              </article>
+              </details>
             )
           })}
         </div>
