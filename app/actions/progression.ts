@@ -37,9 +37,10 @@ import {
   type ProgramRecommendation,
   type ProgressionPace,
 } from '@/lib/progression'
-import type { Habit, HabitCategory, Settings } from '@/lib/types'
+import type { Habit, HabitCategory, HabitsData, Settings } from '@/lib/types'
 import { isHabitDue } from '@/lib/utils'
 import { recordProductEvent } from '@/lib/product-analytics'
+import { loadHabitsData } from '@/app/actions/data'
 
 const attributeKeySchema = z.enum(ATTRIBUTE_KEYS)
 const attributeScoresSchema = z.object({
@@ -186,7 +187,7 @@ export async function previewAssessment(input: unknown): Promise<{
   }
 }
 
-export async function finalizeOnboarding(input: unknown): Promise<ProgressionSummary> {
+export async function finalizeOnboarding(input: unknown): Promise<ProgressionSummary & { habits: HabitsData }> {
   const user = await getCurrentUser()
   if (!user) throw new Error('Not authenticated')
   const parsed = onboardingSchema.parse(input)
@@ -272,9 +273,12 @@ export async function finalizeOnboarding(input: unknown): Promise<ProgressionSum
     recommendation_count: parsed.recommendations.length,
   })
 
-  const summary = await getProgressionSummary()
+  const [summary, hydratedHabits] = await Promise.all([
+    getProgressionSummary(),
+    loadHabitsData(),
+  ])
   if (!summary) throw new Error('Progression profile could not be loaded')
-  return summary
+  return { ...summary, habits: hydratedHabits }
 }
 
 export async function awardAttributeProgress(input: unknown): Promise<ProgressionSummary | null> {

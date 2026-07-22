@@ -105,14 +105,21 @@ try {
   })
   await page.screenshot({ path: path.join(artifactDir, '02-program-mobile.png'), fullPage: true })
   await page.getByRole('button', { name: 'Activate program' }).click()
-  await page.waitForURL(url => url.pathname === '/', { timeout: 30_000 })
+  try {
+    await page.waitForURL(url => url.pathname === '/', { timeout: 30_000 })
+  } catch {
+    throw new Error(`Program activation did not reach Today. Errors: ${runtimeErrors.join(' | ')}\nVisible page:\n${await page.locator('body').innerText()}`)
+  }
   await page.getByText('Daily plan', { exact: true }).waitFor({ timeout: 30_000 })
 
   const characterMobileLink = page.locator('a[href="/character"]:visible').first()
   assert.equal(await characterMobileLink.isVisible(), true)
   const forgePlanButton = page.getByRole('button', { name: "Forge today's plan" })
   if (await forgePlanButton.isDisabled()) {
-    throw new Error(`Daily plan had no selectable quests. Visible page:\n${await page.locator('body').innerText()}`)
+    const todayBody = await page.locator('body').innerText()
+    await page.goto(`${baseUrl}/habits`, { waitUntil: 'networkidle' })
+    const questsBody = await page.locator('body').innerText()
+    throw new Error(`Daily plan had no selectable quests. Today page:\n${todayBody}\n\nQuests page:\n${questsBody}`)
   }
   await forgePlanButton.click()
   await page.getByText("Today's mission", { exact: true }).waitFor()

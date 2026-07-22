@@ -142,6 +142,7 @@ describe('per-user data isolation (PGlite in-memory)', () => {
     })
     expect(activated.profile.onboardingCompleted).toBe(true)
     expect(activated.campaign.day).toBeGreaterThanOrEqual(1)
+    expect(activated.habits.habits.some(habit => habit.progressionOrigin === 'assessment')).toBe(true)
     expect((await data.loadHabitsData()).habits.find(habit => habit.id === 'habit-a1')?.completions)
       .toEqual(['2026-07-01T10:00:00.000Z'])
 

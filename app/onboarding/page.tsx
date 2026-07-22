@@ -175,11 +175,11 @@ export default function OnboardingPage() {
     setSaving(true)
     setError('')
     try {
-      await finalizeOnboarding({ responses, attributes: editedAttributes, recommendations })
+      const activated = await finalizeOnboarding({ responses, attributes: editedAttributes, recommendations })
       try { localStorage.setItem('forge-onboarded', '1') } catch {}
-      // The root layout hydrates Jotai from server data. A full navigation is
-      // intentional here so the newly created program is present immediately.
-      window.location.assign('/')
+      // The action reads the persisted quests back before returning. A unique
+      // document URL then bypasses any pre-onboarding PWA/navigation cache.
+      window.location.replace(`/?activated=${Date.now()}&quests=${activated.habits.habits.length}`)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'The assessment could not be saved. Please try again.')
     } finally {
