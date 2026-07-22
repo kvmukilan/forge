@@ -17,10 +17,11 @@ import PerfectDayModal from './PerfectDayModal'
 import MilestoneModal from './MilestoneModal'
 import SeasonBanner from './SeasonBanner'
 import DailyForge from './DailyForge'
-import { ChevronDown, Coins, Sun, CloudSun, Moon, Gift, Map, Sparkles, UserRound } from 'lucide-react'
+import { ChevronDown, Coins, Sun, CloudSun, Moon, Gift, Loader2, Map, Sparkles, UserRound } from 'lucide-react'
 import { useAchievements } from '@/hooks/useAchievements'
 import { getOrSpawnBoss } from '@/app/actions/gamification'
 import { getProgressionSummary } from '@/app/actions/progression'
+import { loadHabitsData } from '@/app/actions/data'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { DateTime } from 'luxon'
@@ -80,11 +81,12 @@ export default function Dashboard() {
   // Side-effect: check achievements on dashboard load
   useAchievements()
 
-  const [habitsData] = useAtom(habitsAtom)
+  const [habitsData, setHabitsData] = useAtom(habitsAtom)
   const [settingsData] = useAtom(settingsAtom)
   const [wishlist] = useAtom(wishlistAtom)
   const [, setBossData] = useAtom(bossAtom)
   const [worldOpen, setWorldOpen] = useState(false)
+  const [recoveringProgram, setRecoveringProgram] = useState(habitsData.habits.length === 0)
   const habits = habitsData.habits
   const wishlistItems = wishlist.items
 
@@ -104,11 +106,52 @@ export default function Dashboard() {
   // users with habits can opt into the assessment without being blocked.
   const router = useRouter()
   useEffect(() => {
-    if (habits.length > 0) return
-    getProgressionSummary().then(summary => {
-      if (!summary) router.push('/onboarding')
-    }).catch(() => {})
-  }, [habits.length, router])
+    if (habits.length > 0) {
+      setRecoveringProgram(false)
+      return
+    }
+
+    let cancelled = false
+    const recoverFirstProgram = async () => {
+      try {
+        const summary = await getProgressionSummary()
+        if (!summary) {
+          if (!cancelled) router.push('/onboarding')
+          return
+        }
+
+        // A Neon write can become visible to one warm Vercel function before
+        // another. Retry the user-scoped snapshot briefly instead of showing an
+        // empty planner immediately after a successful activation.
+        for (let attempt = 0; attempt < 4; attempt += 1) {
+          const fresh = await loadHabitsData()
+          if (fresh.habits.length > 0) {
+            if (!cancelled) {
+              setHabitsData(fresh)
+              setRecoveringProgram(false)
+            }
+            return
+          }
+          await new Promise(resolve => setTimeout(resolve, 250 * (attempt + 1)))
+        }
+      } catch {
+        // The normal empty-state remains usable if recovery cannot complete.
+      }
+      if (!cancelled) setRecoveringProgram(false)
+    }
+
+    recoverFirstProgram()
+    return () => { cancelled = true }
+  }, [habits.length, router, setHabitsData])
+
+  if (recoveringProgram) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center" role="status" aria-live="polite">
+        <Loader2 className="h-5 w-5 animate-spin text-primary motion-reduce:animate-none" />
+        <span className="sr-only">Loading your first quests</span>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-5 animate-fade-in">
