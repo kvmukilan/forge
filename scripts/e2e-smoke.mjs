@@ -14,6 +14,7 @@ const browser = await chromium.launch({ executablePath, headless: true })
 const protectionBypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 const context = await browser.newContext({
   viewport: { width: 390, height: 844 },
+  serviceWorkers: process.env.BLOCK_SERVICE_WORKERS === '1' ? 'block' : 'allow',
   extraHTTPHeaders: protectionBypass
     ? {
         'x-vercel-protection-bypass': protectionBypass,
