@@ -9,6 +9,7 @@ const { auth } = NextAuth(authConfig)
 const PUBLIC_PATHS = ['/login', '/api/auth', '/api/cron', '/privacy', '/.well-known']
 
 function isPublicPath(pathname: string) {
+  if (pathname === '/api/health') return true
   return PUBLIC_PATHS.some(p => pathname.startsWith(p))
 }
 

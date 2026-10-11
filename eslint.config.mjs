@@ -22,6 +22,7 @@ const customEslintRules = {
 }
 
 const eslintConfig = [
+  { ignores: [".next/**", "next-env.d.ts", "node_modules/**", "public/sw.js", "public/swe-worker*.js"] },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   customEslintRules,
 ];

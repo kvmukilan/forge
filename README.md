@@ -66,3 +66,7 @@ form, closed-testing requirements — is in [docs/play-release.md](docs/play-rel
 
 GNU AGPL v3.0 — see [LICENSE](LICENSE). Forge began as a fork of
 [HabitTrove](https://github.com/dohsimpson/habittrove).
+
+## Deployment readiness
+
+See [deployment setup, checks, and rollback](docs/production.md).

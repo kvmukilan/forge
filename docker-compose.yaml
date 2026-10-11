@@ -1,10 +1,15 @@
 services:
   habittrove:
+    build: .
+    init: true
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - "./data:/app/data"
       - "./backups:/app/backups"
-    image: dohsimpson/habittrove
+    image: forge:local
     environment:
-      - AUTH_SECRET=your-secret-key-here # Replace with your actual secret
+      - AUTH_SECRET=${AUTH_SECRET:?Set AUTH_SECRET in .env before starting Forge}
+      - AUTH_URL=${AUTH_URL:-http://localhost:3000}
+      - DATABASE_URL=${DATABASE_URL:-}
