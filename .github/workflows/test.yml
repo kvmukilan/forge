@@ -40,5 +40,5 @@ jobs:
           docker build -t forge:ci .
           docker run -d --name forge-ci -p 127.0.0.1:3000:3000 -e AUTH_SECRET forge:ci
           trap 'docker logs forge-ci; docker rm -f forge-ci' EXIT
-          curl --fail --retry 20 --retry-connrefused --retry-delay 2 http://127.0.0.1:3000/api/health
+          curl --fail --retry 20 --retry-all-errors --retry-delay 2 --retry-max-time 60 --max-time 5 http://127.0.0.1:3000/api/health
           curl --fail http://127.0.0.1:3000/login > /dev/null
