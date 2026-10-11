@@ -12,7 +12,7 @@ function handlePermissionCheck(
   user: User | SafeUser | undefined,
   resource: 'habit' | 'wishlist' | 'coins',
   action: 'write' | 'interact',
-  tCommon: (key: string, values?: Record<string, any>) => string
+  tCommon: (key: string, values?: Record<string, string | number | Date>) => string
 ): boolean {
   if (!user) {
     toast({

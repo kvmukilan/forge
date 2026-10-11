@@ -21,3 +21,6 @@ tags
 tsconfig.tsbuildinfo
 .env.local
 .env.*.local
+.env
+.env.*
+!.env.example

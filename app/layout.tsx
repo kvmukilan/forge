@@ -1,5 +1,5 @@
 import './globals.css'
-import { Geist } from 'next/font/google'
+import localFont from 'next/font/local'
 import { JotaiProvider } from '@/components/jotai-providers'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { loadSettings, loadHabitsData, loadCoinsData, loadWishlistData, loadUsersPublicData, loadServerSettings } from './actions/data'
@@ -16,9 +16,10 @@ import { Suspense } from 'react'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
 
-const geist = Geist({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+const geist = localFont({
+  src: '../node_modules/@fontsource-variable/geist/files/geist-latin-wght-normal.woff2',
+  display: 'swap',
+  weight: '100 900',
 })
 
 const activeFont = geist
